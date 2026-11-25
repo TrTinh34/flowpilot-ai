@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { SignJWT, jwtVerify } from 'jose';
+import { errors, SignJWT, jwtVerify } from 'jose';
 import { env } from '../../config/env.js';
 
 export const accessTokenLifetime = 15 * 60;
@@ -44,7 +44,7 @@ export async function verifyAccessToken(token: string): Promise<{ userId: string
     exp <= iat ||
     exp - iat > accessTokenLifetime
   ) {
-    throw new Error('Invalid access token claims');
+    throw new errors.JWTClaimValidationFailed('Invalid access token claims', payload);
   }
   return { userId: sub };
 }

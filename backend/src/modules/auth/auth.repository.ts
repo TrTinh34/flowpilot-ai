@@ -2,6 +2,13 @@ import { prisma } from '../../config/prisma.js';
 import { Prisma } from '../../generated/prisma/client.js';
 
 type NewUser = { email: string; displayName: string; passwordHash: string };
+const publicUserSelect = {
+  id: true,
+  email: true,
+  displayName: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
 
 export async function emailExists(email: string): Promise<boolean> {
   const [result] = await prisma.$queryRaw<[{ exists: boolean }]>`
@@ -24,8 +31,12 @@ export async function findUserCredentials(
 export function createUser(data: NewUser) {
   return prisma.user.create({
     data,
-    select: { id: true, email: true, displayName: true, createdAt: true, updatedAt: true },
+    select: publicUserSelect,
   });
+}
+
+export function findPublicUserById(id: string) {
+  return prisma.user.findUnique({ where: { id }, select: publicUserSelect });
 }
 
 export function isDuplicateEmail(error: unknown): boolean {

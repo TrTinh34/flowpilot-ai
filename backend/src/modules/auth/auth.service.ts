@@ -4,6 +4,7 @@ import { hashPassword, verifyPassword } from '../../utils/crypto.util.js';
 import {
   createUser,
   emailExists,
+  findPublicUserById,
   findUserCredentials,
   isDuplicateEmail,
 } from './auth.repository.js';
@@ -55,4 +56,14 @@ export async function verifyLoginCredentials({
   }
 
   return { userId: user.id };
+}
+
+export async function getCurrentUser(userId: string) {
+  const user = await findPublicUserById(userId).catch(() => {
+    throw new AppError(500, ERROR_CODES.INTERNAL_ERROR, 'An unexpected internal error occurred');
+  });
+  if (!user) {
+    throw new AppError(404, ERROR_CODES.NOT_FOUND, 'User not found.');
+  }
+  return user;
 }

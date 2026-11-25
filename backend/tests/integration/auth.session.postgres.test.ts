@@ -82,6 +82,23 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     expect(await db.prisma.refreshToken.count({ where: { userId } })).toBe(before);
   });
 
+  it('looks up only the public fields for the verified subject on PostgreSQL', async () => {
+    const { accessToken } = await login();
+    const { getCurrentUser } = await import('../../src/modules/auth/auth.service.js');
+    const subject = await tokens.verifyAccessToken(accessToken);
+    await expect(getCurrentUser(subject.userId)).resolves.toEqual({
+      id: userId,
+      email: input.email,
+      displayName: 'Session fixture',
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+    });
+    const absentSubject = await tokens.verifyAccessToken(
+      await tokens.issueAccessToken(randomUUID()),
+    );
+    await expect(getCurrentUser(absentSubject.userId)).rejects.toMatchObject({ statusCode: 404 });
+  });
+
   it('rotates and commits reuse revocation only for the affected family', async () => {
     const initial = await login();
     const independent = await login();

@@ -21,6 +21,8 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | AUTH-03 | User Login API | PARTIAL | [Báo cáo](01-authentication/AUTH-03-user-login.md) |
 | AUTH-04 | Access Token & Refresh Token Management | PARTIAL | [Báo cáo](01-authentication/AUTH-04-token-management.md) |
 | AUTH-05 | Logout & Token Revocation | PARTIAL | [Báo cáo](01-authentication/AUTH-05-logout-token-revocation.md) |
+| AUTH-06 | Authentication Middleware | PARTIAL | [Báo cáo](01-authentication/AUTH-06-authentication-middleware.md) |
+| AUTH-07 | Get Current User API | PARTIAL | [Báo cáo](01-authentication/AUTH-07-get-current-user.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -29,4 +31,4 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | Giai đoạn | Tiến độ |
 |---|---|
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
-| Sprint 1 — Foundation + AUTH | Register, Login, Refresh và Logout đã triển khai. Kiểm chứng ghi dữ liệu, rotation, revocation và concurrency chờ PostgreSQL test riêng. |
+| Sprint 1 — Foundation + AUTH | Register, Login, Refresh và Logout đã triển khai. Middleware Bearer đã qua test harness. Route Current User chờ hợp đồng OpenAPI, kiểm chứng database chờ PostgreSQL test riêng. |
