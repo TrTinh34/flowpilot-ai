@@ -1,5 +1,7 @@
 # AUTH-03 — User Login API
 
+**Cập nhật từ AUTH-04.** Login đã được mount và trả HTTP 200 với `accessToken`, `expiresIn` và refresh cookie trong HTTP test dùng repository mock. Đã kiểm tra rate limit thực tế và xác nhận lỗi credential trả 401 trong HTTP test. AUTH-03 vẫn ở trạng thái `PARTIAL` do kiểm chứng toàn luồng trên PostgreSQL test còn bị chặn. Phần bên dưới lưu kết quả tại phiên AUTH-03 trước khi tích hợp token. Xem [báo cáo AUTH-04](AUTH-04-token-management.md).
+
 ## 1. Thông tin Task
 
 - Task ID — AUTH-03

@@ -13,6 +13,10 @@ function parseAllowedOrigins(): string[] {
 
 const allowedOrigins = parseAllowedOrigins();
 
+export function isAllowedOrigin(origin: string): boolean {
+  return allowedOrigins.includes(origin);
+}
+
 export const corsOptions: CorsOptions = {
   origin(origin, callback) {
     // Allow non-browser requests with no Origin header (curl, Supertest, server-to-server)
@@ -20,7 +24,7 @@ export const corsOptions: CorsOptions = {
       callback(null, true);
       return;
     }
-    if (allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
       return;
     }

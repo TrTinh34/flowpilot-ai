@@ -143,7 +143,17 @@ DATABASE_URL=postgresql://postgres:<PASSWORD>@localhost:5434/flowpilot_ai
 FRONTEND_URL=http://localhost:5173
 CORS_ORIGIN=http://localhost:5173
 LOG_LEVEL=info
+JWT_ACCESS_SECRET=<RANDOM_64_HEX_CHARACTERS>
 ```
+
+Backend yêu cầu `JWT_ACCESS_SECRET` là khóa ngẫu nhiên 32 byte ở dạng hex. Để chạy local với khóa chỉ tồn tại trong phiên PowerShell hiện tại:
+
+```powershell
+$env:JWT_ACCESS_SECRET = node -p "require('node:crypto').randomBytes(32).toString('hex')"
+npm --prefix backend run dev
+```
+
+Để chạy integration tests ghi dữ liệu, cấu hình `TEST_DATABASE_URL` trong shell trỏ đến PostgreSQL test riêng có tên kết thúc bằng `_test` và đã áp dụng migration.
 
 ### Frontend — `frontend/.env`
 

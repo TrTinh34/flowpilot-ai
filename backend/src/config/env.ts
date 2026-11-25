@@ -13,6 +13,10 @@ const envSchema = z.object({
     ),
   FRONTEND_URL: z.string().default('http://localhost:5173'),
   CORS_ORIGIN: z.string().optional(),
+  JWT_ACCESS_SECRET: z
+    .string()
+    .length(64)
+    .regex(/^[\da-f]{64}$/i, 'Expected a 32-byte hex signing key'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 
