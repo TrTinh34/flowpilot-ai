@@ -18,6 +18,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | — | Project Initialization | COMPLETED | [Báo cáo](00-initialization/project-initialization.md) |
 | AUTH-01 | Authentication Database Schema & Migration | COMPLETED | [Báo cáo](01-authentication/AUTH-01-database-schema.md) |
 | AUTH-02 | User Registration API | PARTIAL | [Báo cáo](01-authentication/AUTH-02-user-registration.md) |
+| AUTH-03 | User Login API | PARTIAL | [Báo cáo](01-authentication/AUTH-03-user-login.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -26,4 +27,4 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | Giai đoạn | Tiến độ |
 |---|---|
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
-| Sprint 1 — Foundation + AUTH | Migration đã áp dụng trên development. Register đã triển khai, còn chờ kiểm chứng ghi dữ liệu trên PostgreSQL test. |
+| Sprint 1 — Foundation + AUTH | Migration đã áp dụng trên development. Register chờ kiểm chứng PostgreSQL test. Logic xác thực Login đã triển khai, endpoint chờ AUTH-04. |

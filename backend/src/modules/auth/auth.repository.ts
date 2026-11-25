@@ -10,6 +10,17 @@ export async function emailExists(email: string): Promise<boolean> {
   return result.exists;
 }
 
+export async function findUserCredentials(
+  email: string,
+): Promise<{ id: string; passwordHash: string } | null> {
+  const [user] = await prisma.$queryRaw<{ id: string; passwordHash: string }[]>`
+    SELECT id, password_hash AS "passwordHash"
+    FROM users
+    WHERE LOWER(email) = LOWER(${email})
+  `;
+  return user ?? null;
+}
+
 export function createUser(data: NewUser) {
   return prisma.user.create({
     data,

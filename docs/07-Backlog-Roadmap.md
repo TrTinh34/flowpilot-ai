@@ -18,6 +18,7 @@
 - Acceptance: Đăng nhập đúng trả token; sai trả 401; Email duy nhất; refresh token xoay vòng và thu hồi.
 - Tiến độ database: Hoàn thành schema và migration `20261125150345_init_auth`. Đã áp dụng và kiểm chứng trên PostgreSQL development.
 - Tiến độ AUTH-02: Đã triển khai Register và kiểm tra validation, băm mật khẩu, rate limiting và smoke tests. Nghiệm thu còn chờ PostgreSQL test riêng để kiểm chứng ghi dữ liệu, unique index và đăng ký đồng thời.
+- Tiến độ AUTH-03: Đã triển khai và unit test validation và xác thực credentials. Login endpoint và kiểm thử HTTP theo OpenAPI chờ AUTH-04 cấp token.
 - Tasks: Khởi tạo Express.js + TS + Pino/Helmet/CORS/rate-limit; Prisma schema & Prisma Migrate (`users`, `refresh_tokens` + custom SQL `LOWER(email)` unique); auth service (`bcrypt`, JWT, refresh rotation/reuse detection) & Zod schemas; UI form (React Hook Form + Zod); integration test (Vitest + Supertest + PostgreSQL test DB), review.
 
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên
