@@ -1,12 +1,18 @@
-import type { Request, Response } from 'express';
+import type { CookieOptions, Request, Response } from 'express';
 import { env } from '../../config/env.js';
 import { AppError } from '../../errors/app-error.js';
 import { ERROR_CODES } from '../../errors/error-codes.js';
 import type { LoginInput, RegisterInput } from './auth.schema.js';
 import { register } from './auth.service.js';
-import { login, refreshSession } from './auth.session.js';
+import { login, logoutSession, refreshSession } from './auth.session.js';
 
 const cookieName = 'refresh_token';
+const refreshCookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  path: '/api/v1/auth',
+};
 
 function readRefreshCookie(req: Request): string | undefined {
   const cookies = req.headers.cookie
@@ -19,10 +25,7 @@ function readRefreshCookie(req: Request): string | undefined {
 function sendSession(res: Response, session: Awaited<ReturnType<typeof login>>): void {
   res.set('Cache-Control', 'no-store');
   res.cookie(cookieName, session.refreshToken, {
-    httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/api/v1/auth',
+    ...refreshCookieOptions,
     expires: session.expiresAt,
   });
   res.status(200).json({ accessToken: session.accessToken, expiresIn: session.expiresIn });
@@ -61,6 +64,17 @@ export async function loginController(
 export async function refreshController(req: Request, res: Response): Promise<void> {
   try {
     sendSession(res, await refreshSession(readRefreshCookie(req)));
+  } catch (error) {
+    rethrowSafeError(error);
+  }
+}
+
+export async function logoutController(req: Request, res: Response): Promise<void> {
+  try {
+    await logoutSession(readRefreshCookie(req));
+    res.set('Cache-Control', 'no-store');
+    res.clearCookie(cookieName, refreshCookieOptions);
+    res.status(204).end();
   } catch (error) {
     rethrowSafeError(error);
   }

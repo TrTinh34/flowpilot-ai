@@ -10,6 +10,7 @@ import {
 } from '../../src/modules/auth/auth.tokens.js';
 import {
   findRefreshToken,
+  lockRefreshFamily,
   revokeRefreshFamily,
   revokeRefreshToken,
   saveRefreshToken,
@@ -33,6 +34,7 @@ vi.mock('../../src/modules/auth/refresh-token.repository.js', () => ({
 const app = createApp();
 const loginPath = '/api/v1/auth/login';
 const refreshPath = '/api/v1/auth/refresh';
+const logoutPath = '/api/v1/auth/logout';
 const input = { email: 'fixture@example.test', password: 'fixture-password' };
 const userId = randomUUID();
 const refreshToken = generateRefreshToken();
@@ -146,3 +148,74 @@ it('returns a generic 500 for failed refresh transaction', async () => {
   expect(res.body.message).toBe('An unexpected internal error occurred');
   expect(res.headers['set-cookie']).toBeUndefined();
 });
+
+const logout = () => request(app).post(logoutPath).set('Cookie', `refresh_token=${refreshToken}`);
+
+it('revokes the family identified by the cookie and expires the matching cookie', async () => {
+  const res = await logout().send({ familyId: randomUUID() });
+  expect(res.status).toBe(204);
+  expect(res.text).toBe('');
+  expect(res.headers['cache-control']).toBe('no-store');
+  expect(res.headers['set-cookie'][0]).toMatch(
+    /^refresh_token=; Path=\/api\/v1\/auth; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Lax$/,
+  );
+  expect(findRefreshToken).toHaveBeenCalledWith(tx, hashRefreshToken(refreshToken));
+  expect(lockRefreshFamily).toHaveBeenCalledBefore(vi.mocked(revokeRefreshFamily));
+  expect(revokeRefreshFamily).toHaveBeenCalledExactlyOnceWith(
+    tx,
+    record.familyId,
+    expect.any(Date),
+  );
+  expect(saveRefreshToken).not.toHaveBeenCalled();
+});
+
+it('accepts repeated logout with a known revoked token that has not expired', async () => {
+  vi.mocked(findRefreshToken).mockResolvedValue({ ...record, revokedAt: new Date() });
+  expect((await logout()).status).toBe(204);
+  expect((await logout()).status).toBe(204);
+  expect(revokeRefreshFamily).toHaveBeenCalledTimes(2);
+});
+
+it.each(['missing', 'malformed', 'unknown', 'expired'])(
+  'returns 401 for a %s logout cookie',
+  async (scenario) => {
+    if (scenario === 'unknown') vi.mocked(findRefreshToken).mockResolvedValue(null);
+    if (scenario === 'expired')
+      vi.mocked(findRefreshToken).mockResolvedValue({ ...record, expiresAt: new Date(0) });
+    const response = await (scenario === 'missing'
+      ? request(app).post(logoutPath)
+      : scenario === 'malformed'
+        ? request(app).post(logoutPath).set('Cookie', 'refresh_token=invalid')
+        : logout());
+    expect(response.status).toBe(401);
+    expect(response.body.code).toBe('INVALID_REFRESH_TOKEN');
+    expect(revokeRefreshFamily).not.toHaveBeenCalled();
+  },
+);
+
+it('rejects untrusted browser logout before accessing PostgreSQL', async () => {
+  const response = await logout().set('Sec-Fetch-Site', 'cross-site');
+  expect(response.status).toBe(403);
+  expect(transaction).not.toHaveBeenCalled();
+});
+
+it.each(['repository', 'commit'])(
+  'preserves the cookie and returns a generic 500 on %s failure',
+  async (failure) => {
+    const privateError = new Error('private database diagnostics');
+    if (failure === 'repository') vi.mocked(revokeRefreshFamily).mockRejectedValue(privateError);
+    else
+      transaction.mockImplementation(async (callback: (client: typeof tx) => unknown) => {
+        await callback(tx);
+        throw privateError;
+      });
+    const response = await logout();
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({
+      code: 'INTERNAL_ERROR',
+      message: 'An unexpected internal error occurred',
+      requestId: expect.any(String),
+    });
+    expect(response.headers['set-cookie']).toBeUndefined();
+  },
+);

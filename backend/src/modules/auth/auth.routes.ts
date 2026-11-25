@@ -4,11 +4,17 @@ import { AppError } from '../../errors/app-error.js';
 import { ERROR_CODES } from '../../errors/error-codes.js';
 import {
   loginRateLimiter,
+  logoutRateLimiter,
   refreshRateLimiter,
   registrationRateLimiter,
 } from '../../middlewares/rate-limit.middleware.js';
 import { validateBody } from '../../middlewares/validation.middleware.js';
-import { loginController, refreshController, registerController } from './auth.controller.js';
+import {
+  loginController,
+  logoutController,
+  refreshController,
+  registerController,
+} from './auth.controller.js';
 import { loginSchema, registerSchema } from './auth.schema.js';
 
 export const authRouter = Router();
@@ -38,3 +44,4 @@ authRouter.post(
   loginController,
 );
 authRouter.post('/refresh', requireTrustedBrowserOrigin, refreshRateLimiter, refreshController);
+authRouter.post('/logout', requireTrustedBrowserOrigin, logoutRateLimiter, logoutController);

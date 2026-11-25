@@ -20,6 +20,7 @@
 - Tiến độ AUTH-02: Đã triển khai Register và kiểm tra validation, băm mật khẩu, rate limiting và smoke tests. Nghiệm thu còn chờ PostgreSQL test riêng để kiểm chứng ghi dữ liệu, unique index và đăng ký đồng thời.
 - Tiến độ AUTH-03: Login đã nối với cấp token từ AUTH-04 và kiểm chứng HTTP với repository mock. Nghiệm thu còn chờ kiểm chứng PostgreSQL test.
 - Tiến độ AUTH-04: Đã triển khai JWT, refresh cookie, rotation và reuse detection. Kiểm thử concurrency, rollback và commit thu hồi family chờ PostgreSQL test riêng.
+- Tiến độ AUTH-05: Đã triển khai Logout cho phiên hiện tại và xóa refresh cookie sau khi transaction thành công. Thu hồi family, concurrency và rollback chờ kiểm chứng PostgreSQL test.
 - Tasks: Khởi tạo Express.js + TS + Pino/Helmet/CORS/rate-limit; Prisma schema & Prisma Migrate (`users`, `refresh_tokens` + custom SQL `LOWER(email)` unique); auth service (`bcrypt`, JWT, refresh rotation/reuse detection) & Zod schemas; UI form (React Hook Form + Zod); integration test (Vitest + Supertest + PostgreSQL test DB), review.
 
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên

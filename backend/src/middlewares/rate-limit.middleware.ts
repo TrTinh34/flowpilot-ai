@@ -18,3 +18,4 @@ export const apiRateLimiter = rateLimit({ ...rateLimitOptions, limit: 120 });
 export const registrationRateLimiter = rateLimit({ ...rateLimitOptions, limit: 15 });
 export const loginRateLimiter = rateLimit({ ...rateLimitOptions, limit: 15 });
 export const refreshRateLimiter = rateLimit({ ...rateLimitOptions, limit: 30 });
+export const logoutRateLimiter = rateLimit({ ...rateLimitOptions, limit: 30 });

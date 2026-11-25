@@ -24,6 +24,13 @@ function invalidRefreshToken() {
   return new AppError(401, ERROR_CODES.INVALID_REFRESH_TOKEN, 'Invalid or expired refresh token.');
 }
 
+function requireRefreshTokenHash(refreshToken: string | undefined): string {
+  if (!refreshToken || !/^[\w-]{43}$/.test(refreshToken)) {
+    throw invalidRefreshToken();
+  }
+  return hashRefreshToken(refreshToken);
+}
+
 export async function login(input: LoginInput) {
   const { userId } = await verifyLoginCredentials(input);
   const refreshToken = generateRefreshToken();
@@ -39,10 +46,7 @@ export async function login(input: LoginInput) {
 }
 
 export async function refreshSession(refreshToken: string | undefined) {
-  if (!refreshToken || !/^[\w-]{43}$/.test(refreshToken)) {
-    throw invalidRefreshToken();
-  }
-  const tokenHash = hashRefreshToken(refreshToken);
+  const tokenHash = requireRefreshTokenHash(refreshToken);
   const outcome = await prisma.$transaction(
     async (tx) => {
       const candidate = await findRefreshToken(tx, tokenHash);
@@ -87,4 +91,25 @@ export async function refreshSession(refreshToken: string | undefined) {
   if (outcome.status === 'reuse')
     logger.warn({ event: 'refresh_token_reuse' }, 'Refresh token family revoked');
   throw invalidRefreshToken();
+}
+
+export async function logoutSession(refreshToken: string | undefined): Promise<void> {
+  const tokenHash = requireRefreshTokenHash(refreshToken);
+  const revoked = await prisma.$transaction(
+    async (tx) => {
+      const candidate = await findRefreshToken(tx, tokenHash);
+      if (!candidate) return false;
+
+      await lockRefreshFamily(tx, candidate.familyId);
+      const now = new Date();
+      if (candidate.expiresAt <= now) return false;
+
+      // A rotated token can still identify the family for revocation.
+      await revokeRefreshFamily(tx, candidate.familyId, now);
+      return true;
+    },
+    { isolationLevel: 'ReadCommitted' },
+  );
+
+  if (!revoked) throw invalidRefreshToken();
 }

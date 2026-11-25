@@ -56,6 +56,10 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     return request(app).post('/api/v1/auth/refresh').set('Cookie', cookie);
   }
 
+  function logout(cookie: string) {
+    return request(app).post('/api/v1/auth/logout').set('Cookie', cookie);
+  }
+
   async function login() {
     const res = await request(app)
       .post('/api/v1/auth/login')
@@ -66,7 +70,7 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     const tokenHash = tokens.hashRefreshToken(cookie.slice('refresh_token='.length));
     const record = await db.prisma.refreshToken.findUniqueOrThrow({ where: { tokenHash } });
     expect(record.userId).toBe(userId);
-    return { cookie, record };
+    return { cookie, record, accessToken: res.body.accessToken as string };
   }
 
   it('does not persist a session for invalid credentials', async () => {
@@ -137,5 +141,66 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     });
     expect((await refresh(cookie)).status).toBe(401);
     expect((await refresh(`refresh_token=${tokens.generateRefreshToken()}`)).status).toBe(401);
+  });
+
+  it('revokes the current family via an old token and preserves other sessions and the access JWT', async () => {
+    const initial = await login();
+    const independent = await login();
+    const rotated = await refresh(initial.cookie);
+    expect(rotated.status).toBe(200);
+    const successor = rotated.headers['set-cookie'][0].split(';')[0];
+    expect((await logout(initial.cookie)).status).toBe(204);
+    expect((await logout(initial.cookie)).status).toBe(204);
+    expect(
+      await db.prisma.refreshToken.count({
+        where: { familyId: initial.record.familyId, revokedAt: null },
+      }),
+    ).toBe(0);
+    expect((await refresh(successor)).status).toBe(401);
+    expect((await refresh(independent.cookie)).status).toBe(200);
+    await expect(tokens.verifyAccessToken(initial.accessToken)).resolves.toEqual({ userId });
+  });
+
+  it('serializes concurrent logout and refresh without leaving an active successor', async () => {
+    const { cookie, record } = await login();
+    const [first, second, rotation] = await Promise.all([
+      logout(cookie),
+      logout(cookie),
+      refresh(cookie),
+    ]);
+    expect(first.status).toBe(204);
+    expect(second.status).toBe(204);
+    expect([200, 401]).toContain(rotation.status);
+    expect(
+      await db.prisma.refreshToken.count({
+        where: { familyId: record.familyId, revokedAt: null },
+      }),
+    ).toBe(0);
+    if (rotation.status === 200) {
+      expect((await refresh(rotation.headers['set-cookie'][0].split(';')[0])).status).toBe(401);
+    }
+  });
+
+  it('rolls back logout revocation if the transaction fails', async () => {
+    const { cookie, record } = await login();
+    const revoke = repo.revokeRefreshFamily;
+    const failure = vi
+      .spyOn(repo, 'revokeRefreshFamily')
+      .mockImplementationOnce(async (...args) => {
+        await revoke(...args);
+        throw new Error('Fixture failure after database update');
+      });
+    try {
+      const res = await logout(cookie);
+      expect(res.status).toBe(500);
+      expect(res.headers['set-cookie']).toBeUndefined();
+    } finally {
+      failure.mockRestore();
+    }
+    expect(
+      await db.prisma.refreshToken.findUniqueOrThrow({ where: { id: record.id } }),
+    ).toMatchObject({
+      revokedAt: null,
+    });
   });
 });
