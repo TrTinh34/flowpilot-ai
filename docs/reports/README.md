@@ -32,12 +32,17 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | AUTH-11 | Frontend & Backend Integration | COMPLETED | [Báo cáo](01-authentication/AUTH-11-frontend-backend-integration.md) |
 | AUTH-12 | Testing & Code Review | COMPLETED | [Báo cáo](01-authentication/AUTH-12-testing-code-review.md) |
 | AUTH-INT-01 | Authentication Integration Testing | COMPLETED | [Báo cáo](01-authentication/AUTH-INT-01-integration-testing.md) |
+| WS-01 | Workspace schema và migration | COMPLETED | [Báo cáo](02-workspace-project/WS-01-workspace-database.md) |
+| WS-02 | Workspace API và RBAC | COMPLETED | [Báo cáo](02-workspace-project/WS-02-workspace-membership.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
 ## Tiến độ theo Sprint
 
+Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho phạm vi và dependencies đã đối chiếu.
+
 | Giai đoạn | Tiến độ |
 |---|---|
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
 | Sprint 1 — Foundation + AUTH | Hoàn thành 13/13 Task. Regression, PostgreSQL integration, browser smoke và GitHub Actions đều đạt. |
+| Sprint 2 — Workspace & Project | WS-01 và WS-02 đã qua PostgreSQL test. |

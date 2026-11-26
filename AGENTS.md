@@ -22,7 +22,8 @@ Postman CLI is installed on this device, and can be used for API Engineering wor
 - Chạy verification commands, đánh giá từng tiêu chí nghiệm thu và ghi rõ phần chưa được kiểm chứng.
 - Tạo hoặc cập nhật báo cáo trong `docs/reports/` theo [REPORT-TEMPLATE.md](docs/reports/REPORT-TEMPLATE.md).
 - Cập nhật trạng thái Task tại Sprint Backlog, đồng bộ tổng hợp tiến độ Sprint, Reports Index và các mốc liên quan trong Product Backlog.
-- Đưa đường dẫn báo cáo và commit message đề xuất vào phản hồi cuối. Dừng và chờ Developer Review.
+- Tạo một commit cho mỗi Task đã hoàn thành và kiểm chứng. Ghi commit và đường dẫn báo cáo trong phản hồi cuối.
+- Dừng và chờ Developer Review, trừ khi Developer đã giao một chuỗi Task. Chỉ push khi được giao.
 
 ## Khi bắt đầu Sprint mới
 

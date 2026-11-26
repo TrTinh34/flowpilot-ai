@@ -21,6 +21,10 @@
 - Tasks: Khởi tạo Express.js + TS + Pino/Helmet/CORS/rate-limit; Prisma schema & Prisma Migrate (`users`, `refresh_tokens` + custom SQL `LOWER(email)` unique); auth service (`bcrypt`, JWT, refresh rotation/reuse detection) & Zod schemas; UI form (React Hook Form + Zod); integration test (Vitest + Supertest + PostgreSQL test DB), review.
 
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên
+
+- Tiến độ Workspace và Project theo [Sprint 02 Backlog](sprints/sprint-02-workspace-project/README.md#sprint-backlog).
+- WS-01 đã hoàn thành schema và kiểm chứng migration trên PostgreSQL test.
+- WS-02 đã kiểm chứng Workspace API, membership, chuyển quyền Owner và cách ly workspace bằng Supertest trên PostgreSQL test.
 - Epic: WS; priority: Must; FR-WS-01 / UC-WS-01.
 - Story: Là Owner / Admin, tôi muốn tạo workspace, mời và quản lý thành viên để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Người được mời đúng email chấp nhận một lần; Owner cuối không được rời; lời mời hết hạn sau 48 giờ.

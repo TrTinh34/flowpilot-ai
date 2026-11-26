@@ -1,10 +1,11 @@
 # Sprint FlowPilot AI
 
-[Product Backlog & Roadmap](../07-Backlog-Roadmap.md) quản lý ưu tiên và kế hoạch toàn dự án. Chỉ Sprint đang thực hiện có thư mục tại đây.
+[Product Backlog & Roadmap](../07-Backlog-Roadmap.md) quản lý ưu tiên và kế hoạch toàn dự án. Index liệt kê các Sprint đã mở và lưu lịch sử nghiệm thu.
 
 | Sprint ID | Tên | Mục tiêu | Trạng thái | Tiến độ | Dependencies | Tài liệu |
 |---|---|---|---|---|---|---|
 | Sprint 01 | Foundation + AUTH | Hoàn thành nền tảng monorepo, CI và luồng Authentication | COMPLETED | 13/13 Task hoàn thành. GitHub Actions đạt. | Hoàn tất | [Sprint 01](sprint-01-authentication/README.md) |
+| Sprint 02 | Workspace & Project | Tạo workspace, mời thành viên và quản lý project theo quyền | IN_PROGRESS | 2/8 Task hoàn thành | Auth, PostgreSQL test, RBAC và tenant isolation | [Sprint 02](sprint-02-workspace-project/README.md) |
 
 ## Nguồn quản lý
 
