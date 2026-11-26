@@ -164,6 +164,11 @@ export function WorkspaceSettingsPage() {
         </a>
       )}
       {error && <p role="alert">{error}</p>}
+      {selected && (
+        <Link className="underline" to={`/workspaces/${selected.id}/projects`}>
+          Browse projects
+        </Link>
+      )}
       {workspaceId && (
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">Members</h2>

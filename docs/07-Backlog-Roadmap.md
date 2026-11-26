@@ -23,9 +23,7 @@
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên
 
 - Tiến độ Workspace và Project theo [Sprint 02 Backlog](sprints/sprint-02-workspace-project/README.md#sprint-backlog).
-- PROJ-02 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/PROJ-02-project-api-authorization.md).
 - WS-04 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/WS-04-workspace-frontend.md).
-- PROJ-01 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/PROJ-01-project-database.md).
 - WS-03 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/WS-03-workspace-invitations.md).
 - WS-01 đã hoàn thành schema và kiểm chứng migration trên PostgreSQL test.
 - WS-02 đã kiểm chứng Workspace API, membership, chuyển quyền Owner và cách ly workspace bằng Supertest trên PostgreSQL test.
@@ -35,6 +33,8 @@
 - Tasks: Prisma Migrate (`workspaces`, `workspace_members`, `invitations` + custom SQL partial unique pending invite); Express workspace RBAC middleware & service (`prisma.$transaction` cho create/transfer/accept); UI quản lý workspace & invite; integration test (Vitest + Supertest), review.
 
 ### US-PROJ-01 — Tạo, cập nhật, lưu trữ project và quản lý thành viên
+- PROJ-01 và PROJ-02 đã hoàn thành. Xem [Project schema](reports/02-workspace-project/PROJ-01-project-database.md) và [Project API](reports/02-workspace-project/PROJ-02-project-api-authorization.md).
+- PROJ-03 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/PROJ-03-project-frontend.md).
 - Epic: PROJ; priority: Must; FR-PROJ-01 / UC-PROJ-01.
 - Story: Là Owner / Admin / Manager, tôi muốn tạo, cập nhật, lưu trữ project và quản lý thành viên để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Manager tạo task trong project được cấp quyền; Project thuộc đúng workspace; project lưu trữ chỉ đọc.

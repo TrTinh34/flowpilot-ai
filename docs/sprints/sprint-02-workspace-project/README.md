@@ -5,7 +5,7 @@
 - Sprint ID — Sprint 02
 - Ngày mở — 2026-11-26
 - Trạng thái — IN_PROGRESS
-- Tiến độ — 6/8 Task hoàn thành
+- Tiến độ — 7/8 Task hoàn thành
 - Nguồn — [Product Backlog & Roadmap](../../07-Backlog-Roadmap.md)
 
 ## Sprint Goal
@@ -28,7 +28,7 @@ Các Task ID bên dưới được mở khi phân rã hai story hiện có.
 | WS-04 | [Workspace và invitation UI](tasks/WS-04-workspace-frontend.md) | COMPLETED | WS-02, WS-03, AUTH-11 |
 | PROJ-01 | [Project schema và migration](tasks/PROJ-01-project-database.md) | COMPLETED | WS-01 |
 | PROJ-02 | [Project API và phân quyền tài nguyên](tasks/PROJ-02-project-api-authorization.md) | COMPLETED | WS-02, PROJ-01, AUTH-06 |
-| PROJ-03 | [Project list và settings UI](tasks/PROJ-03-project-frontend.md) | PENDING | WS-04, PROJ-02 |
+| PROJ-03 | [Project list và settings UI](tasks/PROJ-03-project-frontend.md) | COMPLETED | WS-04, PROJ-02 |
 | WS-PROJ-INT-01 | [Workspace & Project integration và review](tasks/WS-PROJ-INT-01-integration-review.md) | PENDING | WS-01–04, PROJ-01–03 |
 
 ## Dependencies

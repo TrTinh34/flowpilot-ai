@@ -5,6 +5,8 @@ import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { InitStatusPage } from '@/pages/InitStatusPage';
 import { WorkspaceSettingsPage } from '@/pages/workspace/WorkspaceSettingsPage';
 import { AcceptInvitePage } from '@/pages/workspace/AcceptInvitePage';
+import { ProjectsPage } from '@/pages/project/ProjectsPage';
+import { ProjectSettingsPage } from '@/pages/project/ProjectSettingsPage';
 
 /**
  * Application router — AUTH-10.
@@ -33,7 +35,8 @@ export function AppRouter() {
         <Route path="/" element={<InitStatusPage />} />
         <Route path="/workspaces" element={<WorkspaceSettingsPage />} />
         <Route path="/invitations/accept" element={<AcceptInvitePage />} />
-        {/* Sprint 2: workspace, project, board routes will nest here */}
+        <Route path="/workspaces/:workspaceId/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:projectId" element={<ProjectSettingsPage />} />
       </Route>
 
       {/* ── Fallback ───────────────────────────────────────────────────── */}

@@ -34,16 +34,13 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | AUTH-INT-01 | Authentication Integration Testing | COMPLETED | [Báo cáo](01-authentication/AUTH-INT-01-integration-testing.md) |
 | WS-01 | Workspace schema và migration | COMPLETED | [Báo cáo](02-workspace-project/WS-01-workspace-database.md) |
 | WS-02 | Workspace API và RBAC | COMPLETED | [Báo cáo](02-workspace-project/WS-02-workspace-membership.md) |
+| WS-03 | Mời và chấp nhận thành viên | COMPLETED | [Báo cáo](02-workspace-project/WS-03-workspace-invitations.md) |
+| WS-04 | Workspace và invitation UI | COMPLETED | [Báo cáo](02-workspace-project/WS-04-workspace-frontend.md) |
+| PROJ-01 | Project schema và migration | COMPLETED | [Báo cáo](02-workspace-project/PROJ-01-project-database.md) |
+| PROJ-02 | Project API và phân quyền tài nguyên | COMPLETED | [Báo cáo](02-workspace-project/PROJ-02-project-api-authorization.md) |
+| PROJ-03 | Project list và settings UI | COMPLETED | [Báo cáo](02-workspace-project/PROJ-03-project-frontend.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
-
-| WS-03 | Mời và chấp nhận thành viên | COMPLETED | [Báo cáo](02-workspace-project/WS-03-workspace-invitations.md) |
-
-| PROJ-01 | Project schema và migration | COMPLETED | [Báo cáo](02-workspace-project/PROJ-01-project-database.md) |
-
-| WS-04 | Workspace và invitation UI | COMPLETED | [Báo cáo](02-workspace-project/WS-04-workspace-frontend.md) |
-
-| PROJ-02 | Project API và phân quyền tài nguyên | COMPLETED | [Báo cáo](02-workspace-project/PROJ-02-project-api-authorization.md) |
 
 ## Tiến độ theo Sprint
 
