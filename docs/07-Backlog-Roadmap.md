@@ -23,6 +23,7 @@
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên
 
 - Tiến độ Workspace và Project theo [Sprint 02 Backlog](sprints/sprint-02-workspace-project/README.md#sprint-backlog).
+- PROJ-01 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/PROJ-01-project-database.md).
 - WS-03 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/WS-03-workspace-invitations.md).
 - WS-01 đã hoàn thành schema và kiểm chứng migration trên PostgreSQL test.
 - WS-02 đã kiểm chứng Workspace API, membership, chuyển quyền Owner và cách ly workspace bằng Supertest trên PostgreSQL test.

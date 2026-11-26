@@ -42,4 +42,4 @@ Kiểm chứng tiêu chí bắt buộc liên quan và lưu kết quả trong Dev
 
 ## Development Report Reference
 
-Chưa có báo cáo triển khai Task này.
+[Development Report PROJ-01](../../../reports/02-workspace-project/PROJ-01-project-database.md)

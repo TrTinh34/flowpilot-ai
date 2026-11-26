@@ -51,7 +51,7 @@ UUID PK mặc định (`uuid` / `@db.Uuid`); timestamps `timestamptz` UTC; FK NO
 - Quản lý schema bằng `prisma/schema.prisma` và **Prisma Migrate** (`prisma/migrations/`), chạy theo các milestone tương ứng từng sprint:
   1. `init_auth`: `users`, `refresh_tokens`
   2. `workspace_invitations`: `workspaces`, `workspace_members`, `invitations`
-  3. `project_task`: `projects`, `project_members`, `tasks`
+  3. `projects` (Sprint 02): `projects`, `project_members`. Migration cho `tasks` thuộc Sprint 03.
   4. `collaboration_notification_audit_outbox`: `comments`, `attachments`, `notifications`, `audit_logs`, `outbox_events`
   5. `ai_plans`: `ai_plans`
 - **Custom SQL Migrations:** Với các constraint/index PostgreSQL mà `schema.prisma` chưa hỗ trợ biểu diễn trực tiếp, tạo migration bằng `prisma migrate dev --create-only` và bổ sung SQL thuần vào `migration.sql`:

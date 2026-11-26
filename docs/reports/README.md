@@ -39,6 +39,8 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 
 | WS-03 | Mời và chấp nhận thành viên | COMPLETED | [Báo cáo](02-workspace-project/WS-03-workspace-invitations.md) |
 
+| PROJ-01 | Project schema và migration | COMPLETED | [Báo cáo](02-workspace-project/PROJ-01-project-database.md) |
+
 ## Tiến độ theo Sprint
 
 Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho phạm vi và dependencies đã đối chiếu.
