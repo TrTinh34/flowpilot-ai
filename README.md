@@ -284,6 +284,7 @@ GitHub Actions (`ci.yml`) chạy tự động trên mỗi push/PR:
 | Project Scaffolding | ✅ Done |
 | **Project Initialization** | ✅ **Done** |
 | Sprint 1 — Foundation + AUTH | Completed — 13/13 tasks, authentication regression and GitHub Actions passed |
+| Sprint 2 — Workspace & Project | Completed — 8/8 tasks, PostgreSQL regression, browser smoke and GitHub Actions passed |
 
 **Initialization includes:**
 - Backend: Express 5 + TypeScript + Prisma 7 + Pino + Zod + Helmet + CORS + Rate Limit + Error Handling + Health Check

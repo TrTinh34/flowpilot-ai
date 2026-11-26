@@ -35,6 +35,7 @@
 ### US-PROJ-01 — Tạo, cập nhật, lưu trữ project và quản lý thành viên
 - PROJ-01 và PROJ-02 đã hoàn thành. Xem [Project schema](reports/02-workspace-project/PROJ-01-project-database.md) và [Project API](reports/02-workspace-project/PROJ-02-project-api-authorization.md).
 - PROJ-03 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/PROJ-03-project-frontend.md).
+- Sprint 02 đã nghiệm thu 8/8 Task. Regression, browser smoke và [GitHub Actions](https://github.com/TrTinh34/flowpilot-ai/actions/runs/45853025353) đều đạt.
 - Epic: PROJ; priority: Must; FR-PROJ-01 / UC-PROJ-01.
 - Story: Là Owner / Admin / Manager, tôi muốn tạo, cập nhật, lưu trữ project và quản lý thành viên để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Manager tạo task trong project được cấp quyền; Project thuộc đúng workspace; project lưu trữ chỉ đọc.

@@ -4,8 +4,8 @@
 
 - Sprint ID — Sprint 02
 - Ngày mở — 2026-11-26
-- Trạng thái — IN_PROGRESS
-- Tiến độ — 7/8 Task hoàn thành
+- Trạng thái — COMPLETED
+- Tiến độ — 8/8 Task hoàn thành
 - Nguồn — [Product Backlog & Roadmap](../../07-Backlog-Roadmap.md)
 
 ## Sprint Goal
@@ -29,7 +29,7 @@ Các Task ID bên dưới được mở khi phân rã hai story hiện có.
 | PROJ-01 | [Project schema và migration](tasks/PROJ-01-project-database.md) | COMPLETED | WS-01 |
 | PROJ-02 | [Project API và phân quyền tài nguyên](tasks/PROJ-02-project-api-authorization.md) | COMPLETED | WS-02, PROJ-01, AUTH-06 |
 | PROJ-03 | [Project list và settings UI](tasks/PROJ-03-project-frontend.md) | COMPLETED | WS-04, PROJ-02 |
-| WS-PROJ-INT-01 | [Workspace & Project integration và review](tasks/WS-PROJ-INT-01-integration-review.md) | PENDING | WS-01–04, PROJ-01–03 |
+| WS-PROJ-INT-01 | [Workspace & Project integration và review](tasks/WS-PROJ-INT-01-integration-review.md) | COMPLETED | Regression, browser smoke và GitHub Actions đạt |
 
 ## Dependencies
 
@@ -50,13 +50,14 @@ Theo [Definition of Done của Backlog](../../07-Backlog-Roadmap.md#definition-o
 
 ## Risks and Blockers
 
-- Database Design gộp `projects`, `project_members` và `tasks` trong milestone `project_task`. Roadmap yêu cầu Project ở Sprint 02 và Task ở Sprint 03. `PROJ-01` cần chốt cách chia migration trước khi triển khai.
+- PROJ-01 đã tách migration `projects` khỏi bảng `tasks`. Task schema vẫn thuộc Sprint 03.
 - Acceptance của `US-PROJ-01` và `TC-PROJ-01` có bước Manager tạo task. Sprint 02 kiểm chứng quyền và API Project. Bước tạo task thực tế dùng để kiểm chứng liên Sprint khi Task API đã có.
+- Môi trường production cần adapter gửi email thật để phát lời mời.
 
 ## Sprint Review
 
-Chưa bắt đầu. Bằng chứng được thu thập qua các Task và tổng hợp ở `WS-PROJ-INT-01`.
+Đã nghiệm thu 8/8 Task. Supertest/PostgreSQL xác nhận tenant isolation, phân quyền, chấp nhận lời mời một lần, bảo vệ Owner cuối và Project archive. Edge đã qua luồng Workspace → lời mời → Project. Backend Checks và Frontend Checks đều đạt trên commit `2da836e`. Xem [báo cáo tích hợp](../../reports/02-workspace-project/WS-PROJ-INT-01-integration-review.md) và [GitHub Actions](https://github.com/TrTinh34/flowpilot-ai/actions/runs/45853025353).
 
 ## Sprint Retrospective
 
-Chờ Sprint Review.
+Browser smoke phát hiện đường dẫn lời mời bị mất khi đăng nhập. Đã sửa và kiểm chứng lại. Giữ browser smoke cùng PostgreSQL test cho các thay đổi qua cả frontend và backend.

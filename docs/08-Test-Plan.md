@@ -11,8 +11,8 @@
 | ID | Trace | Setup / action | Expected | Status |
 |---|---|---|---|---|
 | TC-AUTH-01 | FR-AUTH-01 / UC-AUTH-01 | Seed actor đúng quyền; thực hiện luồng chính Đăng ký, đăng nhập, refresh, logout | Đăng nhập đúng trả token; sai trả 401 | Not run |
-| TC-WS-01 | FR-WS-01 / UC-WS-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo workspace, mời và quản lý thành viên | Người được mời đúng email chấp nhận một lần | Not run |
-| TC-PROJ-01 | FR-PROJ-01 / UC-PROJ-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo, cập nhật, lưu trữ project và quản lý thành viên | Manager tạo task trong project được cấp quyền | Not run |
+| TC-WS-01 | FR-WS-01 / UC-WS-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo workspace, mời và quản lý thành viên | Người được mời đúng email chấp nhận một lần | Passed trên PostgreSQL test |
+| TC-PROJ-01 | FR-PROJ-01 / UC-PROJ-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo, cập nhật, lưu trữ project và quản lý thành viên | Manager tạo task trong project được cấp quyền | API Project đã kiểm chứng. Bước tạo task chờ Sprint 03. |
 | TC-TASK-01 | FR-TASK-01 / UC-TASK-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo task, subtask, giao việc, deadline, priority | Task được giao xuất hiện trong My Tasks | Not run |
 | TC-BOARD-01 | FR-BOARD-01 / UC-BOARD-01 | Seed actor đúng quyền; thực hiện luồng chính Kanban, kéo thả và sắp xếp task | Hai cập nhật đồng thời không ghi đè âm thầm | Not run |
 | TC-COL-01 | FR-COL-01 / UC-COL-01 | Seed actor đúng quyền; thực hiện luồng chính Bình luận, mention, đính kèm | Bình luận hiển thị và người được mention nhận thông báo | Not run |
@@ -21,8 +21,8 @@
 | TC-AI-01 | FR-AI-01 / UC-AI-01 | Seed actor đúng quyền; thực hiện luồng chính Sinh kế hoạch AI, chỉnh sửa và xác nhận | JSON sai không tạo task; xác nhận hai lần không nhân đôi | Not run |
 | TC-SEC-01 | NFR-03 | User workspace A gọi GET/PATCH task B, file B, AI plan B | 404, không lộ dữ liệu | Not run |
 | TC-SEC-02 | NFR-03 | Kết nối Socket.IO không JWT hoặc cố gắng join/subscribe room `user:{otherUserId}` / `project:{otherProjectId}` | Handshake bị từ chối hoặc join room bị từ chối (Denied) | Not run |
-| TC-SEC-03 | FR-WS-01 | Xóa Owner cuối | 409 | Not run |
-| TC-SEC-04 | FR-WS-01 | Accept invite sai email hoặc hết hạn | 403 hoặc 422; không membership | Not run |
+| TC-SEC-03 | FR-WS-01 | Xóa Owner cuối | 409 | Passed trên PostgreSQL test |
+| TC-SEC-04 | FR-WS-01 | Accept invite sai email hoặc hết hạn | 403 hoặc 422; không membership | Passed trên PostgreSQL test |
 | TC-TASK-02 | NFR-07 | Hai request move cùng version | Một thành công, một 409 | Not run |
 | TC-AI-02 | NFR-04 | Provider trả JSON sai hoặc 31 tasks (Zod schema fail) | FAILED; 0 task | Not run |
 | TC-AI-03 | NFR-04 | Provider timeout | FAILED; không task | Not run |
