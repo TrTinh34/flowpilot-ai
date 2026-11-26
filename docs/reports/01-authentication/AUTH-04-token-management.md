@@ -1,11 +1,13 @@
 # AUTH-04 — Access Token & Refresh Token Management
 
+**Cập nhật AUTH-INT-01 ngày 2026-11-26 — COMPLETED.** PostgreSQL xác nhận lưu hash, hạn tuyệt đối, rotation, reuse commit, family isolation, concurrent Refresh và rollback khi INSERT kế nhiệm bị CHECK constraint từ chối. Các mục AC-04–13 và AC-18 đã đạt. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-04 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
+
 ## 1. Thông tin Task
 
 - Task ID — AUTH-04
 - Sprint — 1, Foundation + AUTH
 - Ngày triển khai — 2026-11-25
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `FR-AUTH-01`, `NFR-02`, `NFR-07`, `UC-AUTH-01`
 - Loại báo cáo — Ghi sau triển khai
 

@@ -2,21 +2,12 @@ import { randomUUID } from 'node:crypto';
 import { compare } from 'bcryptjs';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { confirmTestDatabase } from '../helpers/test-db.helper.js';
 
 const endpoint = '/api/v1/auth/register';
 const domain = `${randomUUID()}.example.test`;
 const sample = { displayName: 'Test User', email: `register@${domain}`, password: 'Fixture only!' };
 const testDatabaseUrl = process.env['TEST_DATABASE_URL'];
-
-if (testDatabaseUrl) {
-  const target = new URL(testDatabaseUrl);
-  if (!/^postgres(ql)?:$/.test(target.protocol) || !/^\/[a-z0-9_]+_test$/i.test(target.pathname)) {
-    throw new Error(
-      'TEST_DATABASE_URL must identify a separate PostgreSQL database ending in _test',
-    );
-  }
-  process.env['DATABASE_URL'] = testDatabaseUrl;
-}
 
 const { createApp } = await import('../../src/app.js');
 const { disconnectDatabase, prisma } = await import('../../src/config/prisma.js');
@@ -48,19 +39,60 @@ describe('registration HTTP validation', () => {
 
 describe.skipIf(!testDatabaseUrl)('registration with PostgreSQL', () => {
   const app = createApp();
+  let confirmed = false;
 
   beforeAll(async () => {
-    const [database] = await prisma.$queryRaw<
-      [{ name: string }]
-    >`SELECT current_database() AS name`;
-    expect(database.name).toMatch(/_test$/i);
+    await confirmTestDatabase();
+    confirmed = true;
   });
 
   afterAll(async () => {
+    if (!confirmed) return;
     // Only remove this run's fixture addresses from the confirmed test database.
     await prisma.user.deleteMany({
       where: { email: { in: [sample.email, sample.email.toUpperCase(), `race@${domain}`] } },
     });
+  });
+
+  it('checks applied migration and authentication constraints in PostgreSQL', async () => {
+    const migrations = await prisma.$queryRaw<{ migration_name: string }[]>`
+      SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NOT NULL AND rolled_back_at IS NULL
+    `;
+    expect(migrations).toContainEqual({ migration_name: '20261125150345_init_auth' });
+    const constraints = await prisma.$queryRaw<{ conname: string; definition: string }[]>`
+      SELECT conname, pg_get_constraintdef(oid) AS definition FROM pg_constraint
+      WHERE conrelid IN ('public.users'::regclass, 'public.refresh_tokens'::regclass)
+    `;
+    expect(constraints).toEqual(
+      expect.arrayContaining([
+        { conname: 'users_pkey', definition: 'PRIMARY KEY (id)' },
+        { conname: 'refresh_tokens_pkey', definition: 'PRIMARY KEY (id)' },
+        {
+          conname: 'refresh_tokens_user_id_fkey',
+          definition: expect.stringMatching(/REFERENCES users\(id\).*ON DELETE RESTRICT/),
+        },
+      ]),
+    );
+    const indexes = await prisma.$queryRaw<{ indexname: string; indexdef: string }[]>`
+      SELECT indexname, indexdef FROM pg_indexes
+      WHERE schemaname = 'public' AND tablename IN ('users', 'refresh_tokens')
+    `;
+    expect(indexes).toEqual(
+      expect.arrayContaining([
+        {
+          indexname: 'users_email_lower_uidx',
+          indexdef: expect.stringMatching(/CREATE UNIQUE INDEX.*lower\(email\)/),
+        },
+        {
+          indexname: 'refresh_tokens_token_hash_key',
+          indexdef: expect.stringMatching(/CREATE UNIQUE INDEX.*\(token_hash\)/),
+        },
+        ...['user_id', 'family_id', 'expires_at'].map((column) => ({
+          indexname: `refresh_tokens_${column}_idx`,
+          indexdef: expect.stringContaining(`(${column})`),
+        })),
+      ]),
+    );
   });
 
   it('persists the normalized email and a bcrypt hash and rejects duplicates', async () => {
@@ -102,7 +134,11 @@ describe.skipIf(!testDatabaseUrl)('registration with PostgreSQL', () => {
     expect(await prisma.user.count({ where: { email } })).toBe(1);
     await expect(
       prisma.user.create({
-        data: { email, displayName: sample.displayName, passwordHash: 'unused-fixture' },
+        data: {
+          email: email.toUpperCase(),
+          displayName: sample.displayName,
+          passwordHash: 'unused-fixture',
+        },
       }),
     ).rejects.toMatchObject({
       code: 'P2002',

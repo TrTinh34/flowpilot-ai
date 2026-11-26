@@ -17,12 +17,13 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | — | Project Scaffolding | COMPLETED | [Báo cáo](00-initialization/project-scaffolding.md) |
 | — | Project Initialization | COMPLETED | [Báo cáo](00-initialization/project-initialization.md) |
 | AUTH-01 | Authentication Database Schema & Migration | COMPLETED | [Báo cáo](01-authentication/AUTH-01-database-schema.md) |
-| AUTH-02 | User Registration API | PARTIAL | [Báo cáo](01-authentication/AUTH-02-user-registration.md) |
-| AUTH-03 | User Login API | PARTIAL | [Báo cáo](01-authentication/AUTH-03-user-login.md) |
-| AUTH-04 | Access Token & Refresh Token Management | PARTIAL | [Báo cáo](01-authentication/AUTH-04-token-management.md) |
-| AUTH-05 | Logout & Token Revocation | PARTIAL | [Báo cáo](01-authentication/AUTH-05-logout-token-revocation.md) |
+| AUTH-02 | User Registration API | COMPLETED | [Báo cáo](01-authentication/AUTH-02-user-registration.md) |
+| AUTH-03 | User Login API | COMPLETED | [Báo cáo](01-authentication/AUTH-03-user-login.md) |
+| AUTH-04 | Access Token & Refresh Token Management | COMPLETED | [Báo cáo](01-authentication/AUTH-04-token-management.md) |
+| AUTH-05 | Logout & Token Revocation | COMPLETED | [Báo cáo](01-authentication/AUTH-05-logout-token-revocation.md) |
 | AUTH-06 | Authentication Middleware | PARTIAL | [Báo cáo](01-authentication/AUTH-06-authentication-middleware.md) |
 | AUTH-07 | Get Current User API | PARTIAL | [Báo cáo](01-authentication/AUTH-07-get-current-user.md) |
+| AUTH-INT-01 | Authentication Integration Testing | PARTIAL | [Báo cáo](01-authentication/AUTH-INT-01-integration-testing.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -31,4 +32,4 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | Giai đoạn | Tiến độ |
 |---|---|
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
-| Sprint 1 — Foundation + AUTH | Register, Login, Refresh và Logout đã triển khai. Middleware Bearer đã qua test harness. Route Current User chờ hợp đồng OpenAPI, kiểm chứng database chờ PostgreSQL test riêng. |
+| Sprint 1 — Foundation + AUTH | Register, Login, Refresh và Logout đã qua PostgreSQL integration. Middleware Bearer đã qua test harness. Route Current User chờ hợp đồng OpenAPI. |

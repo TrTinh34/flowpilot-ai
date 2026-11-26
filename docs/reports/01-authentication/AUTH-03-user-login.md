@@ -1,5 +1,7 @@
 # AUTH-03 — User Login API
 
+**Cập nhật AUTH-INT-01 ngày 2026-11-26 — COMPLETED.** Register → Login đã chạy qua HTTP và PostgreSQL. Email viết hoa và có khoảng trắng được chuẩn hóa, credentials sai trả cùng 401, response đúng schema và rate limit trả 429. Các mục lookup, rate limit, integration và hợp đồng Login đã đạt. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-03 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
+
 **Cập nhật từ AUTH-04.** Login đã được mount và trả HTTP 200 với `accessToken`, `expiresIn` và refresh cookie trong HTTP test dùng repository mock. Đã kiểm tra rate limit thực tế và xác nhận lỗi credential trả 401 trong HTTP test. AUTH-03 vẫn ở trạng thái `PARTIAL` do kiểm chứng toàn luồng trên PostgreSQL test còn bị chặn. Phần bên dưới lưu kết quả tại phiên AUTH-03 trước khi tích hợp token. Xem [báo cáo AUTH-04](AUTH-04-token-management.md).
 
 ## 1. Thông tin Task
@@ -8,7 +10,7 @@
 - Tên Task — User Login API
 - Sprint — 1, Foundation + AUTH
 - Ngày triển khai — 2026-11-25
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `FR-AUTH-01`, `NFR-02`, `UC-AUTH-01`
 - Loại báo cáo — Ghi sau triển khai, dựa trên test và kiểm tra HTTP thực tế
 

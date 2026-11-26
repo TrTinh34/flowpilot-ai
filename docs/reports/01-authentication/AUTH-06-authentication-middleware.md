@@ -1,5 +1,7 @@
 # AUTH-06 — Authentication Middleware
 
+**Cập nhật AUTH-INT-01 ngày 2026-11-26 — PARTIAL.** Regression đã chạy lại, 13 ca middleware đạt. Integration qua route ứng dụng vẫn chờ AUTH-07. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-06 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
+
 ## 1. Thông tin Task
 
 - Task ID — AUTH-06

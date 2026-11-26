@@ -1,5 +1,7 @@
 # AUTH-07 — Get Current User API
 
+**Cập nhật AUTH-INT-01 ngày 2026-11-26 — PARTIAL.** Login → verify JWT → lookup theo UUID đã chạy trên PostgreSQL, gồm cả subject có user và subject không có user. AC-04 đã đạt ở lớp truy vấn. Route, response HTTP và các ca truy cập qua middleware còn chờ hợp đồng OpenAPI. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-07 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
+
 ## 1. Thông tin Task
 
 - Task ID — AUTH-07

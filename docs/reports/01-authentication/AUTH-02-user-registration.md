@@ -1,11 +1,13 @@
 # AUTH-02 — User Registration API
 
+**Cập nhật AUTH-INT-01 ngày 2026-11-26 — COMPLETED.** PostgreSQL xác nhận persistence, bcrypt, unique index không phân biệt hoa thường, Prisma P2002 chứa tên index và concurrent Register chỉ tạo một user. AC-05–08 và AC-13 đã đạt. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-02 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
+
 ## 1. Thông tin Task
 
 - Task ID — AUTH-02, thuộc story `US-AUTH-01`
 - Sprint — 1, Foundation + AUTH
 - Ngày triển khai — 2026-11-25
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `FR-AUTH-01`, `NFR-02`, `UC-AUTH-01`
 - Loại báo cáo — Ghi sau triển khai, dựa trên source code, kết quả npm scripts và thử HTTP trên backend
 

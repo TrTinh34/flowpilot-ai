@@ -1,12 +1,14 @@
 # AUTH-05 — Logout & Token Revocation
 
+**Cập nhật AUTH-INT-01 ngày 2026-11-26 — COMPLETED.** PostgreSQL xác nhận thu hồi family, giữ phiên khác, Refresh sau Logout bị từ chối, concurrent Logout/Refresh, lỗi revocation và JWT đã cấp vẫn verify được. Các mục AC-02–05, AC-08–10 và AC-14 đã đạt. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-05 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
+
 ## 1. Thông tin Task
 
 - Task ID — AUTH-05
 - Tên Task — Logout & Token Revocation
 - Sprint — 1, Foundation + AUTH
 - Ngày triển khai — 2026-11-25
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `FR-AUTH-01`, `NFR-02`, `NFR-07`, `UC-AUTH-01`
 - Loại báo cáo — Ghi sau triển khai, dựa trên test và kiểm tra HTTP thực tế
 

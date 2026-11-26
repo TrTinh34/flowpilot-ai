@@ -1,6 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import request from 'supertest';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { decodeJwt } from 'jose';
+import { confirmTestDatabase } from '../helpers/test-db.helper.js';
 
 const testDatabaseUrl = process.env['TEST_DATABASE_URL'];
 
@@ -8,28 +10,13 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
   const input = { email: `${randomUUID()}@example.test`, password: 'Fixture only!' };
   let app: ReturnType<typeof import('../../src/app.js').createApp>;
   let db: typeof import('../../src/config/prisma.js');
-  let repo: typeof import('../../src/modules/auth/refresh-token.repository.js');
   let tokens: typeof import('../../src/modules/auth/auth.tokens.js');
   let userId: string | undefined;
 
   beforeAll(async () => {
-    const target = new URL(testDatabaseUrl!);
-    if (
-      !/^postgres(ql)?:$/.test(target.protocol) ||
-      !/^\/[a-z0-9_]+_test$/i.test(target.pathname)
-    ) {
-      throw new Error(
-        'TEST_DATABASE_URL must point to a separate PostgreSQL database ending in _test',
-      );
-    }
-    vi.stubEnv('DATABASE_URL', testDatabaseUrl);
+    await confirmTestDatabase();
     db = await import('../../src/config/prisma.js');
-    const [database] = await db.prisma.$queryRaw<
-      [{ name: string }]
-    >`SELECT current_database() AS name`;
-    expect(database.name).toBe(target.pathname.slice(1));
     app = (await import('../../src/app.js')).createApp();
-    repo = await import('../../src/modules/auth/refresh-token.repository.js');
     tokens = await import('../../src/modules/auth/auth.tokens.js');
     const res = await request(app)
       .post('/api/v1/auth/register')
@@ -48,7 +35,6 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
       }
     } finally {
       await db?.disconnectDatabase();
-      vi.unstubAllEnvs();
     }
   });
 
@@ -60,17 +46,57 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     return request(app).post('/api/v1/auth/logout').set('Cookie', cookie);
   }
 
-  async function login() {
+  async function login(email = ` ${input.email.toUpperCase()} `) {
     const res = await request(app)
       .post('/api/v1/auth/login')
-      .send({ ...input, email: ` ${input.email.toUpperCase()} ` });
+      .send({ ...input, email });
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ accessToken: expect.any(String), expiresIn: 900 });
     const cookie = res.headers['set-cookie'][0].split(';')[0];
     const tokenHash = tokens.hashRefreshToken(cookie.slice('refresh_token='.length));
     const record = await db.prisma.refreshToken.findUniqueOrThrow({ where: { tokenHash } });
     expect(record.userId).toBe(userId);
+    expect(record.expiresAt.getTime() - record.createdAt.getTime()).toBeGreaterThan(604_790_000);
+    expect(record.expiresAt.getTime() - record.createdAt.getTime()).toBeLessThanOrEqual(
+      604_800_000,
+    );
+    expect(record.tokenHash).toMatch(/^[a-f0-9]{64}$/);
+    expect(res.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(res.headers['set-cookie'][0]).toContain('Path=/api/v1/auth');
+    expect(res.headers['set-cookie'][0]).toContain('SameSite=Lax');
+    const claims = decodeJwt(res.body.accessToken);
+    expect(Object.keys(claims).sort()).toEqual(['aud', 'exp', 'iat', 'iss', 'sub']);
+    expect(claims).toMatchObject({ sub: userId, iss: 'flowpilot-ai', aud: 'flowpilot-ai-api' });
+    expect(Number(claims.exp) - Number(claims.iat)).toBe(900);
+    await expect(tokens.verifyAccessToken(res.body.accessToken)).resolves.toEqual({ userId });
     return { cookie, record, accessToken: res.body.accessToken as string };
+  }
+
+  async function withRejection(
+    record: { id: string; familyId: string },
+    operation: 'insert' | 'revoke',
+    test: () => Promise<void>,
+  ) {
+    await confirmTestDatabase();
+    for (const id of [record.id, record.familyId]) {
+      if (!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(id)) {
+        throw new Error('Expected a fixture UUID for test DDL');
+      }
+    }
+    // The validated UUIDs limit this test-only CHECK to one fixture.
+    const name = `fixture_${record.id.replaceAll('-', '')}`;
+    const check =
+      operation === 'insert'
+        ? `family_id <> '${record.familyId}' OR id = '${record.id}'`
+        : `id <> '${record.id}' OR revoked_at IS NULL`;
+    await db.prisma.$executeRawUnsafe(
+      `ALTER TABLE refresh_tokens ADD CONSTRAINT ${name} CHECK (${check}) NOT VALID`,
+    );
+    try {
+      await test();
+    } finally {
+      await db.prisma.$executeRawUnsafe(`ALTER TABLE refresh_tokens DROP CONSTRAINT ${name}`);
+    }
   }
 
   it('does not persist a session for invalid credentials', async () => {
@@ -79,6 +105,14 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
       .post('/api/v1/auth/login')
       .send({ ...input, password: 'wrong' });
     expect(res.status).toBe(401);
+    const unknown = await request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: `${randomUUID()}@example.test`,
+        password: input.password,
+      });
+    expect(unknown.status).toBe(401);
+    expect(unknown.body).toEqual({ ...res.body, requestId: unknown.headers['x-request-id'] });
     expect(await db.prisma.refreshToken.count({ where: { userId } })).toBe(before);
   });
 
@@ -135,15 +169,9 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
 
   it('rolls back source revocation when the successor insert fails', async () => {
     const { cookie, record } = await login();
-    const insert = repo.saveRefreshToken;
-    const failure = vi
-      .spyOn(repo, 'saveRefreshToken')
-      .mockImplementationOnce((data, tx) => insert({ ...data, tokenHash: record.tokenHash }, tx));
-    try {
+    await withRejection(record, 'insert', async () => {
       expect((await refresh(cookie)).status).toBe(500);
-    } finally {
-      failure.mockRestore();
-    }
+    });
     expect(await db.prisma.refreshToken.findUnique({ where: { id: record.id } })).toMatchObject({
       revokedAt: null,
     });
@@ -158,6 +186,30 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     });
     expect((await refresh(cookie)).status).toBe(401);
     expect((await refresh(`refresh_token=${tokens.generateRefreshToken()}`)).status).toBe(401);
+  });
+
+  it('exercises Login → Refresh → Logout without reuse and verifies committed state', async () => {
+    const initial = await login(input.email);
+    expect((await refresh(`refresh_token=${initial.accessToken}`)).status).toBe(401);
+    const rotated = await refresh(initial.cookie);
+    expect(rotated.status).toBe(200);
+    await expect(tokens.verifyAccessToken(rotated.body.accessToken)).resolves.toEqual({ userId });
+    const successor = rotated.headers['set-cookie'][0].split(';')[0];
+    expect(successor).not.toBe(initial.cookie);
+    const next = await refresh(successor);
+    expect(next.status).toBe(200);
+    const finalCookie = next.headers['set-cookie'][0].split(';')[0];
+    const res = await logout(finalCookie);
+    expect(res.status).toBe(204);
+    expect(res.text).toBe('');
+    expect(res.headers['set-cookie'][0]).toMatch(/^refresh_token=; Path=\/api\/v1\/auth; Expires=/);
+    expect(res.headers['set-cookie'][0]).not.toContain('Domain=');
+    const family = await db.prisma.refreshToken.findMany({
+      where: { familyId: initial.record.familyId },
+    });
+    expect(family).toHaveLength(3);
+    expect(family.every((row) => row.revokedAt !== null)).toBe(true);
+    expect((await refresh(finalCookie)).status).toBe(401);
   });
 
   it('revokes the current family via an old token and preserves other sessions and the access JWT', async () => {
@@ -200,20 +252,11 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
 
   it('rolls back logout revocation if the transaction fails', async () => {
     const { cookie, record } = await login();
-    const revoke = repo.revokeRefreshFamily;
-    const failure = vi
-      .spyOn(repo, 'revokeRefreshFamily')
-      .mockImplementationOnce(async (...args) => {
-        await revoke(...args);
-        throw new Error('Fixture failure after database update');
-      });
-    try {
+    await withRejection(record, 'revoke', async () => {
       const res = await logout(cookie);
       expect(res.status).toBe(500);
       expect(res.headers['set-cookie']).toBeUndefined();
-    } finally {
-      failure.mockRestore();
-    }
+    });
     expect(
       await db.prisma.refreshToken.findUniqueOrThrow({ where: { id: record.id } }),
     ).toMatchObject({

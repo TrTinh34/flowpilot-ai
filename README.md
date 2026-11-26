@@ -153,7 +153,15 @@ $env:JWT_ACCESS_SECRET = node -p "require('node:crypto').randomBytes(32).toStrin
 npm --prefix backend run dev
 ```
 
-Để chạy integration tests ghi dữ liệu, cấu hình `TEST_DATABASE_URL` trong shell trỏ đến PostgreSQL test riêng có tên kết thúc bằng `_test` và đã áp dụng migration.
+Để chạy integration tests, tạo PostgreSQL local database `flowpilot_ai_test`, rồi sao chép `backend/.env.test.example` thành `backend/.env.test` và điền thông tin kết nối test. Từ repository root:
+
+```powershell
+npm --prefix backend run test:db:migrate
+npm --prefix backend run test:integration
+npm --prefix backend run test:unit
+```
+
+`test:integration` yêu cầu cấu hình test database. `npm --prefix backend test` chạy toàn bộ suite và bỏ qua các ca cần PostgreSQL nếu thiếu cấu hình test.
 
 ### Frontend — `frontend/.env`
 
