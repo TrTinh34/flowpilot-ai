@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authenticate } from '../../middlewares/auth.middleware.js';
+import { workspaceProjectsRouter } from '../project/project.routes.js';
 import * as controller from './workspace.controller.js';
 
 export const workspaceRouter = Router();
@@ -13,4 +14,5 @@ workspaceRouter.patch('/:workspaceId/members/:userId', controller.changeRole);
 workspaceRouter.delete('/:workspaceId/members/:userId', controller.remove);
 workspaceRouter.post('/:workspaceId/transfer', controller.transfer);
 workspaceRouter.post('/:workspaceId/invitations', controller.invite);
+workspaceRouter.use('/:workspaceId/projects', workspaceProjectsRouter);
 invitationRouter.post('/accept', authenticate, controller.accept);

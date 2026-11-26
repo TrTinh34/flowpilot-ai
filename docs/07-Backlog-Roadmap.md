@@ -23,6 +23,7 @@
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên
 
 - Tiến độ Workspace và Project theo [Sprint 02 Backlog](sprints/sprint-02-workspace-project/README.md#sprint-backlog).
+- PROJ-02 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/PROJ-02-project-api-authorization.md).
 - WS-04 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/WS-04-workspace-frontend.md).
 - PROJ-01 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/PROJ-01-project-database.md).
 - WS-03 đã hoàn thành. Xem [báo cáo](reports/02-workspace-project/WS-03-workspace-invitations.md).

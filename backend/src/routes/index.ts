@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { checkDatabaseConnection } from '../config/prisma.js';
 import { authRouter } from '../modules/auth/auth.routes.js';
+import { projectRouter } from '../modules/project/project.routes.js';
 import { invitationRouter, workspaceRouter } from '../modules/workspace/workspace.routes.js';
 
 const router = Router();
 router.use('/api/v1/auth', authRouter);
 router.use('/api/v1/workspaces', workspaceRouter);
+router.use('/api/v1/projects', projectRouter);
 router.use('/api/v1/invitations', invitationRouter);
 
 router.get('/health', async (_req, res) => {

@@ -73,5 +73,6 @@ export async function deleteMembership(
   workspaceId: string,
   userId: string,
 ) {
+  await tx.projectMember.deleteMany({ where: { userId, project: { workspaceId } } });
   await tx.workspaceMember.delete({ where: { workspaceId_userId: { workspaceId, userId } } });
 }

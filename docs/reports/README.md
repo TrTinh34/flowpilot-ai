@@ -43,6 +43,8 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 
 | WS-04 | Workspace và invitation UI | COMPLETED | [Báo cáo](02-workspace-project/WS-04-workspace-frontend.md) |
 
+| PROJ-02 | Project API và phân quyền tài nguyên | COMPLETED | [Báo cáo](02-workspace-project/PROJ-02-project-api-authorization.md) |
+
 ## Tiến độ theo Sprint
 
 Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho phạm vi và dependencies đã đối chiếu.
