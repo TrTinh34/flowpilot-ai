@@ -24,6 +24,12 @@ export async function list(req: Request, res: Response) {
   res.json(await service.getWorkspaces(actorId(req), page, size));
 }
 
+export async function listMembers(req: Request, res: Response) {
+  const { workspaceId } = parse(schema.workspaceParams, req.params);
+  res.set('Cache-Control', 'no-store');
+  res.json(await service.getWorkspaceMembers(workspaceId, actorId(req)));
+}
+
 export async function create(req: Request, res: Response) {
   const { name } = parse(schema.createWorkspaceBody, req.body);
   res.status(201).json({ data: await service.createWorkspace(actorId(req), name) });

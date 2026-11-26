@@ -3,6 +3,8 @@ import { ProtectedRoute, PublicOnlyRoute } from '@/app/router/ProtectedRoute';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { InitStatusPage } from '@/pages/InitStatusPage';
+import { WorkspaceSettingsPage } from '@/pages/workspace/WorkspaceSettingsPage';
+import { AcceptInvitePage } from '@/pages/workspace/AcceptInvitePage';
 
 /**
  * Application router — AUTH-10.
@@ -29,6 +31,8 @@ export function AppRouter() {
       {/* ── Protected: require authentication ──────────────────────────── */}
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<InitStatusPage />} />
+        <Route path="/workspaces" element={<WorkspaceSettingsPage />} />
+        <Route path="/invitations/accept" element={<AcceptInvitePage />} />
         {/* Sprint 2: workspace, project, board routes will nest here */}
       </Route>
 

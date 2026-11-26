@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { extractApiErrorMessage, fetchBackendHealth } from '@/services/api-client';
 import { selectIsAuthenticated, useAuthStore } from '@/app/store/auth.store';
 import { useLogout } from '@/features/auth/hooks/useLogout';
@@ -66,6 +67,14 @@ export function InitStatusPage() {
           >
             {isFetching ? 'Checking...' : 'Re-check Health'}
           </button>
+          {isAuthenticated && (
+            <Link
+              to="/workspaces"
+              className="rounded-md border border-[var(--border)] px-4 py-2 text-sm"
+            >
+              Workspaces
+            </Link>
+          )}
           {isAuthenticated && (
             <button
               type="button"

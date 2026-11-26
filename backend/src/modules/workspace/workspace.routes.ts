@@ -8,6 +8,7 @@ export const invitationRouter = Router();
 workspaceRouter.use(authenticate);
 workspaceRouter.get('/', controller.list);
 workspaceRouter.post('/', controller.create);
+workspaceRouter.get('/:workspaceId/members', controller.listMembers);
 workspaceRouter.patch('/:workspaceId/members/:userId', controller.changeRole);
 workspaceRouter.delete('/:workspaceId/members/:userId', controller.remove);
 workspaceRouter.post('/:workspaceId/transfer', controller.transfer);

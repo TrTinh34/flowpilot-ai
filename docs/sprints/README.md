@@ -5,7 +5,7 @@
 | Sprint ID | Tên | Mục tiêu | Trạng thái | Tiến độ | Dependencies | Tài liệu |
 |---|---|---|---|---|---|---|
 | Sprint 01 | Foundation + AUTH | Hoàn thành nền tảng monorepo, CI và luồng Authentication | COMPLETED | 13/13 Task hoàn thành. GitHub Actions đạt. | Hoàn tất | [Sprint 01](sprint-01-authentication/README.md) |
-| Sprint 02 | Workspace & Project | Tạo workspace, mời thành viên và quản lý project theo quyền | IN_PROGRESS | 4/8 Task hoàn thành | Auth, PostgreSQL test, RBAC và tenant isolation | [Sprint 02](sprint-02-workspace-project/README.md) |
+| Sprint 02 | Workspace & Project | Tạo workspace, mời thành viên và quản lý project theo quyền | IN_PROGRESS | 5/8 Task hoàn thành | Auth, PostgreSQL test, RBAC và tenant isolation | [Sprint 02](sprint-02-workspace-project/README.md) |
 
 ## Nguồn quản lý
 

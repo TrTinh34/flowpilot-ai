@@ -603,6 +603,47 @@ paths:
                   type: string
               required:
               - token
+  /workspaces/{workspaceId}/members:
+    get:
+      tags: [WS]
+      summary: List workspace members
+      operationId: get_workspaces_workspaceId_members
+      parameters:
+      - name: workspaceId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Workspace summary and member IDs, roles and display names
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, workspace]
+                properties:
+                  workspace:
+                    type: object
+                    required: [id, name, role]
+                    properties:
+                      id: { type: string, format: uuid }
+                      name: { type: string }
+                      role: { type: string, enum: [OWNER, ADMIN, MEMBER] }
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [userId, role, user]
+                      properties:
+                        userId: { type: string, format: uuid }
+                        role: { type: string, enum: [OWNER, ADMIN, MEMBER] }
+                        user:
+                          type: object
+                          required: [displayName]
+                          properties:
+                            displayName: { type: string }
+        '401': { description: Unauthenticated }
+        '404': { description: Workspace not found }
   /workspaces/{workspaceId}/members/{userId}:
     patch:
       tags:

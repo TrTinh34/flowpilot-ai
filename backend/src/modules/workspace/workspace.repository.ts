@@ -21,6 +21,25 @@ export function createWorkspace(name: string, ownerId: string) {
   });
 }
 
+export function listVisibleMembers(workspaceId: string, actorId: string) {
+  return prisma.workspaceMember.findUnique({
+    where: { workspaceId_userId: { workspaceId, userId: actorId } },
+    select: {
+      role: true,
+      workspace: {
+        select: {
+          id: true,
+          name: true,
+          members: {
+            orderBy: { userId: 'asc' },
+            select: { userId: true, role: true, user: { select: { displayName: true } } },
+          },
+        },
+      },
+    },
+  });
+}
+
 export async function lockWorkspace(tx: Prisma.TransactionClient, workspaceId: string) {
   await tx.$queryRaw`SELECT id FROM workspaces WHERE id = ${workspaceId}::uuid FOR UPDATE`;
 }

@@ -169,6 +169,20 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace API on PostgreSQL'
     const id = await create(owner);
     await add(id, admin.id, 'ADMIN');
     await add(id, member.id, 'MEMBER');
+    const directory = await request(app)
+      .get(`${path}/${id}/members`)
+      .set('Authorization', bearer(member));
+    expect(directory.status).toBe(200);
+    expect(directory.body.workspace).toMatchObject({ id, role: 'MEMBER' });
+    expect(directory.body.data).toContainEqual({
+      userId: owner.id,
+      role: 'OWNER',
+      user: { displayName: 'Fixture' },
+    });
+    expect(
+      (await request(app).get(`${path}/${id}/members`).set('Authorization', bearer(outsider)))
+        .status,
+    ).toBe(404);
     const memberPath = `${path}/${id}/members/${member.id}`;
     const transferPath = `${path}/${id}/transfer`;
     expect(

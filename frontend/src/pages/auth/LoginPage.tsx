@@ -11,7 +11,9 @@ export function LoginPage() {
   const setAuth = useAuthStore((s) => s.setAuth);
 
   // If the user was redirected here from a protected route, go back there after login
-  const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? '/';
+  const from =
+    (location.state as { from?: { pathname: string; search?: string; hash?: string } } | null)
+      ?.from ?? '/';
 
   async function handleLogin(values: LoginFormValues): Promise<string | null> {
     try {

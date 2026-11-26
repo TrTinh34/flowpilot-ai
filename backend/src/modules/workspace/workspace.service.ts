@@ -49,6 +49,13 @@ export async function getWorkspaces(actorId: string, page: number, size: number)
   return { data: memberships.map(({ role, workspace }) => ({ ...workspace, role })), page, size };
 }
 
+export async function getWorkspaceMembers(workspaceId: string, actorId: string) {
+  const membership = await repository.listVisibleMembers(workspaceId, actorId);
+  if (!membership) throw workspaceNotFound();
+  const { members, ...workspace } = membership.workspace;
+  return { data: members, workspace: { ...workspace, role: membership.role } };
+}
+
 export async function createWorkspace(actorId: string, name: string) {
   return { ...(await repository.createWorkspace(name, actorId)), role: 'OWNER' as const };
 }

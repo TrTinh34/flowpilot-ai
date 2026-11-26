@@ -31,6 +31,7 @@ export function ProtectedRoute() {
  * Renders children only when NOT authenticated.
  */
 export function PublicOnlyRoute({ redirectTo = '/' }: { redirectTo?: string }) {
+  const location = useLocation();
   const isRestoring = useAuthStore(selectIsRestoring);
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
@@ -39,7 +40,10 @@ export function PublicOnlyRoute({ redirectTo = '/' }: { redirectTo?: string }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to={redirectTo} replace />;
+    const from = (
+      location.state as { from?: { pathname: string; search?: string; hash?: string } } | null
+    )?.from;
+    return <Navigate to={from ?? redirectTo} replace />;
   }
 
   return <Outlet />;
