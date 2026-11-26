@@ -16,7 +16,7 @@ function membershipNotFound() {
   return new AppError(404, ERROR_CODES.NOT_FOUND, 'Workspace member not found.');
 }
 
-async function withWorkspaceLock<T>(
+export async function withWorkspaceLock<T>(
   workspaceId: string,
   actorId: string,
   change: (tx: Prisma.TransactionClient, actorRole: 'OWNER' | 'ADMIN' | 'MEMBER') => Promise<T>,

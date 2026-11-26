@@ -14,23 +14,23 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace API on PostgreSQL'
   let outsider: Actor;
   type Actor = { id: string; token: string };
 
+  async function fixture(): Promise<Actor> {
+    const { issueAccessToken } = await import('../../src/modules/auth/auth.tokens.js');
+    const user = await db.prisma.user.create({
+      data: {
+        email: `${randomUUID()}@example.test`,
+        passwordHash: 'fixture-hash',
+        displayName: 'Fixture',
+      },
+    });
+    actorIds.push(user.id);
+    return { id: user.id, token: await issueAccessToken(user.id) };
+  }
+
   beforeAll(async () => {
     await confirmTestDatabase();
     db = await import('../../src/config/prisma.js');
     app = (await import('../../src/app.js')).app;
-    const { issueAccessToken } = await import('../../src/modules/auth/auth.tokens.js');
-
-    async function fixture(): Promise<Actor> {
-      const user = await db.prisma.user.create({
-        data: {
-          email: `${randomUUID()}@example.test`,
-          passwordHash: 'fixture-hash',
-          displayName: 'Fixture',
-        },
-      });
-      actorIds.push(user.id);
-      return { id: user.id, token: await issueAccessToken(user.id) };
-    }
 
     owner = await fixture();
     admin = await fixture();
@@ -42,6 +42,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace API on PostgreSQL'
     if (!db) return;
     try {
       await db.prisma.$transaction([
+        db.prisma.invitation.deleteMany({ where: { workspaceId: { in: workspaceIds } } }),
         db.prisma.workspaceMember.deleteMany({ where: { workspaceId: { in: workspaceIds } } }),
         db.prisma.workspace.deleteMany({ where: { id: { in: workspaceIds } } }),
         db.prisma.user.deleteMany({ where: { id: { in: actorIds } } }),
@@ -53,6 +54,64 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace API on PostgreSQL'
 
   const path = '/api/v1/workspaces';
   const bearer = (actor: Actor) => `Bearer ${actor.token}`;
+
+  it('issues an invitation and only the matching account accepts it once', async () => {
+    const workspaceId = await create(owner);
+    const email = (await db.prisma.user.findUniqueOrThrow({ where: { id: member.id } })).email;
+    const invite = (actor: Actor) =>
+      request(app)
+        .post(`${path}/${workspaceId}/invitations`)
+        .set('Authorization', bearer(actor))
+        .send({ email: email.toUpperCase(), role: 'MEMBER' });
+    expect((await invite(outsider)).status).toBe(404);
+    const issued = await invite(owner);
+    expect(issued.status).toBe(201);
+    expect(issued.body.data).toMatchObject({ email, status: 'PENDING' });
+    expect((await invite(owner)).status).toBe(409);
+    const token = new URLSearchParams(new URL(issued.body.data.previewUrl).hash.slice(1)).get(
+      'token',
+    );
+    expect(token).toBeTruthy();
+    const accept = (actor: Actor) =>
+      request(app)
+        .post('/api/v1/invitations/accept')
+        .set('Authorization', bearer(actor))
+        .send({ token });
+    expect((await accept(outsider)).status).toBe(403);
+    const accepted = await Promise.all([accept(member), accept(member)]);
+    expect(accepted.map((r) => r.status).sort()).toEqual([200, 422]);
+    expect(
+      await db.prisma.workspaceMember.count({ where: { workspaceId, userId: member.id } }),
+    ).toBe(1);
+    const stored = await db.prisma.invitation.findUniqueOrThrow({
+      where: { id: issued.body.data.id },
+    });
+    expect(stored.status).toBe('ACCEPTED');
+    expect(stored.tokenHash).not.toBe(token);
+    expect(stored.expiresAt.getTime() - stored.createdAt.getTime()).toBeGreaterThan(172_790_000);
+    const otherEmail = (await db.prisma.user.findUniqueOrThrow({ where: { id: outsider.id } }))
+      .email;
+    const second = await request(app)
+      .post(`${path}/${workspaceId}/invitations`)
+      .set('Authorization', bearer(owner))
+      .send({ email: otherEmail, role: 'MEMBER' });
+    expect(second.status).toBe(201);
+    await db.prisma.invitation.update({
+      where: { id: second.body.data.id },
+      data: { expiresAt: new Date(0) },
+    });
+    const expiredToken = new URLSearchParams(
+      new URL(second.body.data.previewUrl).hash.slice(1),
+    ).get('token');
+    const expired = await request(app)
+      .post('/api/v1/invitations/accept')
+      .set('Authorization', bearer(outsider))
+      .send({ token: expiredToken });
+    expect(expired.status).toBe(422);
+    expect(
+      await db.prisma.workspaceMember.count({ where: { workspaceId, userId: outsider.id } }),
+    ).toBe(0);
+  });
 
   async function create(actor: Actor) {
     const name = `Workspace ${randomUUID()}`;
@@ -72,6 +131,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace API on PostgreSQL'
   }
 
   it('requires a Bearer token, creates the Owner membership and lists only actor workspaces with pagination', async () => {
+    const owner = await fixture();
     expect((await request(app).get(path)).status).toBe(401);
     const first = await create(owner);
     const second = await create(owner);

@@ -1,1 +1,7 @@
-// TODO: Define transactional email provider abstraction.
+export interface EmailProvider {
+  assertAvailable(): void;
+  sendWorkspaceInvitation(input: {
+    email: string;
+    token: string;
+  }): Promise<{ previewUrl?: string }>;
+}
