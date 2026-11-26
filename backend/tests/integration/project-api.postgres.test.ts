@@ -20,6 +20,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace project API on Pos
     if (!db) return;
     try {
       await db.prisma.$transaction([
+        db.prisma.task.deleteMany({ where: { project: { workspaceId: { in: workspaceIds } } } }),
         db.prisma.projectMember.deleteMany({
           where: { project: { workspaceId: { in: workspaceIds } } },
         }),
@@ -112,6 +113,22 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace project API on Pos
     expect((await add(owner, member.id)).status).toBe(409);
     expect((await request(app).get(members).set('Authorization', manager.header)).status).toBe(200);
 
+    const assigned = await db.prisma.task.create({
+      data: {
+        projectId,
+        assigneeId: member.id,
+        title: 'Assigned fixture',
+        description: '',
+        priority: 'LOW',
+        position: 0,
+      },
+    });
+    const blockedRemoval = await request(app)
+      .delete(`/api/v1/workspaces/${workspace.id}/members/${member.id}`)
+      .set('Authorization', owner.header);
+    expect(blockedRemoval.status).toBe(409);
+    expect(blockedRemoval.body.code).toBe('WORKSPACE_MEMBER_HAS_TASKS');
+    await db.prisma.task.update({ where: { id: assigned.id }, data: { assigneeId: null } });
     const removal = await request(app)
       .delete(`/api/v1/workspaces/${workspace.id}/members/${member.id}`)
       .set('Authorization', owner.header);

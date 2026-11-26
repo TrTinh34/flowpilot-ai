@@ -83,6 +83,13 @@ export function removeMember(workspaceId: string, actorId: string, userId: strin
     if (!target) throw membershipNotFound();
     if (target.role === 'OWNER' && actorRole !== 'OWNER') throw forbidden();
     await protectLastOwner(tx, workspaceId, target.role);
+    if (await repository.findAssignedTask(tx, workspaceId, userId)) {
+      throw new AppError(
+        409,
+        ERROR_CODES.WORKSPACE_MEMBER_HAS_TASKS,
+        'The member has assigned tasks.',
+      );
+    }
     await repository.deleteMembership(tx, workspaceId, userId);
   });
 }

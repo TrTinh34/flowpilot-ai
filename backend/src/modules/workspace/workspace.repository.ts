@@ -68,6 +68,17 @@ export function updateRole(
   });
 }
 
+export function findAssignedTask(
+  tx: Prisma.TransactionClient,
+  workspaceId: string,
+  userId: string,
+) {
+  return tx.task.findFirst({
+    where: { assigneeId: userId, project: { workspaceId } },
+    select: { id: true },
+  });
+}
+
 export async function deleteMembership(
   tx: Prisma.TransactionClient,
   workspaceId: string,

@@ -40,6 +40,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | PROJ-02 | Project API và phân quyền tài nguyên | COMPLETED | [Báo cáo](02-workspace-project/PROJ-02-project-api-authorization.md) |
 | PROJ-03 | Project list và settings UI | COMPLETED | [Báo cáo](02-workspace-project/PROJ-03-project-frontend.md) |
 | WS-PROJ-INT-01 | Workspace & Project integration và review | COMPLETED | [Báo cáo](02-workspace-project/WS-PROJ-INT-01-integration-review.md) |
+| TASK-01 | Task schema và migration | COMPLETED | [Báo cáo](03-task-board/TASK-01-task-database.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -52,3 +53,4 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
 | Sprint 1 — Foundation + AUTH | Hoàn thành 13/13 Task. Regression, PostgreSQL integration, browser smoke và GitHub Actions đều đạt. |
 | Sprint 2 — Workspace & Project | Hoàn thành 8/8 Task. PostgreSQL regression, browser smoke và GitHub Actions đều đạt. |
+| Sprint 3 — Task & Board | Đã mở Sprint và kiểm chứng TASK-01 trên PostgreSQL test. |

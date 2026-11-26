@@ -42,6 +42,7 @@
 - Tasks: Prisma Migrate (`projects`, `project_members`); Express project/resource authorization middleware (DB membership check, trả 404/403 chuẩn tenant isolation) & service/API; UI danh sách & cài đặt project; integration test (Vitest + Supertest), review.
 
 ### US-TASK-01 — Tạo task, subtask, giao việc, deadline, priority
+- Tiến độ và dependencies theo [Sprint 03 Backlog](sprints/sprint-03-task-board/README.md#sprint-backlog). TASK-01 đã kiểm chứng migration trên PostgreSQL test.
 - Epic: TASK; priority: Must; FR-TASK-01 / UC-TASK-01.
 - Story: Là Manager / Member, tôi muốn tạo task, subtask, giao việc, deadline, priority để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Task được giao xuất hiện trong My Tasks; Assignee thuộc project; subtask cùng project; deadline hợp lệ.
