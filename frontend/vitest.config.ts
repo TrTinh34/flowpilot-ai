@@ -19,9 +19,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}'],
     // Exclude future sprint placeholder test files until their features are implemented
     exclude: [
-      'tests/unit/auth.schema.test.ts',
       'tests/unit/date.util.test.ts',
-      'tests/integration/auth-flow.test.tsx',
       'tests/integration/kanban-board.test.tsx',
       'tests/integration/ai-planner.test.tsx',
     ],

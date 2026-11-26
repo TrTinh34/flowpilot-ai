@@ -84,15 +84,28 @@
   --chart-4: #f59e0b;
   --chart-5: #3b82f6;
 
-  /* shadcn/ui baseline variables — mapped to brand tokens */
-  --background-shadcn: oklch(0.985 0.002 247);
-  --foreground-shadcn: oklch(0.145 0.025 265);
+  /* ── shadcn/ui CSS variable contract ───────────────────────
+     shadcn components reference these tokens directly.
+     Values are mapped to the FlowPilot brand palette.
+     --------------------------------------------------------- */
   --card: #ffffff;
   --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: rgba(99, 102, 241, 0.4);
+  --ring: #6366f1;
+  --radius: 0.375rem;
 }
 
 /* ------------------------------------------------------------
@@ -127,9 +140,39 @@
   /* shadcn/ui baseline — dark */
   --card: #18181b;
   --card-foreground: #fafafa;
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
+  --primary: #818cf8;
+  --primary-foreground: #1e1b4b;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
   --muted: #27272a;
   --muted-foreground: #a1a1aa;
+  --accent: #27272a;
+  --accent-foreground: #fafafa;
+  --destructive: #f87171;
+  --destructive-foreground: #450a0a;
+  --border: #27272a;
   --input: #27272a;
+  --ring: #818cf8;
+}
+
+/* ------------------------------------------------------------
+   Root and app shell — ensure full-viewport coverage.
+   Vite's default does NOT set width/height on #root.
+   Both html and body must stretch to let layouts fill the viewport.
+   ------------------------------------------------------------ */
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ------------------------------------------------------------
@@ -159,7 +202,6 @@ body {
     sans-serif;
   font-size: 14px;
   line-height: 1.6;
-  min-height: 100dvh;
 }
 
 /* ------------------------------------------------------------
