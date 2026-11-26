@@ -36,10 +36,7 @@ describe('LoginForm', () => {
     expect(screen.getByLabelText('Email address')).toBeInTheDocument();
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Create one' })).toHaveAttribute(
-      'href',
-      '/register',
-    );
+    expect(screen.getByRole('link', { name: 'Create one' })).toHaveAttribute('href', '/register');
   });
 
   it('shows a show/hide password toggle with accessible label', async () => {
@@ -76,9 +73,7 @@ describe('LoginForm', () => {
     await user.type(screen.getByLabelText('Email address'), 'bad-email');
     await user.click(screen.getByRole('button', { name: 'Sign In' }));
 
-    expect(
-      await screen.findByText('Enter a valid email address'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Enter a valid email address')).toBeInTheDocument();
   });
 
   it('marks invalid fields with aria-invalid', async () => {
@@ -121,9 +116,7 @@ describe('LoginForm', () => {
 
   it('displays the API error message on failure', async () => {
     const user = userEvent.setup();
-    const onSubmit = vi
-      .fn()
-      .mockResolvedValue('Incorrect email or password. Please try again.');
+    const onSubmit = vi.fn().mockResolvedValue('Incorrect email or password. Please try again.');
     renderLoginForm(onSubmit as never);
 
     await user.type(screen.getByLabelText('Email address'), 'user@example.com');
@@ -219,9 +212,7 @@ describe('RegisterForm', () => {
 
   it('displays the API error when registration fails', async () => {
     const user = userEvent.setup();
-    const onSubmit = vi
-      .fn()
-      .mockResolvedValue('An account with this email already exists.');
+    const onSubmit = vi.fn().mockResolvedValue('An account with this email already exists.');
     renderRegisterForm(onSubmit as never);
 
     await user.type(screen.getByLabelText('Display name'), 'Jane Doe');

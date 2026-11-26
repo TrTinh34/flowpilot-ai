@@ -7,16 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FormErrorBanner } from '@/components/common/FormErrorBanner';
-import {
-  registerSchema,
-  type RegisterFormValues,
-} from '@/features/auth/schemas/auth.schema';
+import { registerSchema, type RegisterFormValues } from '@/features/auth/schemas/auth.schema';
 import { cn } from '@/utils/cn.util';
 
 interface RegisterFormProps {
-  onSubmit: (
-    values: Omit<RegisterFormValues, 'confirmPassword'>,
-  ) => Promise<string | null>;
+  onSubmit: (values: Omit<RegisterFormValues, 'confirmPassword'>) => Promise<string | null>;
   /** Show success state instead of the form (set by parent after 201) */
   onSuccess?: () => void;
 }
@@ -53,7 +48,12 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
     mode: 'onBlur',
   });
 
-  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = form;
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+  } = form;
 
   const password = useWatch({ control, name: 'password' }) ?? '';
   const confirmPassword = useWatch({ control, name: 'confirmPassword' }) ?? '';
@@ -88,9 +88,7 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
           <Check className="size-7 text-green-600" aria-hidden="true" />
         </div>
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">
-            Account created
-          </h2>
+          <h2 className="text-xl font-semibold text-[var(--foreground)]">Account created</h2>
           <p className="mt-1.5 text-sm text-[var(--foreground-secondary)]">
             Your account has been created. Sign in to get started.
           </p>
@@ -161,11 +159,7 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
             {...register('email')}
           />
           {errors.email && (
-            <p
-              id="reg-email-error"
-              className="text-xs text-[var(--color-error-text)]"
-              role="alert"
-            >
+            <p id="reg-email-error" className="text-xs text-[var(--color-error-text)]" role="alert">
               {errors.email.message}
             </p>
           )}
@@ -221,9 +215,7 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
               placeholder="Re-enter your password"
               className="pr-10"
               aria-invalid={!!errors.confirmPassword}
-              aria-describedby={
-                errors.confirmPassword ? 'confirmPassword-error' : undefined
-              }
+              aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
               disabled={isSubmitting}
               {...register('confirmPassword')}
             />
@@ -264,8 +256,8 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
                 rule.isError
                   ? 'text-[var(--color-error-text)]'
                   : rule.met
-                  ? 'text-green-600 dark:text-green-400'
-                  : 'text-[var(--foreground-muted)]',
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-[var(--foreground-muted)]',
               )}
             >
               {rule.isError ? (
@@ -273,7 +265,10 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
               ) : rule.met ? (
                 <Check className="size-3 shrink-0" aria-hidden="true" />
               ) : (
-                <div className="size-3 shrink-0 rounded-full border border-current opacity-40" aria-hidden="true" />
+                <div
+                  className="size-3 shrink-0 rounded-full border border-current opacity-40"
+                  aria-hidden="true"
+                />
               )}
               <span>{rule.label}</span>
               <span className="sr-only">{rule.met ? 'satisfied' : 'not yet satisfied'}</span>

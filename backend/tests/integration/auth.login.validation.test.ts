@@ -8,7 +8,10 @@ const app = createApp();
 afterAll(disconnectDatabase);
 
 it('rejects missing credentials and malformed JSON and applies the login rate limit', async () => {
-  const malformed = await request(app).post(endpoint).set('Content-Type', 'application/json').send('{');
+  const malformed = await request(app)
+    .post(endpoint)
+    .set('Content-Type', 'application/json')
+    .send('{');
   expect(malformed.status).toBe(400);
   expect(malformed.body.code).toBe('VALIDATION_ERROR');
   for (let i = 0; i < 15; i++) {

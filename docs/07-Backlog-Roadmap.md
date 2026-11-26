@@ -17,7 +17,7 @@
 - Story: Là Guest / User, tôi muốn đăng ký, đăng nhập, refresh, logout để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Đăng nhập đúng trả token; sai trả 401; Email duy nhất; refresh token xoay vòng và thu hồi.
 - Tiến độ và dependencies của từng Task được quản lý tại [Sprint 01 Backlog](sprints/sprint-01-authentication/README.md#sprint-backlog).
-- Tích hợp frontend đã qua kiểm thử client và browser cho Register, Login, Current User, phục hồi phiên và Logout. Kiểm tra và review toàn Sprint thuộc AUTH-12.
+- AUTH-12 đã qua regression, browser smoke và review local. Sprint 01 chờ xác nhận GitHub Actions theo Definition of Done.
 - Tasks: Khởi tạo Express.js + TS + Pino/Helmet/CORS/rate-limit; Prisma schema & Prisma Migrate (`users`, `refresh_tokens` + custom SQL `LOWER(email)` unique); auth service (`bcrypt`, JWT, refresh rotation/reuse detection) & Zod schemas; UI form (React Hook Form + Zod); integration test (Vitest + Supertest + PostgreSQL test DB), review.
 
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên

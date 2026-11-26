@@ -4,7 +4,7 @@
 
 | Sprint ID | Tên | Mục tiêu | Trạng thái | Tiến độ | Dependencies | Tài liệu |
 |---|---|---|---|---|---|---|
-| Sprint 01 | Foundation + AUTH | Hoàn thành nền tảng monorepo, CI và luồng Authentication | IN_PROGRESS | 12/13 Task hoàn thành. AUTH-12 chưa bắt đầu. | PostgreSQL test, CI và Sprint Review | [Sprint 01](sprint-01-authentication/README.md) |
+| Sprint 01 | Foundation + AUTH | Hoàn thành nền tảng monorepo, CI và luồng Authentication | IN_PROGRESS | 12/13 Task hoàn thành. AUTH-12 chờ xác nhận CI. | Kết quả GitHub Actions trên revision mới | [Sprint 01](sprint-01-authentication/README.md) |
 
 ## Nguồn quản lý
 

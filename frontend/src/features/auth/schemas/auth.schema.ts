@@ -2,10 +2,7 @@ import { z } from 'zod';
 
 // ─── Field primitives ────────────────────────────────────────────────────────
 
-const emailField = z
-  .string()
-  .min(1, 'Email is required')
-  .email('Enter a valid email address');
+const emailField = z.string().min(1, 'Email is required').email('Enter a valid email address');
 
 /**
  * Password validation matches the backend bcrypt limit exactly.
@@ -33,10 +30,7 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const registerSchema = z
   .object({
-    displayName: z
-      .string()
-      .trim()
-      .min(1, 'Display name is required'),
+    displayName: z.string().trim().min(1, 'Display name is required'),
     email: emailField,
     password: passwordField,
     confirmPassword: z.string().min(1, 'Please confirm your password'),

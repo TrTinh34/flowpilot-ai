@@ -34,7 +34,9 @@ describe('auth.store', () => {
 
   it('setAuth stores token, computes expiresAt, and sets status authenticated', () => {
     const before = Date.now();
-    useAuthStore.getState().setAuth('tok_abc', 900, { id: '1', email: 'a@a.com', displayName: 'Alice' });
+    useAuthStore
+      .getState()
+      .setAuth('tok_abc', 900, { id: '1', email: 'a@a.com', displayName: 'Alice' });
     const state = useAuthStore.getState();
 
     expect(state.status).toBe('authenticated');
@@ -67,7 +69,9 @@ describe('auth.store', () => {
   // ── updateToken ─────────────────────────────────────────────────────────
 
   it('updateToken replaces the token without changing user', () => {
-    useAuthStore.getState().setAuth('old_tok', 900, { id: '1', email: 'a@a.com', displayName: 'Alice' });
+    useAuthStore
+      .getState()
+      .setAuth('old_tok', 900, { id: '1', email: 'a@a.com', displayName: 'Alice' });
     useAuthStore.getState().updateToken('new_tok', 900);
 
     const state = useAuthStore.getState();

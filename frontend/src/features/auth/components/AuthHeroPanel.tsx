@@ -10,7 +10,9 @@ export function AuthHeroPanel() {
   return (
     <div
       className="absolute inset-0 flex flex-col justify-between p-10 xl:p-14 overflow-hidden"
-      style={{ background: 'linear-gradient(145deg, #3730a3 0%, #4f46e5 35%, #6366f1 65%, #7c3aed 100%)' }}
+      style={{
+        background: 'linear-gradient(145deg, #3730a3 0%, #4f46e5 35%, #6366f1 65%, #7c3aed 100%)',
+      }}
       aria-hidden="true"
     >
       {/* Background dot grid */}
@@ -37,9 +39,7 @@ export function AuthHeroPanel() {
           <rect x="10" y="20" width="16" height="4" rx="2" fill="white" opacity="0.8" />
           <circle cx="22" cy="6" r="3" fill="white" opacity="0.7" />
         </svg>
-        <span className="text-[15px] font-semibold text-white/95 tracking-tight">
-          FlowPilot AI
-        </span>
+        <span className="text-[15px] font-semibold text-white/95 tracking-tight">FlowPilot AI</span>
       </div>
 
       {/* Center — Kanban preview */}
@@ -124,7 +124,14 @@ function KanbanPreview() {
                     <div className="h-1 flex-1 rounded-full bg-white/20">
                       <div
                         className="h-full rounded-full bg-white/60"
-                        style={{ width: col.title === 'Done' ? '100%' : col.title === 'In Progress' ? '55%' : '0%' }}
+                        style={{
+                          width:
+                            col.title === 'Done'
+                              ? '100%'
+                              : col.title === 'In Progress'
+                                ? '55%'
+                                : '0%',
+                        }}
                       />
                     </div>
                   </div>
@@ -142,7 +149,9 @@ function KanbanPreview() {
               fill="#c4b5fd"
             />
           </svg>
-          <span className="text-[11px] font-medium text-white/80">AI generated this sprint plan</span>
+          <span className="text-[11px] font-medium text-white/80">
+            AI generated this sprint plan
+          </span>
         </div>
       </div>
     </div>

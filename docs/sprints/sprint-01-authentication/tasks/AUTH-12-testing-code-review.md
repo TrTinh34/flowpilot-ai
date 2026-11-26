@@ -44,4 +44,4 @@ Kiểm chứng các tiêu chí bắt buộc của Task và lưu kết quả vào
 
 ## Development Report Reference
 
-Chưa có báo cáo triển khai.
+[Development Report AUTH-12](../../../reports/01-authentication/AUTH-12-testing-code-review.md)

@@ -29,11 +29,7 @@ export function Logo({ className, showName = true }: LogoProps) {
         {/* Connection node — represents collaboration */}
         <circle cx="22" cy="6" r="3" fill="currentColor" opacity="0.6" />
       </svg>
-      {showName && (
-        <span className="text-[15px] font-semibold tracking-tight">
-          FlowPilot AI
-        </span>
-      )}
+      {showName && <span className="text-[15px] font-semibold tracking-tight">FlowPilot AI</span>}
     </div>
   );
 }

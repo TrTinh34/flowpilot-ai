@@ -103,11 +103,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
             </button>
           </div>
           {errors.password && (
-            <p
-              id="password-error"
-              className="text-xs text-[var(--color-error-text)]"
-              role="alert"
-            >
+            <p id="password-error" className="text-xs text-[var(--color-error-text)]" role="alert">
               {errors.password.message}
             </p>
           )}

@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute, PublicOnlyRoute } from '@/app/router/ProtectedRoute';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
@@ -33,7 +33,7 @@ export function AppRouter() {
       </Route>
 
       {/* ── Fallback ───────────────────────────────────────────────────── */}
-      <Route path="*" element={<InitStatusPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

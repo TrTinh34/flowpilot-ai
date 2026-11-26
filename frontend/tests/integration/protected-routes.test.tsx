@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute, PublicOnlyRoute } from '@/app/router/ProtectedRoute';
+import { AppRouter } from '@/app/router/AppRouter';
 import { useAuthStore } from '@/app/store/auth.store';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -53,6 +54,21 @@ function renderPublicOnly(initialPath = '/login') {
 }
 
 // ─── ProtectedRoute ───────────────────────────────────────────────────────────
+
+it('routes an unknown path through the protected fallback for guests', () => {
+  resetStore();
+  render(
+    <QueryClientProvider client={makeQueryClient()}>
+      <MemoryRouter initialEntries={['/unknown-auth-path']}>
+        <AppRouter />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+  expect(
+    screen.queryByText('Development Environment Initialization Check'),
+  ).not.toBeInTheDocument();
+});
 
 describe('ProtectedRoute', () => {
   beforeEach(() => resetStore());
@@ -145,7 +161,12 @@ describe('PublicOnlyRoute', () => {
 
 describe('logout behavior (store level)', () => {
   it('clearAuth transitions status to unauthenticated', () => {
-    useAuthStore.setState({ status: 'authenticated', accessToken: 'tok', expiresAt: Date.now() + 90000, user: null });
+    useAuthStore.setState({
+      status: 'authenticated',
+      accessToken: 'tok',
+      expiresAt: Date.now() + 90000,
+      user: null,
+    });
     useAuthStore.getState().clearAuth();
     expect(useAuthStore.getState().status).toBe('unauthenticated');
     expect(useAuthStore.getState().accessToken).toBeNull();

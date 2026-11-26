@@ -4,8 +4,8 @@ import type { AuthUser } from '@/features/auth/types/auth.types';
 // ─── State shape ─────────────────────────────────────────────────────────────
 
 export type AuthStatus =
-  | 'idle'          // app just mounted, not yet attempted session restore
-  | 'restoring'     // attempting silent refresh to restore session
+  | 'idle' // app just mounted, not yet attempted session restore
+  | 'restoring' // attempting silent refresh to restore session
   | 'authenticated' // has a valid access token
   | 'unauthenticated'; // no valid session
 
@@ -90,8 +90,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
 // ─── Selector helpers ─────────────────────────────────────────────────────────
 
 /** True when the app is still determining session status */
-export const selectIsRestoring = (s: AuthStore) =>
-  s.status === 'idle' || s.status === 'restoring';
+export const selectIsRestoring = (s: AuthStore) => s.status === 'idle' || s.status === 'restoring';
 
 export const selectIsAuthenticated = (s: AuthStore) =>
   s.status === 'authenticated' && s.accessToken !== null;
