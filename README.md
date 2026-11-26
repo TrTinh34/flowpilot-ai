@@ -296,7 +296,7 @@ GitHub Actions (`ci.yml`) chạy tự động trên mỗi push/PR:
 
 ## Documentation
 
-Xem [báo cáo triển khai](docs/reports/README.md) để tra cứu kết quả theo Task.
+Xem [Sprint Index](docs/sprints/README.md) để tra cứu phạm vi và trạng thái Task, và [báo cáo triển khai](docs/reports/README.md) để tra cứu bằng chứng.
 
 | # | Document | Description |
 |---|---|---|

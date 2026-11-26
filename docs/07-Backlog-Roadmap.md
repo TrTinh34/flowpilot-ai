@@ -16,14 +16,7 @@
 - Epic: AUTH; priority: Must; FR-AUTH-01 / UC-AUTH-01.
 - Story: Là Guest / User, tôi muốn đăng ký, đăng nhập, refresh, logout để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Đăng nhập đúng trả token; sai trả 401; Email duy nhất; refresh token xoay vòng và thu hồi.
-- Tiến độ database: Hoàn thành schema và migration `20261125150345_init_auth`. Đã áp dụng và kiểm chứng trên PostgreSQL development.
-- Tiến độ AUTH-02: Đã triển khai Register và kiểm tra validation, băm mật khẩu, rate limiting và smoke tests. Nghiệm thu còn chờ PostgreSQL test riêng để kiểm chứng ghi dữ liệu, unique index và đăng ký đồng thời.
-- Tiến độ AUTH-03: Login đã nối với cấp token từ AUTH-04 và kiểm chứng HTTP với repository mock. Nghiệm thu còn chờ kiểm chứng PostgreSQL test.
-- Tiến độ AUTH-04: Đã triển khai JWT, refresh cookie, rotation và reuse detection. Kiểm thử concurrency, rollback và commit thu hồi family chờ PostgreSQL test riêng.
-- Tiến độ AUTH-05: Đã triển khai Logout cho phiên hiện tại và xóa refresh cookie sau khi transaction thành công. Thu hồi family, concurrency và rollback chờ kiểm chứng PostgreSQL test.
-- Tiến độ AUTH-06: Đã triển khai middleware Bearer và kiểm thử qua Express test harness. Kiểm chứng trên route ứng dụng chờ AUTH-07.
-- Tiến độ AUTH-07: Lookup hồ sơ theo verified subject đã qua PostgreSQL test. Route và response chờ xác nhận hợp đồng vì OpenAPI chưa định nghĩa Get Current User.
-- Kết quả AUTH-INT-01: AUTH-02 đến AUTH-05 đã qua PostgreSQL integration. Backend Authentication còn chờ hợp đồng và kiểm chứng HTTP Current User trước khi hoàn tất.
+- Tiến độ và dependencies của từng Task được quản lý tại [Sprint 01 Backlog](sprints/sprint-01-authentication/README.md#sprint-backlog).
 - Tasks: Khởi tạo Express.js + TS + Pino/Helmet/CORS/rate-limit; Prisma schema & Prisma Migrate (`users`, `refresh_tokens` + custom SQL `LOWER(email)` unique); auth service (`bcrypt`, JWT, refresh rotation/reuse detection) & Zod schemas; UI form (React Hook Form + Zod); integration test (Vitest + Supertest + PostgreSQL test DB), review.
 
 ### US-WS-01 — Tạo workspace, mời và quản lý thành viên

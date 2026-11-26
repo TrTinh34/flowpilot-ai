@@ -7,15 +7,27 @@ Postman CLI is installed on this device, and can be used for API Engineering wor
 ## Trước khi bắt đầu Task
 
 - Đọc tài liệu liên quan trong `docs/` và [Product Backlog](docs/07-Backlog-Roadmap.md) để xác định phạm vi.
+- Đọc AGENTS.md, [Sprint Index](docs/sprints/README.md), Sprint README và Task File tương ứng.
 - Đọc [Reports Index](docs/reports/README.md) và các báo cáo liên quan trực tiếp.
 - Đối chiếu báo cáo cũ với source code thực tế trước khi dựa vào kết quả đã ghi.
+- Kiểm tra dependencies và tiêu chí nghiệm thu. Khi bắt đầu, cập nhật trạng thái trong Sprint Backlog nếu Task thuộc Sprint.
+
+## Trong khi triển khai
+
+- Tuân thủ phạm vi Task và tiêu chí nghiệm thu đã thống nhất.
+- Ghi lại blockers và quyết định kỹ thuật. Thống nhất thay đổi phạm vi hoặc tiêu chí trước khi thực hiện.
 
 ## Sau khi hoàn thành Task
 
-- Chạy các kiểm tra cần thiết và ghi rõ phần chưa được kiểm chứng.
+- Chạy verification commands, đánh giá từng tiêu chí nghiệm thu và ghi rõ phần chưa được kiểm chứng.
 - Tạo hoặc cập nhật báo cáo trong `docs/reports/` theo [REPORT-TEMPLATE.md](docs/reports/REPORT-TEMPLATE.md).
-- Cập nhật Reports Index và cập nhật trạng thái Product Backlog khi phù hợp.
-- Đưa đường dẫn báo cáo vào phản hồi cuối. Dừng sau khi hoàn thành Task được giao.
+- Cập nhật trạng thái Task tại Sprint Backlog, đồng bộ tổng hợp tiến độ Sprint, Reports Index và các mốc liên quan trong Product Backlog.
+- Đưa đường dẫn báo cáo và commit message đề xuất vào phản hồi cuối. Dừng và chờ Developer Review.
+
+## Khi bắt đầu Sprint mới
+
+- Chỉ bắt đầu khi được giao. Xác minh Sprint trước đã đạt Definition of Done hoặc có quyết định chuyển Sprint rõ ràng.
+- Tạo Sprint directory, Sprint README và Task Files từ Product Backlog bằng template. Xác định dependencies và tiêu chí nghiệm thu.
 
 ## Chất lượng báo cáo
 

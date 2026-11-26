@@ -5,6 +5,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 ## Quy ước
 
 - Dùng [REPORT-TEMPLATE.md](REPORT-TEMPLATE.md). Mỗi Task có một báo cáo chính.
+- Trạng thái hiện tại của Task trong Sprint nằm tại [Sprint Index](../sprints/README.md). Cột trạng thái bên dưới phản ánh kết quả ghi nhận trong báo cáo.
 - Gom báo cáo theo thư mục `NN-chu-de`. Dùng `TASK-ID-ten-task.md` nếu đã có Task ID, `ten-giai-doan.md` cho các báo cáo nền tảng khôi phục từ repo.
 - `COMPLETED` nghĩa là phạm vi của Task đã hoàn thành. `PARTIAL` nghĩa là còn phần việc chưa hoàn thành. `BLOCKED` nghĩa là có trở ngại ngăn việc tiếp tục.
 - Ghi nguồn và loại báo cáo. Dùng `NOT VERIFIED` khi có ghi nhận nhưng thiếu bằng chứng xác minh, và `UNKNOWN` khi không có thông tin.
@@ -16,6 +17,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 |---|---|---|---|
 | — | Project Scaffolding | COMPLETED | [Báo cáo](00-initialization/project-scaffolding.md) |
 | — | Project Initialization | COMPLETED | [Báo cáo](00-initialization/project-initialization.md) |
+| — | Sprint and Task Management Structure | COMPLETED | [Báo cáo](00-initialization/sprint-task-management.md) |
 | AUTH-01 | Authentication Database Schema & Migration | COMPLETED | [Báo cáo](01-authentication/AUTH-01-database-schema.md) |
 | AUTH-02 | User Registration API | COMPLETED | [Báo cáo](01-authentication/AUTH-02-user-registration.md) |
 | AUTH-03 | User Login API | COMPLETED | [Báo cáo](01-authentication/AUTH-03-user-login.md) |

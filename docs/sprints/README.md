@@ -1,0 +1,27 @@
+# Sprint FlowPilot AI
+
+[Product Backlog & Roadmap](../07-Backlog-Roadmap.md) quản lý ưu tiên và kế hoạch toàn dự án. Chỉ Sprint đang thực hiện có thư mục tại đây.
+
+| Sprint ID | Tên | Mục tiêu | Trạng thái | Tiến độ | Dependencies | Tài liệu |
+|---|---|---|---|---|---|---|
+| Sprint 01 | Foundation + AUTH | Hoàn thành nền tảng monorepo, CI và luồng Authentication | IN_PROGRESS | 5/13 Task hoàn thành. 3 Task một phần, 5 Task chưa bắt đầu. | PostgreSQL development/test, hợp đồng Current User, tích hợp frontend và CI | [Sprint 01](sprint-01-authentication/README.md) |
+
+## Nguồn quản lý
+
+- **Sprint Backlog trong Sprint README** là nơi cập nhật trạng thái chính thức của từng Task và tổng hợp tiến độ Sprint.
+- **Task File** mô tả yêu cầu, phạm vi, dependencies và tiêu chí nghiệm thu.
+- **Development Report** ghi kết quả và bằng chứng theo phiên. [Reports Index](../reports/README.md) dùng để tra cứu báo cáo.
+- **Product Backlog** giữ thứ tự ưu tiên và các mốc dự án. Liên kết đến Sprint để xem trạng thái từng Task.
+
+## Trạng thái
+
+| Trạng thái | Ý nghĩa |
+|---|---|
+| PENDING | Chưa bắt đầu |
+| IN_PROGRESS | Đang triển khai hoặc kiểm chứng |
+| IN_REVIEW | Chờ review |
+| COMPLETED | Mọi tiêu chí bắt buộc đã được kiểm chứng |
+| PARTIAL | Đã hoàn thành một phần, còn thiếu phạm vi hoặc bằng chứng |
+| BLOCKED | Có trở ngại đang ngăn Task tiếp tục |
+
+Dùng [Sprint Template](SPRINT-TEMPLATE.md) và [Task Template](TASK-TEMPLATE.md) khi tạo tài liệu mới.
