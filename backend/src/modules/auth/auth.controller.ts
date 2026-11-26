@@ -3,10 +3,19 @@ import { env } from '../../config/env.js';
 import { AppError } from '../../errors/app-error.js';
 import { ERROR_CODES } from '../../errors/error-codes.js';
 import type { LoginInput, RegisterInput } from './auth.schema.js';
-import { register } from './auth.service.js';
+import { getCurrentUser, register } from './auth.service.js';
 import { login, logoutSession, refreshSession } from './auth.session.js';
 
 const cookieName = 'refresh_token';
+
+export async function currentUserController(req: Request, res: Response): Promise<void> {
+  if (!req.auth) {
+    res.set('WWW-Authenticate', 'Bearer');
+    throw new AppError(401, ERROR_CODES.UNAUTHORIZED, 'A valid access token is required.');
+  }
+  res.set('Cache-Control', 'no-store');
+  res.json({ data: await getCurrentUser(req.auth.userId) });
+}
 const refreshCookieOptions: CookieOptions = {
   httpOnly: true,
   secure: env.NODE_ENV === 'production',

@@ -1,11 +1,13 @@
 # AUTH-INT-01 — Authentication Integration Testing & Backend Verification
 
+**Nghiệm thu 2026-11-26 — COMPLETED.** Đã bổ sung Current User qua HTTP vào lifecycle PostgreSQL: Login → Current User → Refresh → Current User → Logout → Refresh bị từ chối. Full regression backend 89/89 đạt. Các ghi chú blocker bên dưới là lịch sử trước khi chốt hợp đồng.
+
 ## 1. Thông tin Task
 
 - Task ID — AUTH-INT-01
 - Sprint — 1, Foundation + AUTH
 - Ngày — 2026-11-26
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `FR-AUTH-01`, `NFR-02`, `NFR-07`, `UC-AUTH-01`, `TC-AUTH-01`, `TC-AUTH-02`
 
 ## 2. Tóm tắt triển khai

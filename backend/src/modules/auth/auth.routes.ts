@@ -2,6 +2,7 @@ import { Router, type RequestHandler } from 'express';
 import { isAllowedOrigin } from '../../config/cors.js';
 import { AppError } from '../../errors/app-error.js';
 import { ERROR_CODES } from '../../errors/error-codes.js';
+import { authenticate } from '../../middlewares/auth.middleware.js';
 import {
   loginRateLimiter,
   logoutRateLimiter,
@@ -10,6 +11,7 @@ import {
 } from '../../middlewares/rate-limit.middleware.js';
 import { validateBody } from '../../middlewares/validation.middleware.js';
 import {
+  currentUserController,
   loginController,
   logoutController,
   refreshController,
@@ -45,3 +47,4 @@ authRouter.post(
 );
 authRouter.post('/refresh', requireTrustedBrowserOrigin, refreshRateLimiter, refreshController);
 authRouter.post('/logout', requireTrustedBrowserOrigin, logoutRateLimiter, logoutController);
+authRouter.get('/me', authenticate, currentUserController);

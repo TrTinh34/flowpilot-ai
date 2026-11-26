@@ -4,7 +4,7 @@
 
 - Sprint ID — Sprint 01
 - Trạng thái — IN_PROGRESS
-- Tiến độ — 6/13 Task `COMPLETED`, 3 `PARTIAL`, 4 `PENDING`
+- Tiến độ — 12/13 Task `COMPLETED`, 1 `PENDING`
 - Nguồn phạm vi — [Roadmap và US-AUTH-01](../../07-Backlog-Roadmap.md)
 
 ## Sprint Goal
@@ -26,18 +26,18 @@ Bảng này quản lý trạng thái hiện tại của từng Task. Các ID AUT
 | AUTH-03 | [User Login API](tasks/AUTH-03-user-login.md) | COMPLETED | AUTH-02, tích hợp cấp token từ AUTH-04 |
 | AUTH-04 | [Access Token & Refresh Token Management](tasks/AUTH-04-token-management.md) | COMPLETED | AUTH-01, logic xác thực credentials từ AUTH-03 |
 | AUTH-05 | [Logout & Token Revocation](tasks/AUTH-05-logout-token-revocation.md) | COMPLETED | AUTH-04 |
-| AUTH-06 | [Authentication Middleware](tasks/AUTH-06-authentication-middleware.md) | PARTIAL | JWT verifier từ AUTH-04, route của AUTH-07 cho nghiệm thu tích hợp |
-| AUTH-07 | [Get Current User API](tasks/AUTH-07-get-current-user.md) | PARTIAL | AUTH-01, AUTH-06 và hợp đồng Current User |
-| AUTH-INT-01 | [Authentication Integration Testing](tasks/AUTH-INT-01-integration-testing.md) | PARTIAL | AUTH-02–07, PostgreSQL test riêng |
+| AUTH-06 | [Authentication Middleware](tasks/AUTH-06-authentication-middleware.md) | COMPLETED | JWT verifier từ AUTH-04, route AUTH-07 |
+| AUTH-07 | [Get Current User API](tasks/AUTH-07-get-current-user.md) | COMPLETED | AUTH-01, AUTH-06 và OpenAPI |
+| AUTH-INT-01 | [Authentication Integration Testing](tasks/AUTH-INT-01-integration-testing.md) | COMPLETED | AUTH-02–07, PostgreSQL test riêng |
 | AUTH-08 | [Authentication UI/UX Design](tasks/AUTH-08-ui-ux-design.md) | COMPLETED | FR-AUTH-01, UC-AUTH-01 và NFR-05 |
-| AUTH-09 | [Login & Register Frontend](tasks/AUTH-09-login-register-frontend.md) | PENDING | AUTH-08, request schema từ AUTH-02 và AUTH-03 |
-| AUTH-10 | [Authentication State & Protected Routes](tasks/AUTH-10-auth-state-protected-routes.md) | PENDING | AUTH-04, AUTH-05, hợp đồng Current User từ AUTH-07 khi cần lấy hồ sơ |
-| AUTH-11 | [Frontend & Backend Integration](tasks/AUTH-11-frontend-backend-integration.md) | PENDING | AUTH-02–07, AUTH-09, AUTH-10 |
+| AUTH-09 | [Login & Register Frontend](tasks/AUTH-09-login-register-frontend.md) | COMPLETED | AUTH-08, request schema từ AUTH-02 và AUTH-03 |
+| AUTH-10 | [Authentication State & Protected Routes](tasks/AUTH-10-auth-state-protected-routes.md) | COMPLETED | AUTH-04, AUTH-05, hợp đồng Current User từ AUTH-07 khi cần lấy hồ sơ |
+| AUTH-11 | [Frontend & Backend Integration](tasks/AUTH-11-frontend-backend-integration.md) | COMPLETED | AUTH-07, AUTH-09, AUTH-10 |
 | AUTH-12 | [Testing & Code Review](tasks/AUTH-12-testing-code-review.md) | PENDING | AUTH-INT-01, AUTH-08–11 |
 
 ## Dependencies
 
-PostgreSQL, Prisma migration và CI cho nền tảng. Frontend tích hợp dựa trên OpenAPI và cấu hình cookie/CORS trong [System Design](../../04-System-Design.md). Hợp đồng Current User cần được chốt trước khi mount route và kiểm thử lifecycle đầy đủ.
+PostgreSQL, Prisma migration và CI cho nền tảng. Frontend tích hợp dựa trên OpenAPI và cấu hình cookie/CORS trong [System Design](../../04-System-Design.md).
 
 ## Acceptance Criteria
 
@@ -51,13 +51,11 @@ PostgreSQL, Prisma migration và CI cho nền tảng. Frontend tích hợp dựa
 
 ## Risks and Blockers
 
-- AUTH-07 đã kiểm chứng lookup trên PostgreSQL. OpenAPI chưa có Current User, nên còn thiếu hợp đồng route và bằng chứng HTTP.
-- AUTH-06 chưa được kiểm chứng qua protected route ứng dụng. AUTH-INT-01 thiếu các bước Current User trong lifecycle.
-- AUTH-08 đến AUTH-12 chưa bắt đầu. Frontend hiện có các placeholder cho trang và auth state. Bằng chứng browser flow, frontend verification và Sprint review còn thiếu.
+- AUTH-12 chưa bắt đầu. Sprint review và nghiệm thu cuối vẫn chờ Task này.
 
 ## Sprint Review
 
-Chưa nghiệm thu Sprint. Báo cáo AUTH-INT-01 ghi nhận 88 test backend đạt tại phiên kiểm chứng. Bằng chứng demo và review toàn Sprint còn chờ các Task đang mở.
+Chưa nghiệm thu Sprint. Regression ghi nhận 89 test backend và 54 test frontend đạt. Luồng browser với PostgreSQL test gồm Register, Login, Current User, khôi phục phiên và Logout. Review toàn Sprint chờ AUTH-12.
 
 ## Sprint Retrospective
 

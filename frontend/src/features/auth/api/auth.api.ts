@@ -1,6 +1,18 @@
-import { apiClient, extractApiErrorMessage } from '@/services/api-client';
-import type { AuthTokenResponse } from '@/features/auth/types/auth.types';
+import axios from 'axios';
+import { useAuthStore } from '@/app/store/auth.store';
+import {
+  apiClient,
+  extractApiErrorMessage,
+  refreshSession,
+  withSessionCookie,
+} from '@/services/api-client';
+import type { AuthTokenResponse, CurrentUser } from '@/features/auth/types/auth.types';
 import type { LoginFormValues, RegisterApiPayload } from '@/features/auth/schemas/auth.schema';
+
+export async function getCurrentUser(): Promise<CurrentUser> {
+  const response = await apiClient.get<{ data: CurrentUser }>('/auth/me');
+  return response.data.data;
+}
 
 /**
  * Maps HTTP error responses to user-readable messages.
@@ -40,8 +52,10 @@ function mapAuthError(error: unknown, context: 'login' | 'register'): string {
  * Returns the access token and its TTL on success.
  */
 export async function login(payload: LoginFormValues): Promise<AuthTokenResponse> {
-  const response = await apiClient.post<AuthTokenResponse>('/auth/login', payload);
-  return response.data;
+  return withSessionCookie(async () => {
+    const response = await apiClient.post<AuthTokenResponse>('/auth/login', payload);
+    return response.data;
+  });
 }
 
 /**
@@ -57,7 +71,14 @@ export async function register(payload: RegisterApiPayload): Promise<void> {
  * Sends the HttpOnly refresh cookie (browser-managed). Revokes the session.
  */
 export async function logout(): Promise<void> {
-  await apiClient.post('/auth/logout');
+  await withSessionCookie(async () => {
+    try {
+      await apiClient.post('/auth/logout');
+    } catch (error) {
+      if (!axios.isAxiosError(error) || error.response?.status !== 401) throw error;
+    }
+    useAuthStore.getState().clearAuth();
+  });
 }
 
 /**
@@ -66,8 +87,7 @@ export async function logout(): Promise<void> {
  * Used by the axios interceptor for silent token refresh.
  */
 export async function refreshToken(): Promise<AuthTokenResponse> {
-  const response = await apiClient.post<AuthTokenResponse>('/auth/refresh');
-  return response.data;
+  return refreshSession();
 }
 
 // Re-export the error mapper for use in page-level handlers

@@ -13,6 +13,11 @@ export interface AuthUser {
   displayName: string;
 }
 
+export interface CurrentUser extends AuthUser {
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ─── Auth state (Zustand — implemented in AUTH-10) ───────────────────────────
 
 export interface AuthState {

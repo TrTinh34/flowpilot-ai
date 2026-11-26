@@ -1,7 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { extractApiErrorMessage, fetchBackendHealth } from '@/services/api-client';
+import { selectIsAuthenticated, useAuthStore } from '@/app/store/auth.store';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 
 export function InitStatusPage() {
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const { logout, isLoggingOut, logoutError } = useLogout();
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['backend-health'],
     queryFn: fetchBackendHealth,
@@ -26,6 +31,7 @@ export function InitStatusPage() {
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-6 py-12">
       <section className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-6 shadow-xs">
         <h1 className="text-2xl font-bold tracking-tight">FlowPilot AI</h1>
+        {user && <p className="mt-1 text-sm">Signed in as {user.displayName}</p>}
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           Development Environment Initialization Check
         </p>
@@ -51,7 +57,7 @@ export function InitStatusPage() {
           <p className="mt-4 text-xs text-red-600">{extractApiErrorMessage(error)}</p>
         ) : null}
 
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap gap-3">
           <button
             type="button"
             onClick={() => void refetch()}
@@ -60,7 +66,22 @@ export function InitStatusPage() {
           >
             {isFetching ? 'Checking...' : 'Re-check Health'}
           </button>
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={() => void logout()}
+              disabled={isLoggingOut}
+              className="rounded-md border border-[var(--border)] px-4 py-2 text-sm font-medium hover:bg-[var(--muted)] disabled:opacity-50"
+            >
+              {isLoggingOut ? 'Signing out...' : 'Sign out'}
+            </button>
+          )}
         </div>
+        {logoutError && (
+          <p role="alert" className="mt-3 text-sm text-red-600">
+            {logoutError}
+          </p>
+        )}
       </section>
     </main>
   );

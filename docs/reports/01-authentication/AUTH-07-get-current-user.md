@@ -1,5 +1,7 @@
 # AUTH-07 — Get Current User API
 
+**Nghiệm thu 2026-11-26 — COMPLETED.** Đã chốt và cập nhật OpenAPI cho `GET /api/v1/auth/me`. HTTP PostgreSQL integration xác nhận đúng envelope, verified subject, 401 và 404. Edge xác nhận frontend hiển thị hồ sơ sau Login và reload. Các ghi chú blocker bên dưới là lịch sử trước khi chốt hợp đồng.
+
 **Cập nhật AUTH-INT-01 ngày 2026-11-26 — PARTIAL.** Login → verify JWT → lookup theo UUID đã chạy trên PostgreSQL, gồm cả subject có user và subject không có user. AC-04 đã đạt ở lớp truy vấn. Route, response HTTP và các ca truy cập qua middleware còn chờ hợp đồng OpenAPI. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-07 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
 
 ## 1. Thông tin Task
@@ -8,7 +10,7 @@
 - Tên Task — Get Current User API
 - Sprint — 1, Foundation + AUTH
 - Ngày triển khai — 2026-11-25
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `BR-04`, Bearer Authentication trong System Design và yêu cầu AUTH-07
 - Loại báo cáo — Ghi sau triển khai
 
@@ -74,6 +76,8 @@ sequenceDiagram
 Cần xác nhận method, path, response envelope và lỗi. Phương án đề xuất là `GET /api/v1/auth/me`, Bearer JWT, HTTP 200 với `{ data: { id, email, displayName, createdAt, updatedAt } }`, 401 nếu token không hợp lệ và 404 nếu subject hợp lệ nhưng user không tồn tại. Đây là đề xuất, chưa phải hợp đồng đang có hiệu lực. Cần PostgreSQL test riêng đã áp dụng migration.
 
 ## 8. Ghi chú cho developer
+
+Trong Postman, chọn `GET /api/v1/auth/me` và Bearer Token từ Login trên môi trường test. Response 200 có dạng `{ "data": { "id": "<user-uuid>", "email": "fixture@example.test", "displayName": "Fixture User", "createdAt": "2026-11-26T00:00:00.000Z", "updatedAt": "2026-11-26T00:00:00.000Z" } }`. Thử bỏ Bearer header để kiểm tra 401 với envelope `{ "code": "UNAUTHORIZED", "message": "A valid access token is required.", "requestId": "<request-id>" }`.
 
 Controller sẽ lấy ID từ `req.auth` do JWT verifier xác lập. Review [Auth Repository](../../../backend/src/modules/auth/auth.repository.ts) và [Auth Service](../../../backend/src/modules/auth/auth.service.ts). Hướng dẫn và ví dụ Postman sẽ bổ sung khi chốt hợp đồng và mount route.
 

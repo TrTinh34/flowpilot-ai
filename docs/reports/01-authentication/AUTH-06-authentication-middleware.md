@@ -1,5 +1,7 @@
 # AUTH-06 — Authentication Middleware
 
+**Nghiệm thu 2026-11-26 — COMPLETED.** Protected route `GET /api/v1/auth/me` đã qua PostgreSQL integration. Bearer hợp lệ đi qua middleware, header thiếu hoặc sai và refresh token bị từ chối với 401. Các ca expired, forged và claims sai được kiểm tra ở middleware suite. Các ghi chú blocker bên dưới là lịch sử trước khi chốt hợp đồng.
+
 **Cập nhật AUTH-INT-01 ngày 2026-11-26 — PARTIAL.** Regression đã chạy lại, 13 ca middleware đạt. Integration qua route ứng dụng vẫn chờ AUTH-07. Các bảng bên dưới ghi lại kết quả tại phiên AUTH-06 ban đầu. Xem [bằng chứng integration](AUTH-INT-01-integration-testing.md).
 
 ## 1. Thông tin Task
@@ -8,7 +10,7 @@
 - Tên Task — Authentication Middleware
 - Sprint — 1, Foundation + AUTH
 - Ngày triển khai — 2026-11-25
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `BR-04`, `NFR-02` và Bearer Authentication trong System Design
 - Loại báo cáo — Ghi sau triển khai
 

@@ -44,4 +44,4 @@ Kiểm chứng các tiêu chí bắt buộc của Task và lưu kết quả vào
 
 ## Development Report Reference
 
-Chưa có báo cáo triển khai.
+[Development Report AUTH-11](../../../reports/01-authentication/AUTH-11-frontend-backend-integration.md)

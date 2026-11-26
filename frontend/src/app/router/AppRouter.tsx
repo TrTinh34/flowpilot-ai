@@ -1,26 +1,38 @@
 import { Route, Routes } from 'react-router-dom';
+import { ProtectedRoute, PublicOnlyRoute } from '@/app/router/ProtectedRoute';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { InitStatusPage } from '@/pages/InitStatusPage';
 
 /**
- * Application router.
+ * Application router — AUTH-10.
  *
- * Sprint 1 routes:
- *   /           → InitStatusPage (temporary dev health check)
- *   /login      → LoginPage (public)
- *   /register   → RegisterPage (public)
- *   *           → 404 fallback (InitStatusPage until NotFoundPage is styled)
+ * Public-only routes (redirect authenticated users away):
+ *   /login      → LoginPage
+ *   /register   → RegisterPage
  *
- * AUTH-10 will add ProtectedRoute wrapping around authenticated routes
- * and replace the / fallback with a proper app shell.
+ * Protected routes (redirect unauthenticated users to /login):
+ *   /           → InitStatusPage (temporary; Sprint 2 will replace with AppShell)
+ *
+ * Fallback:
+ *   *           → Redirect to / for now (NotFoundPage arrives in Sprint 2)
  */
 export function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<InitStatusPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      {/* ── Public-only: redirect if already authenticated ─────────────── */}
+      <Route element={<PublicOnlyRoute redirectTo="/" />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Route>
+
+      {/* ── Protected: require authentication ──────────────────────────── */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<InitStatusPage />} />
+        {/* Sprint 2: workspace, project, board routes will nest here */}
+      </Route>
+
+      {/* ── Fallback ───────────────────────────────────────────────────── */}
       <Route path="*" element={<InitStatusPage />} />
     </Routes>
   );

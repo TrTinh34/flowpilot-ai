@@ -279,6 +279,51 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
       - refreshCookie: []
+  /auth/me:
+    get:
+      tags: [AUTH]
+      summary: Get current user
+      operationId: get_auth_me
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                additionalProperties: false
+                properties:
+                  data:
+                    type: object
+                    required: [id, email, displayName, createdAt, updatedAt]
+                    additionalProperties: false
+                    properties:
+                      id: { type: string, format: uuid }
+                      email: { type: string, format: email }
+                      displayName: { type: string }
+                      createdAt: { type: string, format: date-time }
+                      updatedAt: { type: string, format: date-time }
+        '401':
+          description: Missing or invalid access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Authenticated user not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /workspaces:
     get:
       tags:

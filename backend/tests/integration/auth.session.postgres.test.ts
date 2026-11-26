@@ -46,6 +46,10 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     return request(app).post('/api/v1/auth/logout').set('Cookie', cookie);
   }
 
+  function currentUser(accessToken: string) {
+    return request(app).get('/api/v1/auth/me').set('Authorization', `Bearer ${accessToken}`);
+  }
+
   async function login(email = ` ${input.email.toUpperCase()} `) {
     const res = await request(app)
       .post('/api/v1/auth/login')
@@ -190,10 +194,23 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
 
   it('exercises Login → Refresh → Logout without reuse and verifies committed state', async () => {
     const initial = await login(input.email);
+    const profile = await currentUser(initial.accessToken).query({ userId: randomUUID() });
+    expect(profile.status).toBe(200);
+    expect(profile.headers['cache-control']).toBe('no-store');
+    expect(profile.body).toEqual({
+      data: {
+        id: userId,
+        email: input.email,
+        displayName: 'Session fixture',
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      },
+    });
     expect((await refresh(`refresh_token=${initial.accessToken}`)).status).toBe(401);
     const rotated = await refresh(initial.cookie);
     expect(rotated.status).toBe(200);
     await expect(tokens.verifyAccessToken(rotated.body.accessToken)).resolves.toEqual({ userId });
+    expect((await currentUser(rotated.body.accessToken)).body).toEqual(profile.body);
     const successor = rotated.headers['set-cookie'][0].split(';')[0];
     expect(successor).not.toBe(initial.cookie);
     const next = await refresh(successor);
@@ -210,6 +227,7 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     expect(family).toHaveLength(3);
     expect(family.every((row) => row.revokedAt !== null)).toBe(true);
     expect((await refresh(finalCookie)).status).toBe(401);
+    expect((await currentUser(rotated.body.accessToken)).status).toBe(200);
   });
 
   it('revokes the current family via an old token and preserves other sessions and the access JWT', async () => {
@@ -262,5 +280,24 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     ).toMatchObject({
       revokedAt: null,
     });
+  });
+
+  it('rejects invalid bearer credentials and returns 404 for an absent subject', async () => {
+    for (const header of [
+      undefined,
+      'Basic abc',
+      'Bearer',
+      'Bearer malformed',
+      `Bearer ${tokens.generateRefreshToken()}`,
+    ]) {
+      const call = request(app).get('/api/v1/auth/me');
+      const result = await (header ? call.set('Authorization', header) : call);
+      expect(result.status).toBe(401);
+      expect(result.headers['www-authenticate']).toBe('Bearer');
+      expect(result.body.code).toBe('UNAUTHORIZED');
+    }
+    const result = await currentUser(await tokens.issueAccessToken(randomUUID()));
+    expect(result.status).toBe(404);
+    expect(result.body.code).toBe('NOT_FOUND');
   });
 });
