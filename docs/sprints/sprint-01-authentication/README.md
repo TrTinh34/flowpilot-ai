@@ -4,7 +4,7 @@
 
 - Sprint ID — Sprint 01
 - Trạng thái — IN_PROGRESS
-- Tiến độ — 5/13 Task `COMPLETED`, 3 `PARTIAL`, 5 `PENDING`
+- Tiến độ — 6/13 Task `COMPLETED`, 3 `PARTIAL`, 4 `PENDING`
 - Nguồn phạm vi — [Roadmap và US-AUTH-01](../../07-Backlog-Roadmap.md)
 
 ## Sprint Goal
@@ -29,7 +29,7 @@ Bảng này quản lý trạng thái hiện tại của từng Task. Các ID AUT
 | AUTH-06 | [Authentication Middleware](tasks/AUTH-06-authentication-middleware.md) | PARTIAL | JWT verifier từ AUTH-04, route của AUTH-07 cho nghiệm thu tích hợp |
 | AUTH-07 | [Get Current User API](tasks/AUTH-07-get-current-user.md) | PARTIAL | AUTH-01, AUTH-06 và hợp đồng Current User |
 | AUTH-INT-01 | [Authentication Integration Testing](tasks/AUTH-INT-01-integration-testing.md) | PARTIAL | AUTH-02–07, PostgreSQL test riêng |
-| AUTH-08 | [Authentication UI/UX Design](tasks/AUTH-08-ui-ux-design.md) | PENDING | FR-AUTH-01, UC-AUTH-01 và NFR-05 |
+| AUTH-08 | [Authentication UI/UX Design](tasks/AUTH-08-ui-ux-design.md) | COMPLETED | FR-AUTH-01, UC-AUTH-01 và NFR-05 |
 | AUTH-09 | [Login & Register Frontend](tasks/AUTH-09-login-register-frontend.md) | PENDING | AUTH-08, request schema từ AUTH-02 và AUTH-03 |
 | AUTH-10 | [Authentication State & Protected Routes](tasks/AUTH-10-auth-state-protected-routes.md) | PENDING | AUTH-04, AUTH-05, hợp đồng Current User từ AUTH-07 khi cần lấy hồ sơ |
 | AUTH-11 | [Frontend & Backend Integration](tasks/AUTH-11-frontend-backend-integration.md) | PENDING | AUTH-02–07, AUTH-09, AUTH-10 |

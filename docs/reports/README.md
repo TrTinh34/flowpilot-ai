@@ -17,6 +17,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 |---|---|---|---|
 | — | Project Scaffolding | COMPLETED | [Báo cáo](00-initialization/project-scaffolding.md) |
 | — | Project Initialization | COMPLETED | [Báo cáo](00-initialization/project-initialization.md) |
+| — | DBCode PostgreSQL trong Antigravity | PARTIAL | [Báo cáo](00-initialization/dbcode-antigravity.md) |
 | — | Sprint and Task Management Structure | COMPLETED | [Báo cáo](00-initialization/sprint-task-management.md) |
 | AUTH-01 | Authentication Database Schema & Migration | COMPLETED | [Báo cáo](01-authentication/AUTH-01-database-schema.md) |
 | AUTH-02 | User Registration API | COMPLETED | [Báo cáo](01-authentication/AUTH-02-user-registration.md) |
@@ -25,6 +26,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | AUTH-05 | Logout & Token Revocation | COMPLETED | [Báo cáo](01-authentication/AUTH-05-logout-token-revocation.md) |
 | AUTH-06 | Authentication Middleware | PARTIAL | [Báo cáo](01-authentication/AUTH-06-authentication-middleware.md) |
 | AUTH-07 | Get Current User API | PARTIAL | [Báo cáo](01-authentication/AUTH-07-get-current-user.md) |
+| AUTH-08 | Authentication UI/UX Design & Global Design Foundation | COMPLETED | [Báo cáo](01-authentication/AUTH-08-ui-ux-design.md) |
 | AUTH-INT-01 | Authentication Integration Testing | PARTIAL | [Báo cáo](01-authentication/AUTH-INT-01-integration-testing.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
@@ -34,4 +36,4 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | Giai đoạn | Tiến độ |
 |---|---|
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
-| Sprint 1 — Foundation + AUTH | Register, Login, Refresh và Logout đã qua PostgreSQL integration. Middleware Bearer đã qua test harness. Route Current User chờ hợp đồng OpenAPI. |
+| Sprint 1 — Foundation + AUTH | Register, Login, Refresh và Logout đã qua PostgreSQL integration. Middleware Bearer đã qua test harness. Route Current User chờ hợp đồng OpenAPI. AUTH-08 UI/UX Design COMPLETED. |
