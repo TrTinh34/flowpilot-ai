@@ -51,6 +51,8 @@
 
 ## 7. Vấn đề và blocker
 
+[CI lần đầu](https://github.com/TrTinh34/flowpilot-ai/actions/runs/45844439945) phát hiện Vitest thiếu `VITE_API_BASE_URL` trên runner sạch. Đã khai báo URL loopback trong frontend job. GitHub cũng từ chối file deployment chỉ có TODO, nên đã bỏ placeholder workflow. Thiết kế staging và production vẫn nằm trong System Design.
+
 GitHub Actions chưa có kết quả cho thay đổi local này. Build frontend còn warning chunk trên 500 kB và lint còn warning Fast Refresh từ component Button. Browser thiếu Web Locks dùng điều phối refresh trong một tab. Phạm vi security review là code và regression của Authentication.
 
 ## 8. Ghi chú cho developer
