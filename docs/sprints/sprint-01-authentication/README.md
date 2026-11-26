@@ -3,8 +3,8 @@
 ## Sprint Information
 
 - Sprint ID — Sprint 01
-- Trạng thái — IN_PROGRESS
-- Tiến độ — 12/13 Task `COMPLETED`, 1 `PARTIAL`
+- Trạng thái — COMPLETED
+- Tiến độ — 13/13 Task `COMPLETED`
 - Nguồn phạm vi — [Roadmap và US-AUTH-01](../../07-Backlog-Roadmap.md)
 
 ## Sprint Goal
@@ -33,7 +33,7 @@ Bảng này quản lý trạng thái hiện tại của từng Task. Các ID AUT
 | AUTH-09 | [Login & Register Frontend](tasks/AUTH-09-login-register-frontend.md) | COMPLETED | AUTH-08, request schema từ AUTH-02 và AUTH-03 |
 | AUTH-10 | [Authentication State & Protected Routes](tasks/AUTH-10-auth-state-protected-routes.md) | COMPLETED | AUTH-04, AUTH-05, hợp đồng Current User từ AUTH-07 khi cần lấy hồ sơ |
 | AUTH-11 | [Frontend & Backend Integration](tasks/AUTH-11-frontend-backend-integration.md) | COMPLETED | AUTH-07, AUTH-09, AUTH-10 |
-| AUTH-12 | [Testing & Code Review](tasks/AUTH-12-testing-code-review.md) | PARTIAL | Chờ kết quả GitHub Actions cho thay đổi AUTH-12 |
+| AUTH-12 | [Testing & Code Review](tasks/AUTH-12-testing-code-review.md) | COMPLETED | AUTH-INT-01, AUTH-08–11 và GitHub Actions |
 
 ## Dependencies
 
@@ -51,11 +51,11 @@ PostgreSQL, Prisma migration và CI cho nền tảng. Frontend tích hợp dựa
 
 ## Risks and Blockers
 
-- AUTH-12 đã qua kiểm thử local, review và browser smoke. Nghiệm thu chờ GitHub Actions chạy trên revision có thay đổi CI.
+- GitHub Actions đã đạt. Các cảnh báo frontend còn lại được ghi trong báo cáo AUTH-12.
 
 ## Sprint Review
 
-Regression ghi nhận 89 test backend và 55 test frontend đạt. Browser smoke xác nhận Register, Login, Current User, khôi phục phiên trên hai tab và Logout. Review đã xử lý fallback route và các lỗi Prettier chặn CI. Xem [AUTH-12](../../reports/01-authentication/AUTH-12-testing-code-review.md).
+Nghiệm thu ngày 2026-11-26. Regression ghi nhận 89 test backend và 55 test frontend đạt. Browser smoke xác nhận Register, Login, Current User, khôi phục phiên trên hai tab và Logout. Hai job GitHub Actions đạt trên commit `3089685`. Xem [AUTH-12](../../reports/01-authentication/AUTH-12-testing-code-review.md).
 
 ## Sprint Retrospective
 

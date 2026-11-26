@@ -5,7 +5,7 @@
 - Task ID — AUTH-12
 - Sprint — 01, Foundation + AUTH
 - Ngày — 2026-11-26
-- Trạng thái — PARTIAL
+- Trạng thái — COMPLETED
 - Yêu cầu liên quan — `FR-AUTH-01`, `NFR-02`, `NFR-05`, `UC-AUTH-01`, `TC-AUTH-01`, `TC-AUTH-02`
 
 ## 2. Tóm tắt triển khai
@@ -38,14 +38,14 @@
 | Static checks | Format, lint, typecheck và build của cả hai ứng dụng | PASSED |
 | Browser | Edge headless, Register ở 360 px, guest fallback, duplicate, invalid Login, Login, Current User, reload và Logout | PASSED |
 | Concurrent browser refresh | Hai tab refresh, PostgreSQL ghi nhận hai rotation và đúng một refresh token hoạt động | PASSED |
-| GitHub Actions | Workflow đã cập nhật. Chưa có kết quả remote cho revision mới. | NOT RUN |
+| GitHub Actions | [CI #45844762600](https://github.com/TrTinh34/flowpilot-ai/actions/runs/45844762600) trên commit `3089685`. Backend Checks và Frontend Checks đều thành công. | PASSED |
 
 ## 6. Acceptance Criteria
 
 | Criterion | Status | Notes |
 |---|---|---|
 | Luồng Authentication đạt kiểm thử | PASSED | Regression, HTTP PostgreSQL và browser smoke |
-| CI xanh | BLOCKED | Các gate local đạt. Chờ workflow chạy trên revision có thay đổi AUTH-12. |
+| CI xanh | PASSED | Cả hai job đạt trên revision chứa thay đổi AUTH-12 và bản sửa CI. |
 | Lỗi critical/high đã xử lý | PASSED | Không còn finding mức critical/high trong phạm vi self-review |
 | Có Development Report | PASSED | Đã lưu bằng chứng và cập nhật Sprint |
 
@@ -53,7 +53,7 @@
 
 [CI lần đầu](https://github.com/TrTinh34/flowpilot-ai/actions/runs/45844439945) phát hiện Vitest thiếu `VITE_API_BASE_URL` trên runner sạch. Đã khai báo URL loopback trong frontend job. GitHub cũng từ chối file deployment chỉ có TODO, nên đã bỏ placeholder workflow. Thiết kế staging và production vẫn nằm trong System Design.
 
-GitHub Actions chưa có kết quả cho thay đổi local này. Build frontend còn warning chunk trên 500 kB và lint còn warning Fast Refresh từ component Button. Browser thiếu Web Locks dùng điều phối refresh trong một tab. Phạm vi security review là code và regression của Authentication.
+Build frontend còn warning chunk trên 500 kB và lint còn warning Fast Refresh từ component Button. Browser thiếu Web Locks dùng điều phối refresh trong một tab. Phạm vi security review là code và regression của Authentication.
 
 ## 8. Ghi chú cho developer
 
@@ -61,4 +61,4 @@ Chạy `npm run test:db:migrate`, `npm run test:unit` và `npm run test:integrat
 
 ## 9. Task tiếp theo
 
-Developer Review thay đổi AUTH-12 và xác nhận GitHub Actions trên revision được review trước khi nghiệm thu Sprint 01.
+Sprint 01 đã hoàn tất theo Definition of Done. Sprint 02 chờ yêu cầu bắt đầu riêng.

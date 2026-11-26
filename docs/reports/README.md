@@ -30,7 +30,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | AUTH-09 | Login & Register Frontend | COMPLETED | [Báo cáo](01-authentication/AUTH-09-login-register-frontend.md) |
 | AUTH-10 | Authentication State & Protected Routes | COMPLETED | [Báo cáo](01-authentication/AUTH-10-auth-state-protected-routes.md) |
 | AUTH-11 | Frontend & Backend Integration | COMPLETED | [Báo cáo](01-authentication/AUTH-11-frontend-backend-integration.md) |
-| AUTH-12 | Testing & Code Review | PARTIAL | [Báo cáo](01-authentication/AUTH-12-testing-code-review.md) |
+| AUTH-12 | Testing & Code Review | COMPLETED | [Báo cáo](01-authentication/AUTH-12-testing-code-review.md) |
 | AUTH-INT-01 | Authentication Integration Testing | COMPLETED | [Báo cáo](01-authentication/AUTH-INT-01-integration-testing.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
@@ -40,4 +40,4 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | Giai đoạn | Tiến độ |
 |---|---|
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
-| Sprint 1 — Foundation + AUTH | Auth đã qua regression, PostgreSQL integration và browser smoke. AUTH-12 chờ xác nhận GitHub Actions. |
+| Sprint 1 — Foundation + AUTH | Hoàn thành 13/13 Task. Regression, PostgreSQL integration, browser smoke và GitHub Actions đều đạt. |
