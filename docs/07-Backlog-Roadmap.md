@@ -21,6 +21,7 @@
 - ENV-01 đã khôi phục schema development local và xác minh My Tasks API trả 200. [Báo cáo ENV-01](reports/frontend-redesign/ENV-01-my-tasks-local-schema.md)
 - REDESIGN-04 đã hoàn thành shell, breadcrumb theo route và mobile drawer. [Báo cáo REDESIGN-04](reports/frontend-redesign/REDESIGN-04-application-shell.md)
 - [Sprint 07 — Core flows](sprints/sprint-07-frontend-core-flows/README.md) đã mở Timebox B. REDESIGN-05 đã hoàn thành redesign Auth và xác minh luồng phiên trên Edge. [Báo cáo REDESIGN-05](reports/frontend-redesign/REDESIGN-05-authentication.md)
+- REDESIGN-07 đã kiểm chứng lại luồng Workspace, phân quyền member và lời mời trên Edge. [Báo cáo REDESIGN-07](reports/frontend-redesign/REDESIGN-07-workspace.md)
 
 ## Backlog
 

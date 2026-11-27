@@ -6,7 +6,7 @@
 | Task Name | Workspace & Member Management |
 | Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 6h |
 | Dependencies | REDESIGN-04 |
 | Related Requirements | Workspace/Invitations · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Focus restore, confirm action destructive.
 Dùng Workspace/Invitation APIs và server role.
 
 ## Implementation Checklist
-- [ ] Map current actions
-- [ ] component
-- [ ] verify Owner/Member
+- [x] Đối chiếu quyền và action hiện có
+- [x] Áp dụng components và confirmation dialog
+- [x] Kiểm chứng Owner, Admin và Member
 
 ## Expected Deliverables
 Workspace UI và invite regression.
@@ -66,6 +66,8 @@ RTL role, API error và browser invite.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo REDESIGN-07](../../../reports/frontend-redesign/REDESIGN-07-workspace.md).
 
 ## Next Task
 REDESIGN-08.

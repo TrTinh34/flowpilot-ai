@@ -5,7 +5,7 @@
 - Ngày mở — 2026-11-28
 - Trạng thái — IN_PROGRESS
 - Timebox B · 39 giờ dự kiến trong 2–3 tuần
-- Tiến độ — 1/6 task
+- Tiến độ — 2/6 task
 
 ## Sprint Goal
 
@@ -21,7 +21,7 @@ Triển khai theo task được giao. Mở REDESIGN-05 trước. Giữ contract 
 |---|---|---|---:|---|---|
 | REDESIGN-05 | [Authentication Pages](../sprint-06-frontend-redesign/tasks/REDESIGN-05-authentication.md) | P1 | 5 | REDESIGN-04 | COMPLETED |
 | REDESIGN-06 | [Dashboard](../sprint-06-frontend-redesign/tasks/REDESIGN-06-dashboard.md) | P1 | 6 | REDESIGN-04 | PENDING |
-| REDESIGN-07 | [Workspace & Member Management](../sprint-06-frontend-redesign/tasks/REDESIGN-07-workspace.md) | P1 | 6 | REDESIGN-04 | PENDING |
+| REDESIGN-07 | [Workspace & Member Management](../sprint-06-frontend-redesign/tasks/REDESIGN-07-workspace.md) | P1 | 6 | REDESIGN-04 | COMPLETED |
 | REDESIGN-08 | [Project Management](../sprint-06-frontend-redesign/tasks/REDESIGN-08-projects.md) | P1 | 7 | REDESIGN-07 | PENDING |
 | REDESIGN-09 | [My Tasks & Task Management](../sprint-06-frontend-redesign/tasks/REDESIGN-09-task-management.md) | P0 | 7 | REDESIGN-03, REDESIGN-08, ENV-01 | PENDING |
 | REDESIGN-10 | [Kanban Board & Task Details](../sprint-06-frontend-redesign/tasks/REDESIGN-10-kanban.md) | P1 | 8 | REDESIGN-09 | PENDING |
@@ -45,6 +45,8 @@ Dashboard và audit chưa có backend live. S3 cần cấu hình môi trường 
 ## Sprint Review
 
 REDESIGN-05 đã qua frontend và PostgreSQL regression. Edge 360px đi hết luồng đăng ký, sai mật khẩu, đăng nhập, refresh và logout. [Báo cáo REDESIGN-05](../../reports/frontend-redesign/REDESIGN-05-authentication.md)
+
+REDESIGN-07 đã qua kiểm thử phân quyền Workspace và luồng tạo, mời, tham gia trên Edge với PostgreSQL test. [Báo cáo REDESIGN-07](../../reports/frontend-redesign/REDESIGN-07-workspace.md)
 
 ## Sprint Retrospective
 
