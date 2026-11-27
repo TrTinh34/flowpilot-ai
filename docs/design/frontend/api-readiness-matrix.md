@@ -10,7 +10,7 @@ API paths tương đối với `/api/v1`. Hợp đồng [OpenAPI](../../06-API-S
 | Task / List, My Tasks, Detail | /projects/:id/tasks, /me/tasks, /tasks/:id | Mounted Task; task.api | Real; ENV-01 đã khôi phục schema và xác minh My Tasks trả 200 trên dev local |
 | Board | PATCH /tasks/:id/move + project tasks list | Mounted Task; board.api | Real; 409 reconcile và keyboard fallback |
 | Collaboration | GET/POST /tasks/:id/comments; GET/POST /tasks/:id/attachments; GET /attachments/:id/download | Mounted Collaboration; collaboration.api | Real; upload/download cần S3, mention outbox đã có, delivery chưa có |
-| Dashboard / Activity | GET /projects/:projectId/dashboard và /projects/:projectId/audit | Có OpenAPI, chưa mount Dashboard/Audit; page đọc fixtures | Demo có chủ đích; audit timeline thật chờ endpoint |
+| Dashboard / Activity | GET /projects/:projectId/dashboard và /projects/:projectId/audit | Có OpenAPI, chưa mount Dashboard/Audit; task preview dùng GET /me/tasks | KPI và activity mẫu chỉ có trong dev với `VITE_USE_MOCK_API=true`; audit timeline thật chờ endpoint |
 | Notifications / Bell, Inbox | GET /notifications, PATCH /notifications/:notificationId/read; mark-all cần contract | Có OpenAPI một phần, chưa mount; hai fixture stores riêng | Demo; cập nhật unread cùng nguồn, không mở task ID giả |
 | AI Planner | POST /projects/:projectId/ai/plans, GET /ai/plans/:planId, POST /ai/plans/:planId/confirm | Có OpenAPI, chưa mount; page đọc fixture | Demo; confirm không ghi task thật |
 

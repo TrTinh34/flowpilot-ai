@@ -26,6 +26,8 @@
 - REDESIGN-09 đã hoàn thành My Tasks và Project Tasks. My Tasks và Project Tasks tải dữ liệu từ PostgreSQL test. My Tasks vừa màn hình 360 px. [Báo cáo REDESIGN-09](reports/frontend-redesign/REDESIGN-09-task-management.md)
 - REDESIGN-10 đã hoàn thành Kanban và Task Detail. Bàn phím chuyển cột, khôi phục focus, gặp HTTP 409 do version cũ, tải lại và di chuyển thành công. Task Detail hiển thị subtask. [Báo cáo REDESIGN-10](reports/frontend-redesign/REDESIGN-10-kanban.md)
 
+- REDESIGN-06 hoàn thành Dashboard với My Tasks dùng API thật và Demo chỉ bật trong dev. Timebox B đạt 6/6 task, chờ Developer Review. [Báo cáo REDESIGN-06](reports/frontend-redesign/REDESIGN-06-dashboard.md)
+
 ## Backlog
 
 ### US-AUTH-01 — Đăng ký, đăng nhập, refresh, logout

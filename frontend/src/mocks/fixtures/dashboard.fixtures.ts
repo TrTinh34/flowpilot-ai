@@ -1,66 +1,58 @@
-/** Mock dashboard data — used when VITE_USE_MOCK_API=true or backend not ready */
+import type { TaskStatus } from '@/features/task/types/task.types';
 
-export interface DashboardStats {
-  totalTasks: number;
-  byStatus: { status: string; count: number }[];
-  completionRate: number;
-  activeProjects: number;
-}
+export const demoProjects = [
+  { id: 'launch', active: true },
+  { id: 'platform', active: true },
+  { id: 'prototype', active: false },
+];
 
-export interface ActivityEntry {
-  id: string;
-  user: string;
-  action: string;
-  target: string;
-  createdAt: string;
-}
-
-export const mockDashboardStats: DashboardStats = {
-  totalTasks: 24,
-  byStatus: [
-    { status: 'TODO', count: 8 },
-    { status: 'IN_PROGRESS', count: 7 },
-    { status: 'IN_REVIEW', count: 4 },
-    { status: 'DONE', count: 5 },
-  ],
-  completionRate: 21,
-  activeProjects: 3,
-};
-
-export const mockActivity: ActivityEntry[] = [
+export const demoTasks: {
+  projectId: string;
+  title: string;
+  status: TaskStatus;
+  due: string | null;
+  updatedAt: string;
+}[] = [
   {
-    id: 'a1',
-    user: 'Alice',
-    action: 'created task',
-    target: 'Set up CI pipeline',
-    createdAt: '2026-11-27T08:30:00Z',
+    projectId: 'launch',
+    title: 'Prepare release notes',
+    status: 'IN_PROGRESS',
+    due: '2026-12-03',
+    updatedAt: '2026-11-28',
   },
   {
-    id: 'a2',
-    user: 'Bob',
-    action: 'moved task to IN_REVIEW',
-    target: 'User auth API',
-    createdAt: '2026-11-27T09:15:00Z',
+    projectId: 'launch',
+    title: 'Review onboarding copy',
+    status: 'IN_REVIEW',
+    due: '2026-12-04',
+    updatedAt: '2026-11-27',
   },
   {
-    id: 'a3',
-    user: 'Alice',
-    action: 'completed task',
-    target: 'Database schema',
-    createdAt: '2026-11-27T10:00:00Z',
+    projectId: 'platform',
+    title: 'Plan the next sprint',
+    status: 'TODO',
+    due: '2026-12-07',
+    updatedAt: '2026-11-26',
   },
   {
-    id: 'a4',
-    user: 'Charlie',
-    action: 'commented on',
-    target: 'Kanban board drag',
-    createdAt: '2026-11-26T17:45:00Z',
+    projectId: 'launch',
+    title: 'Validate release checklist',
+    status: 'DONE',
+    due: null,
+    updatedAt: '2026-11-25',
   },
   {
-    id: 'a5',
-    user: 'Bob',
-    action: 'created task',
-    target: 'Write API tests',
-    createdAt: '2026-11-26T16:20:00Z',
+    projectId: 'platform',
+    title: 'Update API documentation',
+    status: 'DONE',
+    due: null,
+    updatedAt: '2026-11-24',
+  },
+  {
+    projectId: 'prototype',
+    title: 'Publish prototype handoff',
+    status: 'DONE',
+    due: null,
+    updatedAt: '2026-11-23',
   },
 ];

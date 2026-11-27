@@ -5,7 +5,7 @@
 - Ngày mở — 2026-11-28
 - Trạng thái — IN_PROGRESS
 - Timebox B · 39 giờ dự kiến trong 2–3 tuần
-- Tiến độ — 5/6 task
+- Tiến độ — 6/6 task, chờ Developer Review
 
 ## Sprint Goal
 
@@ -20,7 +20,7 @@ Triển khai theo task được giao. Mở REDESIGN-05 trước. Giữ contract 
 | ID | Task | Ưu tiên | Giờ | Dependencies | Trạng thái |
 |---|---|---|---:|---|---|
 | REDESIGN-05 | [Authentication Pages](../sprint-06-frontend-redesign/tasks/REDESIGN-05-authentication.md) | P1 | 5 | REDESIGN-04 | COMPLETED |
-| REDESIGN-06 | [Dashboard](../sprint-06-frontend-redesign/tasks/REDESIGN-06-dashboard.md) | P1 | 6 | REDESIGN-04 | PENDING |
+| REDESIGN-06 | [Dashboard](../sprint-06-frontend-redesign/tasks/REDESIGN-06-dashboard.md) | P1 | 6 | REDESIGN-04 | COMPLETED |
 | REDESIGN-07 | [Workspace & Member Management](../sprint-06-frontend-redesign/tasks/REDESIGN-07-workspace.md) | P1 | 6 | REDESIGN-04 | COMPLETED |
 | REDESIGN-08 | [Project Management](../sprint-06-frontend-redesign/tasks/REDESIGN-08-projects.md) | P1 | 7 | REDESIGN-07 | COMPLETED |
 | REDESIGN-09 | [My Tasks & Task Management](../sprint-06-frontend-redesign/tasks/REDESIGN-09-task-management.md) | P0 | 7 | REDESIGN-03, REDESIGN-08, ENV-01 | COMPLETED |
@@ -53,6 +53,8 @@ REDESIGN-08 đã hoàn thành Projects và Project Settings. Owner tạo project
 REDESIGN-09 đã hoàn thành My Tasks và Project Tasks. My Tasks và Project Tasks tải dữ liệu từ PostgreSQL test. My Tasks vừa màn hình 360 px. [Báo cáo REDESIGN-09](../../reports/frontend-redesign/REDESIGN-09-task-management.md)
 
 REDESIGN-10 đã hoàn thành Kanban và Task Detail. Bàn phím chuyển cột, khôi phục focus, gặp HTTP 409 do version cũ, tải lại và di chuyển thành công. Task Detail hiển thị subtask. [Báo cáo REDESIGN-10](../../reports/frontend-redesign/REDESIGN-10-kanban.md)
+
+REDESIGN-06 đã xác minh Dashboard ở cả hai chế độ trên Edge với PostgreSQL test. Production bundle loại fixture Dashboard. [Báo cáo REDESIGN-06](../../reports/frontend-redesign/REDESIGN-06-dashboard.md)
 
 ## Sprint Retrospective
 

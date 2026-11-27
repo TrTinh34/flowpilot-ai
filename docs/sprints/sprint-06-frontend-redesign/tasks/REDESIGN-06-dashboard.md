@@ -6,7 +6,7 @@
 | Task Name | Dashboard |
 | Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 6h |
 | Dependencies | REDESIGN-04 |
 | Related Requirements | Dashboard · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Chart có text/legend, focus theo hierarchy.
 OpenAPI dashboard/audit chưa mount; demo dev-only.
 
 ## Implementation Checklist
-- [ ] Tách adapter
-- [ ] derive metrics
-- [ ] verify mode
+- [x] Tách adapter
+- [x] Derive metrics
+- [x] Verify mode
 
 ## Expected Deliverables
 Dashboard và fixture tests.
@@ -68,4 +68,6 @@ RTL mode on/off và browser 390/1440.
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
 
 ## Next Task
+[Báo cáo triển khai](../../../reports/frontend-redesign/REDESIGN-06-dashboard.md).
+
 REDESIGN-16.
