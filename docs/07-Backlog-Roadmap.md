@@ -43,6 +43,7 @@
 
 ### US-TASK-01 — Tạo task, subtask, giao việc, deadline, priority
 - Tiến độ và dependencies theo [Sprint 03 Backlog](sprints/sprint-03-task-board/README.md#sprint-backlog). TASK-01 đã kiểm chứng migration trên PostgreSQL test.
+- TASK-03 đã tích hợp Project Tasks, Task Detail, subtask và My Tasks. Frontend tests xác nhận thao tác và xử lý version conflict.
 - Epic: TASK; priority: Must; FR-TASK-01 / UC-TASK-01.
 - Story: Là Manager / Member, tôi muốn tạo task, subtask, giao việc, deadline, priority để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Task được giao xuất hiện trong My Tasks; Assignee thuộc project; subtask cùng project; deadline hợp lệ.

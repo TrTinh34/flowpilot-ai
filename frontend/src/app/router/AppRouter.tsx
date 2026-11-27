@@ -7,6 +7,9 @@ import { WorkspaceSettingsPage } from '@/pages/workspace/WorkspaceSettingsPage';
 import { AcceptInvitePage } from '@/pages/workspace/AcceptInvitePage';
 import { ProjectsPage } from '@/pages/project/ProjectsPage';
 import { ProjectSettingsPage } from '@/pages/project/ProjectSettingsPage';
+import { ProjectTasksPage } from '@/pages/task/ProjectTasksPage';
+import { MyTasksPage } from '@/pages/task/MyTasksPage';
+import { TaskDetailPage } from '@/features/task/components/TaskDetailDrawer';
 
 /**
  * Application router — AUTH-10.
@@ -37,6 +40,9 @@ export function AppRouter() {
         <Route path="/invitations/accept" element={<AcceptInvitePage />} />
         <Route path="/workspaces/:workspaceId/projects" element={<ProjectsPage />} />
         <Route path="/projects/:projectId" element={<ProjectSettingsPage />} />
+        <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage />} />
+        <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
+        <Route path="/my-tasks" element={<MyTasksPage />} />
       </Route>
 
       {/* ── Fallback ───────────────────────────────────────────────────── */}

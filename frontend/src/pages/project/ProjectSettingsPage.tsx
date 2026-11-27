@@ -86,6 +86,11 @@ function ProjectSettings({ projectId }: { projectId: string }) {
         Back to projects
       </Link>
       <h1 className="text-2xl font-semibold">{project?.name ?? 'Project settings'}</h1>
+      {project && (
+        <Link to={`/projects/${project.id}/tasks`} className="underline">
+          Project tasks
+        </Link>
+      )}
       {detail.isPending && <p role="status">Loading project…</p>}
       {detail.isError && <p role="alert">{extractApiErrorMessage(detail.error)}</p>}
       {project?.status === 'ARCHIVED' && <p>Archived · read-only</p>}

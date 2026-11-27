@@ -59,6 +59,11 @@ export function InitStatusPage() {
         ) : null}
 
         <div className="mt-6 flex flex-wrap gap-3">
+          {isAuthenticated && (
+            <Link to="/my-tasks" className="rounded-md border px-4 py-2 text-sm">
+              My Tasks
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => void refetch()}

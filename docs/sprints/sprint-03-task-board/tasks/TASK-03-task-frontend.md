@@ -42,4 +42,4 @@ Kiểm chứng các tiêu chí và cập nhật báo cáo triển khai.
 
 ## Development Report Reference
 
-Chưa triển khai.
+[Development Report TASK-03](../../../reports/03-task-board/TASK-03-task-frontend.md)
