@@ -15,7 +15,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace API on PostgreSQL'
   type Actor = { id: string; token: string };
 
   async function fixture(): Promise<Actor> {
-    const { issueAccessToken } = await import('../../src/modules/auth/auth.tokens.js');
+    const { accessTokenIssuer } = await import('../../src/modules/auth/index.js');
     const user = await db.prisma.user.create({
       data: {
         email: `${randomUUID()}@example.test`,
@@ -24,7 +24,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace API on PostgreSQL'
       },
     });
     actorIds.push(user.id);
-    return { id: user.id, token: await issueAccessToken(user.id) };
+    return { id: user.id, token: await accessTokenIssuer.issueAccessToken(user.id) };
   }
 
   beforeAll(async () => {

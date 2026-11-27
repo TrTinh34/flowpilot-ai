@@ -4,7 +4,11 @@ export default defineConfig({
   test: {
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
-    include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts'],
+    include: [
+      'tests/unit/**/*.test.ts',
+      'tests/architecture/**/*.test.ts',
+      'tests/integration/**/*.test.ts',
+    ],
     // Exclude future sprint placeholder test files until their features are implemented
     exclude: [
       'tests/unit/board.service.test.ts',

@@ -1,30 +1,29 @@
 import { randomUUID } from 'node:crypto';
 import { expect, it, vi } from 'vitest';
-import { logoutSession } from '../../src/modules/auth/auth.session.js';
-import { generateRefreshToken } from '../../src/modules/auth/auth.tokens.js';
-import {
-  findRefreshToken,
-  lockRefreshFamily,
-  revokeRefreshFamily,
-} from '../../src/modules/auth/refresh-token.repository.js';
+import { env } from '../../src/config/env.js';
+import type { AuthUnitOfWork } from '../../src/modules/auth/application/ports/auth-unit-of-work.port.js';
+import type { RefreshTokenRepository } from '../../src/modules/auth/application/ports/refresh-token.repository.port.js';
+import { LogoutUseCase } from '../../src/modules/auth/application/use-cases/logout.use-case.js';
+import { JoseTokenService } from '../../src/modules/auth/infrastructure/security/jose-token.service.js';
 
-const { transaction, tx } = vi.hoisted(() => ({ transaction: vi.fn(), tx: {} }));
-vi.mock('../../src/config/prisma.js', () => ({ prisma: { $transaction: transaction } }));
-vi.mock('../../src/modules/auth/refresh-token.repository.js', () => ({
-  findRefreshToken: vi.fn(),
-  lockRefreshFamily: vi.fn(),
-  revokeRefreshFamily: vi.fn(),
-}));
-
-it('uses ReadCommitted and waits for the transaction to finish before resolving', async () => {
+it('waits for the unit-of-work transaction to finish before resolving', async () => {
   const familyId = randomUUID();
-  vi.mocked(findRefreshToken).mockResolvedValue({
-    id: randomUUID(),
-    userId: randomUUID(),
-    familyId,
-    expiresAt: new Date(Date.now() + 60_000),
-    revokedAt: null,
-  });
+  const tokenService = new JoseTokenService(env.JWT_ACCESS_SECRET);
+
+  const refreshTokens: RefreshTokenRepository = {
+    save: vi.fn(),
+    findByTokenHash: vi.fn().mockResolvedValue({
+      id: randomUUID(),
+      userId: randomUUID(),
+      familyId,
+      expiresAt: new Date(Date.now() + 60_000),
+      revokedAt: null,
+    }),
+    lockFamily: vi.fn(),
+    revokeToken: vi.fn(),
+    revokeFamily: vi.fn(),
+  };
+
   let releaseCommit!: () => void;
   const commit = new Promise<void>((resolve) => {
     releaseCommit = resolve;
@@ -33,23 +32,26 @@ it('uses ReadCommitted and waits for the transaction to finish before resolving'
   const callbackFinished = new Promise<void>((resolve) => {
     finishCallback = resolve;
   });
-  transaction.mockImplementationOnce(async (callback: (client: typeof tx) => Promise<unknown>) => {
-    const result = await callback(tx);
-    finishCallback();
-    await commit;
-    return result;
-  });
 
+  const unitOfWork: AuthUnitOfWork = {
+    execute: vi.fn(async (work) => {
+      const result = await work({ refreshTokens });
+      finishCallback();
+      await commit;
+      return result;
+    }),
+  };
+
+  const useCase = new LogoutUseCase(unitOfWork, tokenService);
   const completed = vi.fn();
-  const result = logoutSession(generateRefreshToken()).then(completed);
+  const result = useCase.execute(tokenService.generateRefreshToken()).then(completed);
+
   await Promise.race([result, callbackFinished]);
   try {
     expect(completed).not.toHaveBeenCalled();
-    expect(transaction).toHaveBeenCalledWith(expect.any(Function), {
-      isolationLevel: 'ReadCommitted',
-    });
-    expect(lockRefreshFamily).toHaveBeenCalledBefore(vi.mocked(revokeRefreshFamily));
-    expect(revokeRefreshFamily).toHaveBeenCalledWith(tx, familyId, expect.any(Date));
+    expect(unitOfWork.execute).toHaveBeenCalledOnce();
+    expect(refreshTokens.lockFamily).toHaveBeenCalledBefore(vi.mocked(refreshTokens.revokeFamily));
+    expect(refreshTokens.revokeFamily).toHaveBeenCalledWith(familyId, expect.any(Date));
   } finally {
     releaseCommit();
     await result;

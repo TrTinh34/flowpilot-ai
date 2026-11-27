@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { checkDatabaseConnection } from '../config/prisma.js';
-import { authRouter } from '../modules/auth/auth.routes.js';
+import { authRouter } from '../modules/auth/index.js';
 import { projectRouter } from '../modules/project/project.routes.js';
 import { invitationRouter, workspaceRouter } from '../modules/workspace/workspace.routes.js';
 

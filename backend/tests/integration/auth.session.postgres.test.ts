@@ -10,14 +10,26 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
   const input = { email: `${randomUUID()}@example.test`, password: 'Fixture only!' };
   let app: ReturnType<typeof import('../../src/app.js').createApp>;
   let db: typeof import('../../src/config/prisma.js');
-  let tokens: typeof import('../../src/modules/auth/auth.tokens.js');
+  let authModule: typeof import('../../src/modules/auth/auth.module.js').authModule;
+  let tokens: {
+    hashRefreshToken: (t: string) => string;
+    generateRefreshToken: () => string;
+    verifyAccessToken: (t: string) => Promise<{ userId: string }>;
+    issueAccessToken: (u: string) => Promise<string>;
+  };
   let userId: string | undefined;
 
   beforeAll(async () => {
     await confirmTestDatabase();
     db = await import('../../src/config/prisma.js');
     app = (await import('../../src/app.js')).createApp();
-    tokens = await import('../../src/modules/auth/auth.tokens.js');
+    authModule = (await import('../../src/modules/auth/auth.module.js')).authModule;
+    tokens = {
+      hashRefreshToken: (t) => authModule.refreshTokenService.hashRefreshToken(t),
+      generateRefreshToken: () => authModule.refreshTokenService.generateRefreshToken(),
+      verifyAccessToken: (t) => authModule.accessTokenVerifier.verifyAccessToken(t),
+      issueAccessToken: (u) => authModule.accessTokenIssuer.issueAccessToken(u),
+    };
     const res = await request(app)
       .post('/api/v1/auth/register')
       .send({ ...input, displayName: 'Session fixture' });
@@ -122,9 +134,9 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
 
   it('looks up only the public fields for the verified subject on PostgreSQL', async () => {
     const { accessToken } = await login();
-    const { getCurrentUser } = await import('../../src/modules/auth/auth.service.js');
+    const { UserNotFoundError } = await import('../../src/modules/auth/domain/errors/auth.errors.js');
     const subject = await tokens.verifyAccessToken(accessToken);
-    await expect(getCurrentUser(subject.userId)).resolves.toEqual({
+    await expect(authModule.useCases.getCurrentUserUseCase.execute(subject.userId)).resolves.toEqual({
       id: userId,
       email: input.email,
       displayName: 'Session fixture',
@@ -134,7 +146,9 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
     const absentSubject = await tokens.verifyAccessToken(
       await tokens.issueAccessToken(randomUUID()),
     );
-    await expect(getCurrentUser(absentSubject.userId)).rejects.toMatchObject({ statusCode: 404 });
+    await expect(
+      authModule.useCases.getCurrentUserUseCase.execute(absentSubject.userId),
+    ).rejects.toBeInstanceOf(UserNotFoundError);
   });
 
   it('rotates and commits reuse revocation only for the affected family', async () => {

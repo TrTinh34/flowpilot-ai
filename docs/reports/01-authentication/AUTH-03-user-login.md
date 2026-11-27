@@ -79,3 +79,16 @@ Review `auth.schema.ts` để thấy ranh giới input, `auth.service.ts` để 
 ## 9. Task tiếp theo
 
 Khi AUTH-04 được giao, tích hợp cấp token với Login controller, route và rate limiting, rồi kiểm tra hợp đồng HTTP trên PostgreSQL test.
+
+
+---
+
+### Architecture Refactoring Note
+
+This task was originally implemented using the project's previous Feature-based Layered Architecture.
+
+The implementation was subsequently migrated to Feature-based Clean Architecture as part of the architecture refactoring initiative (`ARCH-01`).
+
+The original functional behavior and public API contract remain unchanged.
+
+Refer to [ADR-001](../../architecture/decisions/ADR-001-adopt-clean-architecture.md) and [Architecture Refactoring Report](../architecture/clean-architecture-refactoring.md) for current architecture, changed paths, and regression verification results.

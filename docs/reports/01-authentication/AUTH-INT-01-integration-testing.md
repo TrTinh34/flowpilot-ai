@@ -75,3 +75,16 @@ AUTH-02 đến AUTH-05 đạt các ca tích hợp bắt buộc. AUTH-06 và AUTH
 ## 9. Task tiếp theo
 
 Chốt hợp đồng Get Current User, mount middleware và bổ sung các bước Current User vào lifecycle suite. Các hạng mục frontend của Sprint 1 vẫn theo Product Backlog.
+
+
+---
+
+### Architecture Refactoring Note
+
+This task was originally implemented using the project's previous Feature-based Layered Architecture.
+
+The implementation was subsequently migrated to Feature-based Clean Architecture as part of the architecture refactoring initiative (`ARCH-01`).
+
+The original functional behavior and public API contract remain unchanged.
+
+Refer to [ADR-001](../../architecture/decisions/ADR-001-adopt-clean-architecture.md) and [Architecture Refactoring Report](../architecture/clean-architecture-refactoring.md) for current architecture, changed paths, and regression verification results.

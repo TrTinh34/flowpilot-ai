@@ -1,117 +1,390 @@
 # System Design
-**v0.1 | Draft**
+**v0.2 | Active Architecture (Clean Architecture)**
 
-## Architecture
-- **Core Stack (chính thức):** React, Node.js LTS, Express.js, PostgreSQL (TypeScript end-to-end).
-- **Frontend (đề xuất):** React, Vite, TypeScript, Tailwind CSS, shadcn/ui, React Router, TanStack Query, Zustand, React Hook Form, Zod, dnd-kit, Recharts, Socket.IO Client.
-- **Backend (đề xuất):** Node.js LTS, Express.js, TypeScript, Prisma ORM, Prisma Migrate, Zod, JWT, bcrypt, Socket.IO, Helmet, CORS, `express-rate-limit`, Pino Logger.
-- **Integrations:** AI Provider SDK cho Node.js theo hướng **Provider Abstraction** (dễ chuyển đổi giữa OpenAI, Gemini hoặc provider khác), S3-compatible private storage, email provider.
-- **Architecture Style:** **Modular Monolith** theo **Feature-based Architecture** kết hợp **Layered Architecture**. Redis/RabbitMQ/pgvector không bắt buộc cho MVP. Chọn phiên bản package tương thích khi khởi tạo `package.json`.
+> **ADR liên quan:** [ADR-001: Áp dụng Feature-based Clean Architecture](architecture/decisions/ADR-001-adopt-clean-architecture.md)
+
+---
+
+## 1. Architecture Overview & Goals
+
+FlowPilot AI áp dụng kiến trúc chính thức:
+
+- **Architecture Style:** Modular Monolith.
+- **Code Organization:** Feature-based Architecture.
+- **Backend Internal Architecture:** Clean Architecture.
+- **Design Principles:** SOLID, Dependency Inversion, Separation of Concerns.
+- **Dependency Injection:** Constructor Injection và Composition Root (không dùng DI framework ngoài).
+- **Frontend Architecture:** Feature-based Architecture (React + Vite + TypeScript).
+- **Persistence:** Prisma ORM và PostgreSQL.
+- **Communication:** REST API (hiện tại) và Socket.IO WebSocket (kế hoạch Sprint 4).
+- **Deployment:** Single backend application + React SPA.
+
+*(Redis, RabbitMQ và pgvector không bắt buộc cho MVP.)*
+
+### Architecture Goals
+
+1. **Business Logic Independence:** Tách biệt hoàn toàn nghiệp vụ (`Domain`, `Application`) khỏi framework và hạ tầng (`Express`, `Prisma`, `bcrypt`, `jose`).
+2. **Testability:** Cho phép unit test Use Cases nhanh chóng bằng fake/in-memory Ports mà không cần PostgreSQL hay mock module internals.
+3. **Module Isolation:** Mỗi feature module sở hữu ranh giới nghiệp vụ rõ ràng, giao tiếp qua public contracts (`index.ts`).
+4. **Infrastructure Replaceability:** Dễ dàng thay thế adapter (AI provider, Storage, Email, Token service) mà không sửa Use Case.
+5. **Practicality for Solo Developer:** Giữ sự đơn giản vận hành của Modular Monolith, tránh over-engineering của Microservices hay CQRS/Event Sourcing.
+
+> **Lưu ý về đánh đổi:** Modular Monolith + Clean Architecture tương thích hoàn toàn vì Modular Monolith định nghĩa **ranh giới giữa các module nghiệp vụ** và **đơn vị triển khai**, còn Clean Architecture định nghĩa **hướng phụ thuộc bên trong từng module**. Clean Architecture **không** tự động yêu cầu Microservices và **không** cải thiện runtime performance; đổi lại, nó giảm coupling và chi phí bảo trì dài hạn với chi phí tăng nhẹ số lượng file (ports, adapters, presenters).
+
+---
+
+## 2. Architecture Diagrams
+
+### 2.1 System Context Diagram
 
 ```mermaid
 flowchart TD
- UI["React SPA (Vite + Socket.IO Client)"] -->|HTTPS REST / WSS Socket.IO| BE["Node.js + Express.js Modular Monolith"]
- BE -->|Prisma ORM| DB[(PostgreSQL)]
- BE -->|Provider Abstraction SDK| AI[AI Provider]
- BE --> S3[Private Object Storage]
- BE --> MAIL[Email Provider]
+  USER["Team Member / Manager / Admin"] -->|HTTPS Browser| FE["React SPA (Vite)"]
+  FE -->|HTTPS REST / WSS Socket.IO| BE["FlowPilot AI Backend (Modular Monolith)"]
+  BE -->|Prisma ORM / SQL| DB[(PostgreSQL 17)]
+  BE -->|Provider Abstraction SDK| AI["External AI Provider (OpenAI / Gemini)"]
+  BE -->|S3-compatible API| S3["Private Object Storage"]
+  BE -->|SMTP / API| MAIL["Email Provider"]
 ```
 
-### Component & Layer Flow
-**Backend Request Flow:** `HTTP Request → Express Router → Middleware → Controller → Service → Repository → Prisma ORM → PostgreSQL`.
+### 2.2 High-Level System Architecture
 
 ```mermaid
 flowchart LR
- REQ[HTTP / Socket.IO] --> MW["Express Middlewares (RequestId, Helmet, CORS, RateLimit, Auth/RBAC, Zod)"]
- MW --> MOD["Feature Modules (Controller → Service → Repository)"]
- MOD --> PRISMA["Prisma ORM"]
- PRISMA --> PG[(PostgreSQL)]
- MOD -.->|Outbox / Events| JOB["In-process Workers (AI Plan & Outbox)"]
- JOB --> PRISMA
- JOB --> AI["AI Provider Adapter"]
- JOB --> IO["Socket.IO Server"]
+  CLIENT["React SPA (Feature-based)"] -->|REST + HttpOnly Cookie + Bearer JWT| PRES["Presentation Layer (Express Routes, Middlewares, Controllers)"]
+  PRES -->|Input DTO| APP["Application Layer (Use Cases & Ports)"]
+  APP -->|Entities & Domain Rules| DOM["Domain Layer (Entities, Errors, Policies)"]
+  INFRA["Infrastructure Layer (Prisma Repos, UoW, bcrypt, jose, Pino)"] -->|Implements Ports| APP
+  INFRA -->|Prisma Client| PG[(PostgreSQL)]
+  MOD_BG["In-process Workers (AI Plan & Outbox)"] -->|Uses Application / Ports| APP
+  MOD_BG -->|Adapter| AI["AI Provider / Socket.IO"]
 ```
 
-## Module boundaries & Backend Folder Structure
-Luồng phụ thuộc nghiệp vụ: `Auth/User → Workspace → Project → Task/Board → Collaboration`; `Notification/Audit` nhận domain event qua transactional outbox hoặc service hook; `AI` gọi `Project/Task` application services, không truy cập repository của module khác trực tiếp. DTO / response mapper không expose raw Prisma model hay sensitive fields (`password_hash`, `token_hash`). Transaction (`prisma.$transaction`) đặt ở Service layer.
+### 2.3 Modular Monolith Module Diagram
 
-Cấu trúc thư mục Backend (`backend/`):
+```mermaid
+flowchart TD
+  AUTH["auth (Migrated to Clean Architecture)"]
+  WS["workspace"]
+  PROJ["project"]
+  TASK["task"]
+  BOARD["board"]
+  COL["collaboration"]
+  NOTI["notification"]
+  DASH["dashboard"]
+  AUDIT["audit"]
+  AI["ai"]
+
+  WS -->|Public Auth Middleware| AUTH
+  PROJ -->|Public Auth Middleware & Workspace Scope| WS
+  TASK -->|Project Scope| PROJ
+  BOARD -->|Task & Project Lock| TASK
+  COL -->|Task Scope| TASK
+  NOTI -.->|Outbox Events| COL
+  AUDIT -.->|Domain / Audit Hook| TASK
+  DASH -->|Read Aggregation| PROJ
+  AI -->|Application Services| TASK
+```
+
+### 2.4 Clean Architecture Dependency Diagram
+
+> **Phân biệt quan trọng:** Mũi tên dưới đây biểu diễn **hướng phụ thuộc source code (import)**, ngược chiều với luồng gọi thực thi (runtime execution flow).
+
+```mermaid
+flowchart LR
+  COMP["Composition Root (auth.module.ts / app.ts)"] -->|Instantiates & Injects| PRES["Presentation (Controllers, Routes, Schemas, Presenters)"]
+  COMP -->|Instantiates & Injects| INFRA["Infrastructure (Prisma Repos, UoW, Jose, Bcrypt, Pino)"]
+  PRES -->|Calls Use Cases & DTOs| APP["Application (Use Cases, Ports, DTOs)"]
+  INFRA -->|Implements Ports| APP
+  APP -->|Uses Entities & Errors| DOM["Domain (Entities, Policies, Domain Errors)"]
+  INFRA -->|Maps Entities & Errors| DOM
+  PRES -->|Maps Domain Errors| DOM
+```
+
+### 2.5 Authentication Module Component Diagram
+
+```mermaid
+flowchart TB
+  subgraph Presentation
+    ROUTES["auth.routes.ts"]
+    CTRL["AuthController"]
+    MW["authenticate.middleware.ts"]
+    SCH["auth.schemas.ts (Zod)"]
+    ERRP["auth-error.presenter.ts"]
+  end
+
+  subgraph Application
+    UC_REG["RegisterUserUseCase"]
+    UC_LOGIN["LoginUserUseCase"]
+    UC_REF["RefreshSessionUseCase"]
+    UC_LOGOUT["LogoutUseCase"]
+    UC_ME["GetCurrentUserUseCase"]
+    PORTS["Ports: UserRepository, RefreshTokenRepository, AuthUnitOfWork, PasswordHasher, AccessTokenIssuer, AccessTokenVerifier, RefreshTokenService, AuthLogger"]
+  end
+
+  subgraph Domain
+    ENT["User & RefreshToken Entities / Policies"]
+    DERR["Domain Errors (EmailAlreadyExists, InvalidCredentials, InvalidRefreshToken, UserNotFound, Unauthorized)"]
+  end
+
+  subgraph Infrastructure
+    PR_USER["PrismaUserRepository"]
+    PR_RT["PrismaRefreshTokenRepository"]
+    PR_UOW["PrismaAuthUnitOfWork"]
+    BCRYPT["BcryptPasswordHasher"]
+    JOSE["JoseTokenService"]
+    PINO["PinoAuthLogger"]
+  end
+
+  ROUTES --> CTRL
+  ROUTES --> MW
+  ROUTES --> SCH
+  CTRL --> UC_REG & UC_LOGIN & UC_REF & UC_LOGOUT & UC_ME
+  CTRL --> ERRP
+  MW --> PORTS
+  UC_REG & UC_LOGIN & UC_REF & UC_LOGOUT & UC_ME --> PORTS
+  UC_REG & UC_LOGIN & UC_REF & UC_LOGOUT & UC_ME --> ENT & DERR
+  PR_USER & PR_RT & PR_UOW & BCRYPT & JOSE & PINO -->|Implements| PORTS
+```
+
+### 2.6 Registration Sequence Diagram
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant R as AuthRoutes / Zod
+  participant CTL as AuthController
+  participant UC as RegisterUserUseCase
+  participant REPO as PrismaUserRepository
+  participant HASH as BcryptPasswordHasher
+  participant DB as PostgreSQL
+
+  C->>R: POST /api/v1/auth/register
+  R->>CTL: validatedBody
+  CTL->>UC: execute(RegisterUserInput)
+  UC->>REPO: emailExists(normalizedEmail)
+  REPO->>DB: SELECT EXISTS (... LOWER(email))
+  DB-->>REPO: false
+  UC->>HASH: hash(password)
+  HASH-->>UC: passwordHash
+  UC->>REPO: create({ displayName, email, passwordHash })
+  REPO->>DB: INSERT INTO users
+  DB-->>REPO: PublicUser (no passwordHash)
+  REPO-->>UC: PublicUser
+  UC-->>CTL: PublicUserDto
+  CTL-->>C: 201 Created (PublicUserDto)
+```
+
+### 2.7 Login Sequence Diagram
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant CTL as AuthController
+  participant UC as LoginUserUseCase
+  participant UREPO as PrismaUserRepository
+  participant HASH as BcryptPasswordHasher
+  participant TOK as JoseTokenService
+  participant RTREPO as PrismaRefreshTokenRepository
+
+  C->>CTL: POST /api/v1/auth/login
+  CTL->>UC: execute(LoginUserInput)
+  UC->>UREPO: findCredentialsByEmail(normalizedEmail)
+  UREPO-->>UC: UserCredentials | null
+  UC->>HASH: verify(password, hashOrDummy)
+  HASH-->>UC: boolean
+  UC->>TOK: generateRefreshToken() & issueAccessToken(userId)
+  UC->>RTREPO: save({ userId, familyId, tokenHash, expiresAt })
+  UC-->>CTL: AuthSessionDto
+  CTL-->>C: 200 OK { accessToken, expiresIn } + Set-Cookie refresh_token
+```
+
+### 2.8 Refresh Token Rotation Sequence Diagram
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant CTL as AuthController
+  participant UC as RefreshSessionUseCase
+  participant UOW as PrismaAuthUnitOfWork
+  participant RT as PrismaRefreshTokenRepository
+  participant TOK as JoseTokenService
+  participant LOG as PinoAuthLogger
+
+  C->>CTL: POST /api/v1/auth/refresh (Cookie)
+  CTL->>UC: execute(refreshToken)
+  UC->>UOW: execute(ReadCommitted tx)
+  UOW->>RT: findByTokenHash(tokenHash)
+  UOW->>RT: lockFamily(familyId) [pg_advisory_xact_lock]
+  UOW->>RT: findByTokenHash(tokenHash)
+  alt Token already revoked (Reuse Detected)
+    UOW->>RT: revokeFamily(familyId, now)
+    UOW-->>UC: { status: 'reuse' } (Committed!)
+    UC->>LOG: warnRefreshTokenReuse()
+    UC-->>CTL: throw InvalidRefreshTokenError
+    CTL-->>C: 401 INVALID_REFRESH_TOKEN
+  else Valid active token
+    UC->>TOK: generateRefreshToken() & issueAccessToken(userId)
+    UOW->>RT: revokeToken(currentId, now)
+    UOW->>RT: save(successorTokenHash, same familyId, same expiresAt)
+    UOW-->>UC: { status: 'rotated', session }
+    UC-->>CTL: AuthSessionDto
+    CTL-->>C: 200 OK { accessToken, expiresIn } + Set-Cookie new refresh_token
+  end
+```
+
+### 2.9 Logout Sequence Diagram
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant CTL as AuthController
+  participant UC as LogoutUseCase
+  participant UOW as PrismaAuthUnitOfWork
+  participant RT as PrismaRefreshTokenRepository
+
+  C->>CTL: POST /api/v1/auth/logout (Cookie)
+  CTL->>UC: execute(refreshToken)
+  UC->>UOW: execute(ReadCommitted tx)
+  UOW->>RT: findByTokenHash(tokenHash)
+  UOW->>RT: lockFamily(familyId)
+  UOW->>RT: revokeFamily(familyId, now)
+  UOW-->>UC: true
+  UC-->>CTL: void
+  CTL-->>C: 204 No Content + Clear-Cookie refresh_token
+```
+
+### 2.10 Get Current User Sequence Diagram
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant MW as authenticate Middleware
+  participant VER as JoseTokenService
+  participant CTL as AuthController
+  participant UC as GetCurrentUserUseCase
+  participant REPO as PrismaUserRepository
+
+  C->>MW: GET /api/v1/auth/me (Bearer JWT)
+  MW->>VER: verifyAccessToken(token)
+  VER-->>MW: { userId }
+  MW->>CTL: req.auth = { userId }
+  CTL->>UC: execute(userId)
+  UC->>REPO: findPublicById(userId)
+  REPO-->>UC: PublicUser | null
+  UC-->>CTL: PublicUserDto
+  CTL-->>C: 200 OK { data: PublicUserDto }
+```
+
+### 2.11 Dependency Injection & Composition Root Diagram
+
+```mermaid
+flowchart TD
+  APP["app.ts / rootRouter"] --> AUTH_MOD["auth.module.ts (Composition Root)"]
+  AUTH_MOD -->|"new PrismaUserRepository(prisma)"| INFRA_U["PrismaUserRepository"]
+  AUTH_MOD -->|"new PrismaAuthUnitOfWork(prisma)"| INFRA_UOW["PrismaAuthUnitOfWork"]
+  AUTH_MOD -->|"new BcryptPasswordHasher()"| INFRA_H["BcryptPasswordHasher"]
+  AUTH_MOD -->|"new JoseTokenService(env.JWT_ACCESS_SECRET)"| INFRA_T["JoseTokenService"]
+  AUTH_MOD -->|"new PinoAuthLogger(logger)"| INFRA_L["PinoAuthLogger"]
+  AUTH_MOD -->|"Injects Ports"| UCS["Auth Use Cases (5)"]
+  AUTH_MOD -->|"Injects Use Cases & isProduction"| CTL["AuthController"]
+  AUTH_MOD -->|"Injects AccessTokenVerifier"| MW["authenticate Middleware"]
+  AUTH_MOD -->|"Assembles"| ROUTER["authRouter"]
+```
+
+### 2.12 Deployment Diagram
+
+```mermaid
+flowchart LR
+  BROWSER["User Browser (React 19 SPA)"] -->|HTTPS| HOST["Single Backend Process (Node.js 24 + Express 5)"]
+  HOST -->|TCP 5432/5434| PG[(PostgreSQL 17)]
+  HOST -->|HTTPS| EXT["External Services (AI Provider, S3 Storage, Email)"]
+```
+
+---
+
+## 3. Clean Architecture Layers & Dependency Rule
+
+1. **Domain Layer (`domain/`):**
+   - Chứa Entities, Value Objects, Domain Policies/Helpers, Domain Errors (`DomainError`).
+   - Pure TypeScript — **không** import Express, Prisma, bcrypt, jose, Pino hay `process.env`.
+2. **Application Layer (`application/`):**
+   - Chứa Use Cases, Input/Output DTOs, Ports (interfaces), Application Errors (`ApplicationError`).
+   - Chỉ phụ thuộc vào `Domain` và `Ports` của chính nó. Không trả về HTTP status codes, không đọc cookies, không trả về raw Prisma models.
+3. **Infrastructure Layer (`infrastructure/`):**
+   - Implement các `Ports` bằng công nghệ cụ thể (Prisma, PostgreSQL, bcryptjs, jose, Pino).
+   - Dịch lỗi hạ tầng (ví dụ Prisma `P2002` trên `users_email_lower_uidx`) thành Domain Error (`EmailAlreadyExistsError`).
+4. **Presentation Layer (`presentation/`):**
+   - Chứa Express Routes, Controllers, Zod Request Schemas, HTTP Middlewares, Error Presenters (`toAuthAppError`).
+   - Map validated HTTP input → Application Input DTO → gọi Use Case → map Output DTO / DomainError → HTTP response.
+5. **Composition Root (`<module>.module.ts` & `app.ts`):**
+   - Nơi duy nhất khởi tạo concrete adapters và inject vào Use Cases, Controllers, và Middlewares qua Constructor Injection.
+
+---
+
+## 4. Target Backend Directory Structure & Module Boundaries
+
 ```text
 backend/
 ├── prisma/
 │   ├── schema.prisma
 │   └── migrations/
-├── tests/                     # Unit & Supertest integration tests
+├── tests/
+│   ├── unit/                      # Domain & Use Case unit tests (in-memory fakes)
+│   ├── integration/               # Supertest + PostgreSQL integration tests
+│   ├── architecture/              # Automated Clean Architecture fitness tests
+│   ├── fixtures/
+│   └── helpers/
 └── src/
-    ├── config/                # Env validation (Zod), Pino logger, Prisma client, CORS
-    ├── modules/               # auth, workspace, project, task, board, collaboration, notification, dashboard, audit, ai
-    │   └── <feature>/         # routes, controller, service, repository, schema (Zod), types
-    ├── middlewares/           # authenticateJwt, authorizeWorkspace/Project, validateRequest, rateLimiter, requestId, errorHandler
-    ├── integrations/          # ai/ (AiProvider interface + adapters + FakeAiProvider), storage/, email/
-    ├── sockets/               # Socket.IO server, handshake JWT auth, server-managed room handlers
-    ├── jobs/                  # Polling workers cho ai_plans (lease) và outbox_events (retry/backoff)
-    ├── utils/                 # Password/token hashing, pagination, magic-byte helpers
-    ├── errors/                # AppError classes và error codes chuẩn hóa
-    ├── app.ts                 # Express app setup và routing
-    └── server.ts              # HTTP server, Socket.IO attach, workers và graceful shutdown
+    ├── shared/
+    │   ├── domain/errors/         # DomainError, ERROR_CODES
+    │   └── application/errors/    # ApplicationError
+    ├── modules/
+    │   ├── auth/                  # Migrated to Clean Architecture
+    │   │   ├── domain/            # entities/, errors/
+    │   │   ├── application/       # use-cases/, ports/, dtos/
+    │   │   ├── infrastructure/    # repositories/, persistence/, security/, logging/
+    │   │   ├── presentation/      # controllers/, routes/, middlewares/, schemas/, presenters/
+    │   │   ├── auth.module.ts     # Composition Root
+    │   │   └── index.ts           # Public Module Contract
+    │   ├── workspace/             # Sprint 2 module (Layered; future migration candidate)
+    │   ├── project/               # Sprint 2 module (Layered; future migration candidate)
+    │   └── task/, board/, collaboration/, notification/, dashboard/, audit/, ai/
+    ├── config/                    # env.ts, logger.ts, prisma.ts, cors.ts
+    ├── middlewares/               # Shared HTTP middlewares (auth re-export, authorization, error, rate-limit, request-id, validation)
+    ├── errors/                    # AppError (HTTP) + error-codes re-export
+    ├── integrations/              # ai/, storage/, email/ provider adapters
+    ├── sockets/                   # Socket.IO server & handlers
+    ├── jobs/                      # In-process background workers
+    ├── routes/                    # Root Express router
+    ├── app.ts                     # Express app factory
+    └── server.ts                  # HTTP server + graceful shutdown
 ```
-*(Giữ cấu trúc gọn cho dự án cá nhân; không thêm DI container, CQRS hay abstraction dư thừa.)*
 
-## Security
-- **Authentication:** Express Authentication Middleware. Access token (JWT, TTL 15 phút) giữ trong memory phía client; Refresh token (TTL 7 ngày) dùng `HttpOnly`, `Secure`, `SameSite` cookie. Refresh rotation lưu `token_hash` trong DB; phát hiện token reuse lập tức revoke toàn bộ `family_id`. Password hash bằng `bcrypt`.
-- **Authorization (Workspace / Project / Resource):** Express Authorization Middleware và Service layer kiểm tra membership/role trực tiếp trong DB cho từng resource (`workspace_members`, `project_members`). **Không chỉ dựa vào role claim trong JWT** để quyết định quyền truy cập tài nguyên. Truy cập ngoài workspace trả `404`; thiếu quyền trong phạm vi trả `403`.
-- **Input & HTTP Hardening:** Validate toàn bộ request body/query/params bằng `Zod`. Sử dụng `Helmet`, `CORS` allowlist, kiểm tra `Origin`/CSRF cho các cookie endpoints (`/auth/refresh`, `/auth/logout`), và `express-rate-limit` cho auth và AI endpoints.
-- **Error Handling & Log Hygiene:** Global Error Handling Middleware trả JSON `{ code, message, requestId }` khớp OpenAPI `Error` schema, không lộ stack trace ở production. Cấu hình Pino `redact` để tuyệt đối không lưu hay ghi log password, access/refresh token, invitation token thô hoặc API keys.
-- **File Security:** File lưu private trên S3-compatible storage, cấp short-lived signed URL sau khi kiểm tra quyền task/project; chỉ cho phép PDF/PNG/JPEG, tối đa 10 MB, kiểm tra MIME + file signature (magic bytes) và đổi tên object ngẫu nhiên.
+### Module Boundaries & Cross-Module Rules
 
-### Token delivery và thời hạn phiên
+- Các module ngoài `auth` **chỉ** được import từ `modules/auth/index.ts` (hoặc qua `middlewares/auth.middleware.ts`), **tuyệt đối không** deep-import vào `domain/`, `application/`, `infrastructure/`, `presentation/`, hay `auth.module.ts`.
+- **Naming Conventions:** `<Action><Entity>UseCase` (`RegisterUserUseCase`), `<Capability>Repository` / `<Capability>Port` (`user.repository.port.ts`), `Prisma<Entity>Repository`, `<Name>Controller`, `create<Module>Router`, `<module>.module.ts`.
+- **Rules for Future Modules:** Mọi module mới từ Sprint 03 trở đi (`task`, `board`, `collaboration`, `notification`, `dashboard`, `audit`, `ai`) phải tuân thủ 4 tầng Clean Architecture + Composition Root.
 
-Access token dùng HS256 với khóa ngẫu nhiên 32 byte, issuer `flowpilot-ai`, audience `flowpilot-ai-api` và các claims `sub`, `iat`, `exp`. Refresh token là opaque token 32 byte ngẫu nhiên. PostgreSQL lưu SHA-256 của token. Mỗi lần login mở một family với hạn tuyệt đối 7 ngày, rotation giữ nguyên hạn đó.
+---
 
-Login và Refresh gửi access token trong JSON và gửi refresh token qua cookie `refresh_token` có `HttpOnly`, `SameSite=Lax`, path `/api/v1/auth` và `Secure` trong production. Browser gửi credentials và Origin thuộc CORS allowlist. Triển khai frontend và API cùng site để cookie hoạt động theo cấu hình này.
+## 5. Transaction Management & Error Handling
 
-## Real-time Communication (Socket.IO)
-- Sử dụng **Socket.IO** trên HTTP server của Express để truyền tải sự kiện real-time.
-- **Handshake Auth:** Middleware `io.use(...)` xác thực JWT Access Token khi client bắt tay kết nối; từ chối nếu token thiếu, hết hạn hoặc không hợp lệ.
-- **Server-managed Rooms:** Sau khi xác thực, server tự động cho socket join room cá nhân `user:{userId}`. Khi client muốn theo dõi một project, server kiểm tra quyền membership trong DB rồi mới cho join room `project:{projectId}`. Client không được phép tự ý join hoặc subscribe room của user hay project khác.
-- **Consistency:** Notification và real-time event chỉ được phát sau khi DB transaction commit (đọc từ `outbox_events`). Socket.IO chỉ là tín hiệu kích hoạt UI; REST API là nguồn dữ liệu chuẩn khi reconnect hoặc đồng bộ lại inbox/board.
+- **Transaction Management:** Các thao tác đa bước có yêu cầu tính nguyên tử và locking (như Refresh Token Rotation và Logout Revocation) sử dụng `AuthUnitOfWork` (`PrismaAuthUnitOfWork`) với `ReadCommitted` và `pg_advisory_xact_lock`. Tất cả repository calls trong transaction dùng chung transaction client (`tx`). Khi phát hiện reuse, transaction commit việc thu hồi family trước khi Use Case ném `InvalidRefreshTokenError` bên ngoài transaction.
+- **Error Handling:**
+  - `DomainError` / `ApplicationError` mang `code` và `message` (không mang HTTP status code).
+  - `AuthController` + `toAuthAppError` ánh xạ lỗi nghiệp vụ sang `AppError` với HTTP status code đúng chuẩn OpenAPI.
+  - `errorMiddleware` chuẩn hóa JSON `{ code, message, requestId }`, không rò rỉ stack trace, SQL, password hash, hay raw tokens.
 
-## AI planning & Integration
-```mermaid
-sequenceDiagram
- participant U as Manager
- participant B as Express API & Worker
- participant D as PostgreSQL (Prisma)
- participant A as AI Provider Adapter
- U->>B: POST /projects/:id/ai/plans (brief)
- B->>D: Save GENERATING job in ai_plans
- B-->>U: 202 { planId, status: GENERATING }
- B->>A: Structured prompt (Node.js SDK + JSON Schema)
- A-->>B: Structured JSON task suggestions
- B->>B: Validate with Zod (<= 30 tasks)
- B->>D: Save READY (draft) or FAILED
- U->>B: GET /ai/plans/:planId
- B-->>U: Draft tasks (Preview & Edit)
- U->>B: POST /ai/plans/:planId/confirm (edited tasks)
- B->>D: $transaction: lock plan, recheck permissions, create tasks & audit
- B-->>U: 200 { taskIds }
-```
-- **Provider Abstraction:** Thiết kế `AiProvider` interface trong `src/integrations/ai/` bọc Node.js AI Provider SDK (có thể đổi OpenAI, Gemini hoặc provider khác qua config), kèm `FakeAiProvider` cho CI và test.
-- **Async Job Execution (Node.js):** Giữ API `202 Accepted` không đồng bộ. In-process worker trong `src/jobs/` poll bảng `ai_plans` theo cơ chế lease (`lease_until`), bounded retry cho lỗi transient, timeout 60s; không cần Redis hay RabbitMQ trong MVP.
-- **Validation & Guardrails:** Brief tối đa 8.000 ký tự; rate limit 5 lần tạo/người/giờ. Output từ AI bắt buộc qua **Structured Output / JSON Schema** và kiểm tra lại bằng **Zod** (tối đa 30 tasks: `title`, `description`, `priority`, `estimatedHours`, `dueDate` nullable).
-- **Human-in-the-loop & No Direct DB Access:** AI không có tool ghi dữ liệu hay thực thi SQL; prompt injection không được mở rộng quyền hay truy cập tenant khác. Task chỉ được tạo khi Manager Preview, Edit và Confirm.
-- **Idempotent Confirm & Error Handling:** Khi Confirm, validate lại payload bằng Zod; mở `prisma.$transaction`, khóa dòng `ai_plans` (`FOR UPDATE`), kiểm tra lại quyền Manager và trạng thái project, tạo tasks qua Task/Audit service và lưu `result_ids` + `CONFIRMED`. Nếu đã `CONFIRMED`, trả `result_ids` cũ để chống tạo trùng khi gọi lặp hoặc đồng thời. AI timeout, JSON sai schema, vượt 30 tasks, rate limit (429) hoặc provider failure sẽ đánh dấu `FAILED` kèm `error_code` và tạo 0 task.
+---
 
-## Reliability
-- **Optimistic Concurrency Control:** Task có trường `version` tăng mỗi lần cập nhật; Prisma thực hiện conditional update (`where: { id, version }`). Khi di chuyển task trên Kanban, transaction khóa dòng `projects` (`SELECT ... FOR UPDATE`), kiểm tra `version` và cập nhật `position` nguyên tử; conflict trả `409 Conflict`.
-- **Transactional Outbox:** `outbox_events` ghi cùng transaction với nghiệp vụ cho email và notification; worker poll với exponential backoff và giới hạn `attempts`; `event_id` dùng để deduplicate ở bảng `notifications`. Job quá hạn `lease_until` được worker reclaim và log lỗi.
+## 6. Security, Persistence, Testing & Deployment
 
-## Deployment
-- Monorepo `frontend/`, `backend/`, `docs/`.
-- **Build & Runtime:** Node.js LTS và `npm`; **Prisma Migrate** (`prisma migrate deploy`) chạy trước mỗi release; Docker ở trạng thái Optional.
-- **CI/CD (GitHub Actions):** Chạy lint, typecheck (`tsc --noEmit`), Vitest/Supertest/RTL tests trên PostgreSQL test DB, build frontend/backend, smoke test trên staging, và manual approval trước khi deploy production.
-- **Health & Observability:** Express Health Check endpoint (`GET /health` kiểm tra app & kết nối PostgreSQL); **Pino** structured JSON logging kèm `requestId` trên mọi log.
-- **Environment Variables:** Quản lý qua biến môi trường (`NODE_ENV`, `PORT`, `DATABASE_URL`, `JWT_ACCESS_SECRET`, `CORS_ORIGIN`, `AI_PROVIDER`, `AI_API_KEY`, `AI_TIMEOUT_MS`, `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `EMAIL_API_KEY`, `LOG_LEVEL`). Backup/restore PostgreSQL định kỳ. Hosting chưa chốt.
-
-## Decisions
-Modular Monolith giảm overhead cho solo developer; Node.js + Express.js + TypeScript đồng nhất ngôn ngữ với React frontend; Prisma ORM + PostgreSQL giữ nguyên tính chặt chẽ về transaction/constraints và hỗ trợ custom SQL migrations; DB job/outbox thay message broker cho MVP; AI Provider Abstraction tránh vendor lock-in; Human-in-the-loop approval giảm rủi ro tạo task sai. Đánh đổi: chưa scale ngang worker hoặc real-time adapter chuyên dụng (có thể bổ sung Redis adapter/queue sau MVP nếu cần).
+- **Security:** Access token JWT (HS256, TTL 15 phút, `at+jwt`, claims `sub`, `iat`, `exp`, `iss`, `aud`). Refresh token opaque 32-byte lưu SHA-256 trong PostgreSQL, cookie `HttpOnly`, `SameSite=Lax`, `Path=/api/v1/auth`, `Secure` ở production. Password hash bằng `bcryptjs` cost 12, giữ dummy hash cho timing mitigation.
+- **Authorization:** Kiểm tra membership/role trực tiếp từ DB (`workspace_members`, `project_members`), không chỉ dựa vào JWT claims.
+- **Testing Architecture:**
+  - `tests/unit/`: Test Domain và Use Cases bằng in-memory fakes/stubs (không cần PostgreSQL).
+  - `tests/integration/`: Test end-to-end HTTP + Prisma + PostgreSQL thật trên `flowpilot_ai_test`.
+  - `tests/architecture/`: Automated fitness tests kiểm tra Dependency Rule, module boundaries, và circular dependencies.
+- **Deployment & Scalability:** Single Node.js process + PostgreSQL 17. Khi cần scale ngang sau MVP, có thể bổ sung Redis adapter cho Socket.IO/rate-limit hoặc tách worker mà không cần đổi business logic trong Use Cases.

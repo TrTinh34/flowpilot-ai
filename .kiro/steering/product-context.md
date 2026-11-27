@@ -26,6 +26,7 @@ inclusion: always
 
 ### Backend (đang chạy)
 - Node.js, Express.js, TypeScript, Prisma ORM, PostgreSQL
+- Kiến trúc nội bộ: Feature-based Clean Architecture (`domain/`, `application/`, `infrastructure/`, `presentation/`, Composition Root `<module>.module.ts`) trong Modular Monolith (đã migrate module `auth`; `workspace`/`project` giữ tương thích từ Sprint 2)
 - JWT (access token 15 phút, in-memory), Refresh token (7 ngày, HttpOnly SameSite=Lax cookie)
 - Zod validation, Pino logger, bcrypt
 

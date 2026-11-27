@@ -96,3 +96,16 @@ Review [Session Service](../../../backend/src/modules/auth/auth.session.ts) và 
 ## 9. Task tiếp theo
 
 Chạy PostgreSQL integration suite trên test database đã xác nhận. AUTH-06 sẽ bắt đầu khi được giao.
+
+
+---
+
+### Architecture Refactoring Note
+
+This task was originally implemented using the project's previous Feature-based Layered Architecture.
+
+The implementation was subsequently migrated to Feature-based Clean Architecture as part of the architecture refactoring initiative (`ARCH-01`).
+
+The original functional behavior and public API contract remain unchanged.
+
+Refer to [ADR-001](../../architecture/decisions/ADR-001-adopt-clean-architecture.md) and [Architecture Refactoring Report](../architecture/clean-architecture-refactoring.md) for current architecture, changed paths, and regression verification results.

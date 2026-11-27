@@ -1,11 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import { expect, it, vi } from 'vitest';
-import { getCurrentUser } from '../../src/modules/auth/auth.service.js';
-
-const { findUnique } = vi.hoisted(() => ({ findUnique: vi.fn() }));
-vi.mock('../../src/config/prisma.js', () => ({
-  prisma: { user: { findUnique } },
-}));
+import { beforeEach, expect, it, vi } from 'vitest';
+import type { UserRepository } from '../../src/modules/auth/application/ports/user.repository.port.js';
+import { GetCurrentUserUseCase } from '../../src/modules/auth/application/use-cases/get-current-user.use-case.js';
+import { UserNotFoundError } from '../../src/modules/auth/domain/errors/auth.errors.js';
+import { ApplicationError } from '../../src/shared/application/errors/application-error.js';
 
 const user = {
   id: randomUUID(),
@@ -15,27 +13,35 @@ const user = {
   updatedAt: new Date(),
 };
 
-it('looks up the subject by ID and requests only public profile fields', async () => {
-  findUnique.mockResolvedValueOnce(user);
-  await expect(getCurrentUser(user.id)).resolves.toEqual(user);
-  expect(findUnique).toHaveBeenLastCalledWith({
-    where: { id: user.id },
-    select: { id: true, email: true, displayName: true, createdAt: true, updatedAt: true },
-  });
+let userRepository: UserRepository;
+let useCase: GetCurrentUserUseCase;
+
+beforeEach(() => {
+  userRepository = {
+    emailExists: vi.fn(),
+    create: vi.fn(),
+    findCredentialsByEmail: vi.fn(),
+    findPublicById: vi.fn(),
+  };
+  useCase = new GetCurrentUserUseCase(userRepository);
 });
 
-it('reports a missing profile as an internal not-found result', async () => {
-  findUnique.mockResolvedValueOnce(null);
-  await expect(getCurrentUser(user.id)).rejects.toMatchObject({
-    statusCode: 404,
-    code: 'NOT_FOUND',
-  });
+it('looks up the subject by ID and returns only public profile fields', async () => {
+  vi.mocked(userRepository.findPublicById).mockResolvedValueOnce(user);
+  await expect(useCase.execute(user.id)).resolves.toEqual(user);
+  expect(userRepository.findPublicById).toHaveBeenCalledWith(user.id);
 });
 
-it('uses a safe 500 for a repository failure', async () => {
-  findUnique.mockRejectedValueOnce(new Error('private DB diagnostic'));
-  await expect(getCurrentUser(user.id)).rejects.toMatchObject({
-    statusCode: 500,
+it('reports a missing profile as UserNotFoundError', async () => {
+  vi.mocked(userRepository.findPublicById).mockResolvedValueOnce(null);
+  await expect(useCase.execute(user.id)).rejects.toBeInstanceOf(UserNotFoundError);
+});
+
+it('uses a safe ApplicationError for a repository failure', async () => {
+  vi.mocked(userRepository.findPublicById).mockRejectedValueOnce(new Error('private DB diagnostic'));
+  const error = await useCase.execute(user.id).catch((e) => e);
+  expect(error).toBeInstanceOf(ApplicationError);
+  expect(error).toMatchObject({
     code: 'INTERNAL_ERROR',
     message: 'An unexpected internal error occurred',
   });

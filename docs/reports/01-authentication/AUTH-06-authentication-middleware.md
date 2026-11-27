@@ -66,3 +66,16 @@ Gắn `authenticate` trước controller ở từng route cần Bearer JWT. Decl
 ## 9. Task tiếp theo
 
 Tích hợp và kiểm chứng middleware trên route AUTH-07 sau khi chốt hợp đồng.
+
+
+---
+
+### Architecture Refactoring Note
+
+This task was originally implemented using the project's previous Feature-based Layered Architecture.
+
+The implementation was subsequently migrated to Feature-based Clean Architecture as part of the architecture refactoring initiative (`ARCH-01`).
+
+The original functional behavior and public API contract remain unchanged.
+
+Refer to [ADR-001](../../architecture/decisions/ADR-001-adopt-clean-architecture.md) and [Architecture Refactoring Report](../architecture/clean-architecture-refactoring.md) for current architecture, changed paths, and regression verification results.

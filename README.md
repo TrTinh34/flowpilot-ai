@@ -37,8 +37,9 @@
 
 ## Architecture Overview
 
-- **System:** Modular Monolith với Feature-based Architecture kết hợp Layered Architecture
-- **Backend Request Flow:** `HTTP Request → Express Router → Middleware → Controller → Service → Repository → Prisma ORM → PostgreSQL`
+- **System:** Modular Monolith với **Feature-based Clean Architecture** (backend) và **Feature-based Architecture** (frontend)
+- **Backend Layers:** `Presentation (Routes/Controllers/Middleware) → Application (Use Cases & Ports) → Domain (Entities/Errors) ← Infrastructure (Prisma/Bcrypt/Jose/Pino)`
+- **Composition Root:** Constructor Injection thủ công tại `<module>.module.ts` và `app.ts`
 - **Real-time:** Socket.IO (planned) với JWT authentication trong WebSocket handshake
 - **AI Workflow:** Provider Abstraction Pattern (OpenAI / Gemini / other), Human-in-the-loop approval
 

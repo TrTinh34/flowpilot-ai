@@ -2,18 +2,15 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import express from 'express';
 import { SignJWT } from 'jose';
 import request from 'supertest';
-import { expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
 import { env } from '../../src/config/env.js';
-import { authenticate } from '../../src/middlewares/auth.middleware.js';
 import { errorMiddleware } from '../../src/middlewares/error.middleware.js';
 import { requestIdMiddleware } from '../../src/middlewares/request-id.middleware.js';
-import {
-  generateRefreshToken,
-  issueAccessToken,
-  verifyAccessToken,
-} from '../../src/modules/auth/auth.tokens.js';
+import { JoseTokenService } from '../../src/modules/auth/infrastructure/security/jose-token.service.js';
+import { createAuthenticateMiddleware } from '../../src/modules/auth/presentation/middlewares/authenticate.middleware.js';
 
-vi.mock('../../src/modules/auth/auth.tokens.js', { spy: true });
+const tokenService = new JoseTokenService(env.JWT_ACCESS_SECRET);
+const authenticate = createAuthenticateMiddleware(tokenService);
 
 function protectedApp() {
   const app = express();
@@ -29,13 +26,18 @@ function protectedApp() {
 
 const userId = randomUUID();
 
+beforeEach(() => {
+  vi.restoreAllMocks();
+});
+
 it('extracts the Bearer token and passes only the verified userId downstream', async () => {
+  const verifySpy = vi.spyOn(tokenService, 'verifyAccessToken');
   const { app, controller } = protectedApp();
-  const token = await issueAccessToken(userId);
+  const token = await tokenService.issueAccessToken(userId);
   const response = await request(app).get('/protected').set('Authorization', `bEaReR  ${token}`);
   expect(response.status).toBe(200);
   expect(response.body).toEqual({ userId });
-  expect(verifyAccessToken).toHaveBeenLastCalledWith(token);
+  expect(verifySpy).toHaveBeenLastCalledWith(token);
   expect(controller).toHaveBeenCalledExactlyOnceWith({ userId });
 });
 
@@ -67,7 +69,7 @@ it.each(['expired', 'forged', 'invalid subject', 'invalid type', 'refresh token'
     const now = Math.floor(Date.now() / 1000);
     const token =
       scenario === 'refresh token'
-        ? generateRefreshToken()
+        ? tokenService.generateRefreshToken()
         : await new SignJWT({})
             .setProtectedHeader({
               alg: 'HS256',
@@ -90,7 +92,9 @@ it.each(['expired', 'forged', 'invalid subject', 'invalid type', 'refresh token'
 
 it('returns a safe 500 if verification unexpectedly fails', async () => {
   const { app, controller } = protectedApp();
-  vi.mocked(verifyAccessToken).mockRejectedValueOnce(new Error('private verifier diagnostic'));
+  vi.spyOn(tokenService, 'verifyAccessToken').mockRejectedValueOnce(
+    new Error('private verifier diagnostic'),
+  );
   const response = await request(app).get('/protected').set('Authorization', 'Bearer opaque');
   expect(response.status).toBe(500);
   expect(response.body.message).toBe('An unexpected internal error occurred');

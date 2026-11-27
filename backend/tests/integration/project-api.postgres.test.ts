@@ -35,7 +35,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace project API on Pos
   });
 
   async function actor(): Promise<Actor> {
-    const { issueAccessToken } = await import('../../src/modules/auth/auth.tokens.js');
+    const { accessTokenIssuer } = await import('../../src/modules/auth/index.js');
     const user = await db.prisma.user.create({
       data: {
         email: `${randomUUID()}@example.test`,
@@ -44,7 +44,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace project API on Pos
       },
     });
     userIds.push(user.id);
-    return { id: user.id, header: `Bearer ${await issueAccessToken(user.id)}` };
+    return { id: user.id, header: `Bearer ${await accessTokenIssuer.issueAccessToken(user.id)}` };
   }
 
   it('scopes listing, mutation and archived project membership to the workspace and role', async () => {

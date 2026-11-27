@@ -8,7 +8,7 @@ description: Frontend architecture, coding standards, component conventions, và
 
 ## Kiến trúc tổng quan
 
-Feature-based Architecture kết hợp Layered Architecture. Áp dụng nhất quán trên toàn frontend.
+Frontend áp dụng **Feature-based Architecture** kết hợp Layered Architecture. (Lưu ý: **Clean Architecture** là kiến trúc nội bộ của **backend** trong Modular Monolith; frontend giữ nguyên Feature-based Architecture.)
 
 ## Directory Responsibilities
 

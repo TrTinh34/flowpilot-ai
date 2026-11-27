@@ -76,3 +76,16 @@ Router áp dụng rate limit trước Zod. Controller chuyển dữ liệu đã 
 ## 9. Task tiếp theo
 
 Hoàn tất kiểm chứng AUTH-02 trên PostgreSQL test trước khi chuyển sang Login theo Product Backlog.
+
+
+---
+
+### Architecture Refactoring Note
+
+This task was originally implemented using the project's previous Feature-based Layered Architecture.
+
+The implementation was subsequently migrated to Feature-based Clean Architecture as part of the architecture refactoring initiative (`ARCH-01`).
+
+The original functional behavior and public API contract remain unchanged.
+
+Refer to [ADR-001](../../architecture/decisions/ADR-001-adopt-clean-architecture.md) and [Architecture Refactoring Report](../architecture/clean-architecture-refactoring.md) for current architecture, changed paths, and regression verification results.

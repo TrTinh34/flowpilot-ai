@@ -2,20 +2,16 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { decodeJwt, SignJWT } from 'jose';
 import { expect, it } from 'vitest';
 import { env } from '../../src/config/env.js';
-import {
-  generateRefreshToken,
-  hashRefreshToken,
-  issueAccessToken,
-  verifyAccessToken,
-} from '../../src/modules/auth/auth.tokens.js';
+import { JoseTokenService } from '../../src/modules/auth/infrastructure/security/jose-token.service.js';
 
+const tokenService = new JoseTokenService(env.JWT_ACCESS_SECRET);
 const userId = randomUUID();
 
 it('issues a 15-minute access JWT and verifies the user subject', async () => {
-  const token = await issueAccessToken(userId);
+  const token = await tokenService.issueAccessToken(userId);
   const { iat, exp } = decodeJwt(token);
   expect(exp! - iat!).toBe(900);
-  await expect(verifyAccessToken(token)).resolves.toEqual({ userId });
+  await expect(tokenService.verifyAccessToken(token)).resolves.toEqual({ userId });
 });
 
 it.each(['signature', 'expiration', 'subject', 'type', 'audience', 'algorithm'])(
@@ -37,15 +33,15 @@ it.each(['signature', 'expiration', 'subject', 'type', 'audience', 'algorithm'])
           ? randomBytes(48)
           : Buffer.from(env.JWT_ACCESS_SECRET, 'hex'),
       );
-    await expect(verifyAccessToken(token)).rejects.toThrow();
+    await expect(tokenService.verifyAccessToken(token)).rejects.toThrow();
   },
 );
 
 it('generates 32-byte opaque tokens and hashes them deterministically', () => {
-  const token = generateRefreshToken();
+  const token = tokenService.generateRefreshToken();
   expect(Buffer.from(token, 'base64url')).toHaveLength(32);
-  expect(generateRefreshToken()).not.toBe(token);
-  expect(hashRefreshToken(token)).toMatch(/^[a-f0-9]{64}$/);
-  expect(hashRefreshToken(token)).toBe(hashRefreshToken(token));
-  expect(hashRefreshToken(token)).not.toBe(token);
+  expect(tokenService.generateRefreshToken()).not.toBe(token);
+  expect(tokenService.hashRefreshToken(token)).toMatch(/^[a-f0-9]{64}$/);
+  expect(tokenService.hashRefreshToken(token)).toBe(tokenService.hashRefreshToken(token));
+  expect(tokenService.hashRefreshToken(token)).not.toBe(token);
 });
