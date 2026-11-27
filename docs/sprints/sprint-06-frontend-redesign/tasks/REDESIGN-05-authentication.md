@@ -4,9 +4,9 @@
 |---|---|
 | Task ID | REDESIGN-05 |
 | Task Name | Authentication Pages |
-| Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
+| Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 5h |
 | Dependencies | REDESIGN-04 |
 | Related Requirements | Auth · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Autocomplete, label toggle, focus lỗi đầu.
 Auth luôn thật.
 
 ## Implementation Checklist
-- [ ] Điều chỉnh layout
-- [ ] states
-- [ ] regression
+- [x] Điều chỉnh layout
+- [x] Xác minh states và focus
+- [x] Chạy frontend regression, PostgreSQL và Edge
 
 ## Expected Deliverables
 Auth UI và before/after.
@@ -66,6 +66,8 @@ Auth regression và browser keyboard.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo REDESIGN-05](../../../reports/frontend-redesign/REDESIGN-05-authentication.md).
 
 ## Next Task
 REDESIGN-07.

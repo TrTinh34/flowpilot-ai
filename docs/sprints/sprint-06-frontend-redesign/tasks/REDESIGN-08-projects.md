@@ -4,7 +4,7 @@
 |---|---|
 | Task ID | REDESIGN-08 |
 | Task Name | Project Management |
-| Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
+| Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
 | Status | PENDING |
 | Estimated Effort | 7h |

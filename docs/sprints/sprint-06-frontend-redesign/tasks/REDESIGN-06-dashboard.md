@@ -4,7 +4,7 @@
 |---|---|
 | Task ID | REDESIGN-06 |
 | Task Name | Dashboard |
-| Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
+| Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
 | Status | PENDING |
 | Estimated Effort | 6h |

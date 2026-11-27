@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
@@ -63,6 +63,7 @@ describe('LoginForm', () => {
 
     expect(await screen.findByText('Email is required')).toBeInTheDocument();
     expect(screen.getByText('Password is required')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText('Email address')).toHaveFocus());
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -103,6 +104,8 @@ describe('LoginForm', () => {
 
     // Loading state
     expect(screen.getByRole('button', { name: /Signing in/i })).toBeDisabled();
+    fireEvent.submit(screen.getByRole('button', { name: /Signing in/i }).closest('form')!);
+    expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmit).toHaveBeenCalledWith({
       email: 'user@example.com',
       password: 'password123',
@@ -123,9 +126,9 @@ describe('LoginForm', () => {
     await user.type(screen.getByLabelText('Password'), 'wrong-password');
     await user.click(screen.getByRole('button', { name: 'Sign In' }));
 
-    expect(
-      await screen.findByText('Incorrect email or password. Please try again.'),
-    ).toBeInTheDocument();
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Incorrect email or password. Please try again.');
+    expect(alert).toHaveFocus();
   });
 });
 
@@ -154,6 +157,7 @@ describe('RegisterForm', () => {
     expect(screen.getByText('Email is required')).toBeInTheDocument();
     expect(screen.getByText('Password is required')).toBeInTheDocument();
     expect(screen.getByText('Please confirm your password')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText('Display name')).toHaveFocus());
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -205,7 +209,7 @@ describe('RegisterForm', () => {
     await user.type(screen.getByLabelText('Confirm password'), 'password-abc');
     await user.click(screen.getByRole('button', { name: 'Create Account' }));
 
-    expect(await screen.findByText('Account created')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Account created' })).toHaveFocus();
     expect(screen.getByText(/Your account has been created/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Sign In' })).toBeInTheDocument();
   });

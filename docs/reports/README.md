@@ -79,3 +79,4 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Sprint 5 — Collaboration | Hoàn thành 5/5 task. PostgreSQL, fake storage, Edge và GitHub Actions đều đạt. |
 | Sprint 6 — Frontend Redesign Planning | Audit, direction và task specs chờ developer review. [Báo cáo planning](frontend-redesign/sprint-planning-report.md) |
 | Sprint 6 — Frontend Redesign Implementation | Timebox A đạt 5/5 task. [REDESIGN-02 — Design System](frontend-redesign/REDESIGN-02-design-system.md) · [REDESIGN-03 — Shared UI](frontend-redesign/REDESIGN-03-shared-components.md) · [ENV-01 — My Tasks](frontend-redesign/ENV-01-my-tasks-local-schema.md) · [REDESIGN-04 — Shell](frontend-redesign/REDESIGN-04-application-shell.md) |
+| Sprint 7 — Frontend Redesign Core flows | Timebox B đạt 1/6 task. [REDESIGN-05 — Auth](frontend-redesign/REDESIGN-05-authentication.md) |

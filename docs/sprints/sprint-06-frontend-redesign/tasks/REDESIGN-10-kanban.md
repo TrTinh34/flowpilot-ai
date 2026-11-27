@@ -4,7 +4,7 @@
 |---|---|
 | Task ID | REDESIGN-10 |
 | Task Name | Kanban Board & Task Details |
-| Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
+| Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
 | Status | PENDING |
 | Estimated Effort | 8h |
