@@ -162,7 +162,9 @@ describe('Clean Architecture Fitness Tests', () => {
   });
 
   it('Other modules do not deep-import auth internals', () => {
-    const externalFiles = allSrcFiles.filter((file) => !toRelPosix(file).startsWith('modules/auth/'));
+    const externalFiles = allSrcFiles.filter(
+      (file) => !toRelPosix(file).startsWith('modules/auth/'),
+    );
     const forbiddenAuthInternals = [
       'modules/auth/domain/',
       'modules/auth/application/',
@@ -177,9 +179,10 @@ describe('Clean Architecture Fitness Tests', () => {
         if (!resolved) continue;
         const target = toRelPosix(resolved);
         for (const forbidden of forbiddenAuthInternals) {
-          expect(target, `${toRelPosix(file)} must import auth via modules/auth/index`).not.toContain(
-            forbidden,
-          );
+          expect(
+            target,
+            `${toRelPosix(file)} must import auth via modules/auth/index`,
+          ).not.toContain(forbidden);
         }
       }
     }

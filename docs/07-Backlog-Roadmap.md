@@ -52,6 +52,7 @@
 ### US-BOARD-01 — Kanban, kéo thả và sắp xếp task
 - BOARD-01 đã kiểm chứng Board Move API, quyền theo project và cập nhật đồng thời trên PostgreSQL test.
 - BOARD-02 đã tích hợp Kanban theo project, kéo thả, điều khiển bằng bàn phím và tải lại board khi xung đột version.
+- TASK-BOARD-INT-01 đã qua kiểm thử PostgreSQL và regression frontend. Sprint 03 còn chờ nghiệm thu CI. [Báo cáo kiểm chứng](reports/03-task-board/TASK-BOARD-INT-01-integration-review.md)
 - Epic: BOARD; priority: Must; FR-BOARD-01 / UC-BOARD-01.
 - Story: Là Manager / Member, tôi muốn kanban, kéo thả và sắp xếp task để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Hai cập nhật đồng thời không ghi đè âm thầm; Kiểm tra version khi di chuyển; cập nhật thứ tự nguyên tử.

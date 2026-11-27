@@ -6,10 +6,10 @@ import { mockDashboardStats, mockActivity } from '@/mocks/fixtures/dashboard.fix
 import { Clock, CheckSquare, Layers, TrendingUp } from 'lucide-react';
 
 const STATUS_COLOR: Record<string, string> = {
-  TODO:        'bg-slate-200',
+  TODO: 'bg-slate-200',
   IN_PROGRESS: 'bg-blue-400',
-  IN_REVIEW:   'bg-yellow-400',
-  DONE:        'bg-green-400',
+  IN_REVIEW: 'bg-yellow-400',
+  DONE: 'bg-green-400',
 };
 
 function timeAgo(iso: string) {
@@ -44,10 +44,30 @@ export function DashboardPage() {
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
-          { label: 'Total Tasks', value: stats.totalTasks, icon: Layers, color: 'text-[var(--color-primary)]' },
-          { label: 'In Progress', value: stats.byStatus.find(s => s.status === 'IN_PROGRESS')?.count ?? 0, icon: TrendingUp, color: 'text-blue-500' },
-          { label: 'Completed', value: stats.byStatus.find(s => s.status === 'DONE')?.count ?? 0, icon: CheckSquare, color: 'text-green-500' },
-          { label: 'Active Projects', value: stats.activeProjects, icon: Clock, color: 'text-yellow-500' },
+          {
+            label: 'Total Tasks',
+            value: stats.totalTasks,
+            icon: Layers,
+            color: 'text-[var(--color-primary)]',
+          },
+          {
+            label: 'In Progress',
+            value: stats.byStatus.find((s) => s.status === 'IN_PROGRESS')?.count ?? 0,
+            icon: TrendingUp,
+            color: 'text-blue-500',
+          },
+          {
+            label: 'Completed',
+            value: stats.byStatus.find((s) => s.status === 'DONE')?.count ?? 0,
+            icon: CheckSquare,
+            color: 'text-green-500',
+          },
+          {
+            label: 'Active Projects',
+            value: stats.activeProjects,
+            icon: Clock,
+            color: 'text-yellow-500',
+          },
         ].map((card) => (
           <div
             key={card.label}
@@ -67,7 +87,9 @@ export function DashboardPage() {
         {/* Status breakdown */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
           <h2 className="text-base font-semibold text-[var(--foreground)]">Task Status</h2>
-          <p className="text-xs text-[var(--foreground-muted)] mb-4">Mock data — backend dashboard API coming soon</p>
+          <p className="text-xs text-[var(--foreground-muted)] mb-4">
+            Mock data — backend dashboard API coming soon
+          </p>
           <div className="space-y-3">
             {stats.byStatus.map((s) => (
               <div key={s.status} className="space-y-1">
@@ -92,17 +114,17 @@ export function DashboardPage() {
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-[var(--foreground)]">My Tasks</h2>
-            <Link
-              to="/my-tasks"
-              className="text-xs text-[var(--color-primary)] hover:underline"
-            >
+            <Link to="/my-tasks" className="text-xs text-[var(--color-primary)] hover:underline">
               View all →
             </Link>
           </div>
           {isPending && (
             <div className="space-y-2">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-10 rounded-md bg-[var(--surface-secondary)] animate-pulse" />
+                <div
+                  key={i}
+                  className="h-10 rounded-md bg-[var(--surface-secondary)] animate-pulse"
+                />
               ))}
             </div>
           )}
@@ -138,7 +160,9 @@ export function DashboardPage() {
       {/* Recent Activity */}
       <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
         <h2 className="text-base font-semibold text-[var(--foreground)]">Recent Activity</h2>
-        <p className="text-xs text-[var(--foreground-muted)] mb-4">Mock data — audit log API coming soon</p>
+        <p className="text-xs text-[var(--foreground-muted)] mb-4">
+          Mock data — audit log API coming soon
+        </p>
         <ul className="divide-y divide-[var(--border)]">
           {activity.map((entry) => (
             <li key={entry.id} className="flex items-start gap-3 py-3">

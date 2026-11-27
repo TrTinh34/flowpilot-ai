@@ -79,7 +79,10 @@ export function AiPlannerPage() {
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="ai-project-name" className="block text-sm font-medium text-[var(--foreground)]">
+            <label
+              htmlFor="ai-project-name"
+              className="block text-sm font-medium text-[var(--foreground)]"
+            >
               Project name <span className="text-red-500">*</span>
             </label>
             <input
@@ -100,10 +103,18 @@ export function AiPlannerPage() {
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="ai-description" className="block text-sm font-medium text-[var(--foreground)]">
+              <label
+                htmlFor="ai-description"
+                className="block text-sm font-medium text-[var(--foreground)]"
+              >
                 Project description <span className="text-red-500">*</span>
               </label>
-              <span className={cn('text-xs', descChars > 7500 ? 'text-red-500' : 'text-[var(--foreground-muted)]')}>
+              <span
+                className={cn(
+                  'text-xs',
+                  descChars > 7500 ? 'text-red-500' : 'text-[var(--foreground-muted)]',
+                )}
+              >
                 {descChars}/8000
               </span>
             </div>
@@ -128,7 +139,12 @@ export function AiPlannerPage() {
           <Button
             type="button"
             className="w-full"
-            disabled={!description.trim() || !projectName.trim() || state === 'generating' || state === 'confirming'}
+            disabled={
+              !description.trim() ||
+              !projectName.trim() ||
+              state === 'generating' ||
+              state === 'confirming'
+            }
             onClick={generate}
             aria-busy={state === 'generating'}
           >
@@ -170,7 +186,8 @@ export function AiPlannerPage() {
               Describe your project to get started
             </h2>
             <p className="max-w-sm text-sm text-[var(--foreground-secondary)]">
-              Enter your project name and description, then click &ldquo;Generate Plan&rdquo; to get an AI-powered task breakdown.
+              Enter your project name and description, then click &ldquo;Generate Plan&rdquo; to get
+              an AI-powered task breakdown.
             </p>
           </div>
         )}
@@ -183,10 +200,16 @@ export function AiPlannerPage() {
               <span className="text-sm font-medium">AI is generating your plan…</span>
             </div>
             {[3, 2, 4].map((count, i) => (
-              <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 space-y-2">
+              <div
+                key={i}
+                className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 space-y-2"
+              >
                 <div className="h-5 w-32 rounded bg-[var(--surface-secondary)] animate-pulse" />
                 {[...Array(count)].map((_, j) => (
-                  <div key={j} className="h-10 rounded-lg bg-[var(--surface-secondary)] animate-pulse" />
+                  <div
+                    key={j}
+                    className="h-10 rounded-lg bg-[var(--surface-secondary)] animate-pulse"
+                  />
                 ))}
               </div>
             ))}
@@ -200,7 +223,9 @@ export function AiPlannerPage() {
             <div className="rounded-xl border border-[var(--color-accent-ai)]/30 bg-[var(--color-accent-ai)]/5 p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="size-4 text-[var(--color-accent-ai)]" aria-hidden="true" />
-                <span className="text-sm font-semibold text-[var(--foreground)]">{projectName}</span>
+                <span className="text-sm font-semibold text-[var(--foreground)]">
+                  {projectName}
+                </span>
               </div>
               <p className="text-sm text-[var(--foreground-secondary)]">{plan.summary}</p>
               <p className="mt-2 text-xs text-[var(--foreground-muted)]">
@@ -214,9 +239,13 @@ export function AiPlannerPage() {
                 key={phaseIdx}
                 className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
               >
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">{phase.name}</h3>
+                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">
+                  {phase.name}
+                </h3>
                 {phase.remaining.length === 0 && (
-                  <p className="text-xs text-[var(--foreground-muted)]">All tasks removed from this phase.</p>
+                  <p className="text-xs text-[var(--foreground-muted)]">
+                    All tasks removed from this phase.
+                  </p>
                 )}
                 <ul className="space-y-2">
                   {phase.remaining.map(({ task }) => (
@@ -283,9 +312,7 @@ export function AiPlannerPage() {
               <CheckCircle className="size-10 text-green-500" aria-hidden="true" />
             </div>
             <h2 className="text-lg font-semibold text-[var(--foreground)]">Plan confirmed!</h2>
-            <p className="text-sm text-[var(--foreground-secondary)]">
-              Redirecting to My Tasks…
-            </p>
+            <p className="text-sm text-[var(--foreground-secondary)]">Redirecting to My Tasks…</p>
           </div>
         )}
 
@@ -295,7 +322,9 @@ export function AiPlannerPage() {
             <AlertCircle className="size-10 text-red-400" aria-hidden="true" />
             <h2 className="text-lg font-semibold text-[var(--foreground)]">Generation failed</h2>
             <p className="text-sm text-[var(--foreground-secondary)]">{errorMsg}</p>
-            <Button variant="outline" onClick={regenerate}>Try again</Button>
+            <Button variant="outline" onClick={regenerate}>
+              Try again
+            </Button>
           </div>
         )}
       </div>

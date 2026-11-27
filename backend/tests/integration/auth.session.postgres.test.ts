@@ -134,9 +134,12 @@ describe.skipIf(!testDatabaseUrl)('auth sessions on PostgreSQL', () => {
 
   it('looks up only the public fields for the verified subject on PostgreSQL', async () => {
     const { accessToken } = await login();
-    const { UserNotFoundError } = await import('../../src/modules/auth/domain/errors/auth.errors.js');
+    const { UserNotFoundError } =
+      await import('../../src/modules/auth/domain/errors/auth.errors.js');
     const subject = await tokens.verifyAccessToken(accessToken);
-    await expect(authModule.useCases.getCurrentUserUseCase.execute(subject.userId)).resolves.toEqual({
+    await expect(
+      authModule.useCases.getCurrentUserUseCase.execute(subject.userId),
+    ).resolves.toEqual({
       id: userId,
       email: input.email,
       displayName: 'Session fixture',

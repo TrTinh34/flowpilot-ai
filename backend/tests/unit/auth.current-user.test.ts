@@ -38,7 +38,9 @@ it('reports a missing profile as UserNotFoundError', async () => {
 });
 
 it('uses a safe ApplicationError for a repository failure', async () => {
-  vi.mocked(userRepository.findPublicById).mockRejectedValueOnce(new Error('private DB diagnostic'));
+  vi.mocked(userRepository.findPublicById).mockRejectedValueOnce(
+    new Error('private DB diagnostic'),
+  );
   const error = await useCase.execute(user.id).catch((e) => e);
   expect(error).toBeInstanceOf(ApplicationError);
   expect(error).toMatchObject({

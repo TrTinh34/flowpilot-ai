@@ -97,7 +97,9 @@ function TaskDetail({ taskId }: { taskId: string }) {
         <TabsContent value="details" className="space-y-4 pt-4">
           {access.isPending && <p role="status">Loading project permissions…</p>}
           {access.isError && <p role="alert">{extractApiErrorMessage(access.error)}</p>}
-          {access.data?.project.status === 'ARCHIVED' && <p>This project is archived and read-only.</p>}
+          {access.data?.project.status === 'ARCHIVED' && (
+            <p>This project is archived and read-only.</p>
+          )}
           {canEdit && (
             <TaskForm
               key={item.version}
@@ -110,7 +112,9 @@ function TaskDetail({ taskId }: { taskId: string }) {
           )}
           {conflict ? (
             <div className="space-y-2">
-              <p role="alert">This task was changed. Reload the latest version before saving again.</p>
+              <p role="alert">
+                This task was changed. Reload the latest version before saving again.
+              </p>
               <Button
                 variant="outline"
                 disabled={task.isFetching}

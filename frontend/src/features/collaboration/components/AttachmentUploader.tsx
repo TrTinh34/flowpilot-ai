@@ -79,8 +79,13 @@ export function AttachmentUploader() {
         tabIndex={0}
         aria-label="Upload file"
         onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click(); }}
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click();
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={(e) => {
           e.preventDefault();
@@ -96,8 +101,7 @@ export function AttachmentUploader() {
       >
         <Upload className="size-6 text-[var(--foreground-muted)]" aria-hidden="true" />
         <p className="text-sm text-[var(--foreground-secondary)]">
-          Drag & drop or{' '}
-          <span className="text-[var(--color-primary)] font-medium">browse</span>
+          Drag & drop or <span className="text-[var(--color-primary)] font-medium">browse</span>
         </p>
         <p className="text-xs text-[var(--foreground-muted)]">PDF, PNG, JPEG · Max 10 MB</p>
         <input
@@ -134,7 +138,10 @@ export function AttachmentUploader() {
 
       {/* Error */}
       {error && (
-        <div role="alert" className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
+        <div
+          role="alert"
+          className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700"
+        >
           <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
           {error}
         </div>
@@ -155,7 +162,9 @@ export function AttachmentUploader() {
               )}
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm text-[var(--foreground)]">{att.name}</p>
-                <p className="text-[11px] text-[var(--foreground-muted)]">{formatBytes(att.size)}</p>
+                <p className="text-[11px] text-[var(--foreground-muted)]">
+                  {formatBytes(att.size)}
+                </p>
               </div>
               <button
                 type="button"

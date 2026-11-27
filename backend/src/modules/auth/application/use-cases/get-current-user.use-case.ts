@@ -12,9 +12,13 @@ export class GetCurrentUserUseCase {
     try {
       user = await this.userRepository.findPublicById(userId);
     } catch (error) {
-      throw new ApplicationError(ERROR_CODES.INTERNAL_ERROR, 'An unexpected internal error occurred', {
-        cause: error,
-      });
+      throw new ApplicationError(
+        ERROR_CODES.INTERNAL_ERROR,
+        'An unexpected internal error occurred',
+        {
+          cause: error,
+        },
+      );
     }
 
     if (!user) {

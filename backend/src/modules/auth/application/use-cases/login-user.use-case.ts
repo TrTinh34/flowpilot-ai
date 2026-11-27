@@ -31,9 +31,13 @@ export class LoginUserUseCase {
         user?.passwordHash ?? DUMMY_PASSWORD_HASH,
       );
     } catch (error) {
-      throw new ApplicationError(ERROR_CODES.INTERNAL_ERROR, 'An unexpected internal error occurred', {
-        cause: error,
-      });
+      throw new ApplicationError(
+        ERROR_CODES.INTERNAL_ERROR,
+        'An unexpected internal error occurred',
+        {
+          cause: error,
+        },
+      );
     }
 
     if (!user || !passwordMatches) {

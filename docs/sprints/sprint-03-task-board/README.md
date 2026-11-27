@@ -26,7 +26,7 @@ US-TASK-01 và US-BOARD-01. Bao gồm schema, migration, API, quyền theo proje
 | BOARD-01 | [Board move API](tasks/BOARD-01-board-move-api.md) | COMPLETED | TASK-01, TASK-02 |
 | TASK-03 | [Task detail, subtask và My Tasks UI](tasks/TASK-03-task-frontend.md) | COMPLETED | TASK-02, PROJ-03 |
 | BOARD-02 | [Kanban và điều khiển di chuyển](tasks/BOARD-02-board-frontend.md) | COMPLETED | BOARD-01, TASK-03 |
-| TASK-BOARD-INT-01 | [Task & Board integration và review](tasks/TASK-BOARD-INT-01-integration-review.md) | PENDING | TASK-01–03, BOARD-01–02 |
+| TASK-BOARD-INT-01 | [Task & Board integration và review](tasks/TASK-BOARD-INT-01-integration-review.md) | IN_PROGRESS | TASK-01–03, BOARD-01–02 |
 
 ## Dependencies
 
@@ -44,12 +44,12 @@ Theo [Product Backlog](../../07-Backlog-Roadmap.md#definition-of-done). Migratio
 
 ## Risks and Blockers
 
-Bước Manager tạo task của TC-PROJ-01 được kiểm chứng liên Sprint sau khi có TASK-02. Development database cần migration Task trước khi dùng những luồng đọc hoặc ghi bảng này.
+Bước Manager tạo task của TC-PROJ-01 đã qua kiểm thử PostgreSQL. Development database cần migration Task trước khi dùng những luồng đọc hoặc ghi bảng này. Kiểm tra format local đã đạt trên backend và frontend.
 
 ## Sprint Review
 
-Đã kiểm chứng schema Task trên PostgreSQL test. API và UI nằm trong các Task tiếp theo.
+Đã kiểm chứng migration, quyền theo project, tenant isolation, di chuyển đồng thời, regression API/UI và smoke test trên Edge với PostgreSQL test. Còn chờ CI trên revision nghiệm thu. [Báo cáo TASK-BOARD-INT-01](../../reports/03-task-board/TASK-BOARD-INT-01-integration-review.md)
 
 ## Sprint Retrospective
 
-Chờ Sprint Review.
+Ca concurrency xác minh lỗi 409 trên PostgreSQL thật. Kiểm tra format theo từng gói giúp xác định điều kiện còn lại trước khi đóng Sprint.

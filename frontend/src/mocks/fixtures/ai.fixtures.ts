@@ -44,7 +44,12 @@ export const mockAiPlan: AiPlan = {
       tasks: [
         { id: 't7', title: 'Build authentication UI', priority: 'HIGH', estimatedDays: 2 },
         { id: 't8', title: 'Implement Kanban board', priority: 'HIGH', estimatedDays: 3 },
-        { id: 't9', title: 'Add dashboard and notifications', priority: 'MEDIUM', estimatedDays: 2 },
+        {
+          id: 't9',
+          title: 'Add dashboard and notifications',
+          priority: 'MEDIUM',
+          estimatedDays: 2,
+        },
       ],
     },
     {

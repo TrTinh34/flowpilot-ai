@@ -6,9 +6,7 @@ export function ProfilePage() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
       <h1 className="text-2xl font-semibold text-[var(--foreground)]">Profile</h1>
-      <p className="mt-1 text-sm text-[var(--foreground-secondary)]">
-        Your account information.
-      </p>
+      <p className="mt-1 text-sm text-[var(--foreground-secondary)]">Your account information.</p>
 
       <div className="mt-8 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 space-y-6">
         {/* Avatar + name */}
@@ -20,9 +18,7 @@ export function ProfilePage() {
             <p className="text-base font-semibold text-[var(--foreground)]">
               {user?.displayName ?? '—'}
             </p>
-            <p className="text-sm text-[var(--foreground-secondary)]">
-              {user?.email ?? '—'}
-            </p>
+            <p className="text-sm text-[var(--foreground-secondary)]">{user?.email ?? '—'}</p>
           </div>
         </div>
 

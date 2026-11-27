@@ -51,8 +51,12 @@ export function CommentSection() {
               </div>
               <div className="flex-1 rounded-xl bg-[var(--surface-secondary)] px-3.5 py-2.5">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-semibold text-[var(--foreground)]">{c.authorName}</span>
-                  <span className="text-[10px] text-[var(--foreground-muted)]">{timeAgo(c.createdAt)}</span>
+                  <span className="text-xs font-semibold text-[var(--foreground)]">
+                    {c.authorName}
+                  </span>
+                  <span className="text-[10px] text-[var(--foreground-muted)]">
+                    {timeAgo(c.createdAt)}
+                  </span>
                 </div>
                 <p className="text-sm text-[var(--foreground)]">{c.content}</p>
               </div>

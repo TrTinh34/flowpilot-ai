@@ -12,9 +12,9 @@
 |---|---|---|---|---|
 | TC-AUTH-01 | FR-AUTH-01 / UC-AUTH-01 | Seed actor đúng quyền; thực hiện luồng chính Đăng ký, đăng nhập, refresh, logout | Đăng nhập đúng trả token; sai trả 401 | Not run |
 | TC-WS-01 | FR-WS-01 / UC-WS-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo workspace, mời và quản lý thành viên | Người được mời đúng email chấp nhận một lần | Passed trên PostgreSQL test |
-| TC-PROJ-01 | FR-PROJ-01 / UC-PROJ-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo, cập nhật, lưu trữ project và quản lý thành viên | Manager tạo task trong project được cấp quyền | API Project đã kiểm chứng. Bước tạo task chờ Sprint 03. |
-| TC-TASK-01 | FR-TASK-01 / UC-TASK-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo task, subtask, giao việc, deadline, priority | Task được giao xuất hiện trong My Tasks | Not run |
-| TC-BOARD-01 | FR-BOARD-01 / UC-BOARD-01 | Seed actor đúng quyền; thực hiện luồng chính Kanban, kéo thả và sắp xếp task | Hai cập nhật đồng thời không ghi đè âm thầm | Not run |
+| TC-PROJ-01 | FR-PROJ-01 / UC-PROJ-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo, cập nhật, lưu trữ project và quản lý thành viên | Manager tạo task trong project được cấp quyền | PASSED · bước Manager tạo task qua API PostgreSQL Sprint 03 |
+| TC-TASK-01 | FR-TASK-01 / UC-TASK-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo task, subtask, giao việc, deadline, priority | Task được giao xuất hiện trong My Tasks | PASSED · PostgreSQL integration và test giao diện |
+| TC-BOARD-01 | FR-BOARD-01 / UC-BOARD-01 | Seed actor đúng quyền; thực hiện luồng chính Kanban, kéo thả và sắp xếp task | Hai cập nhật đồng thời không ghi đè âm thầm | PASSED · PostgreSQL integration và test giao diện |
 | TC-COL-01 | FR-COL-01 / UC-COL-01 | Seed actor đúng quyền; thực hiện luồng chính Bình luận, mention, đính kèm | Bình luận hiển thị và người được mention nhận thông báo | Not run |
 | TC-NOTI-01 | FR-NOTI-01 / UC-NOTI-01 | Seed actor đúng quyền; thực hiện luồng chính Thông báo trong app và real-time | Reconnect tải lại thông báo chưa đọc | Not run |
 | TC-DASH-01 | FR-DASH-01 / UC-DASH-01 | Seed actor đúng quyền; thực hiện luồng chính Dashboard tiến độ, My Tasks, audit log | Số task hoàn thành khớp dữ liệu | Not run |
@@ -23,7 +23,7 @@
 | TC-SEC-02 | NFR-03 | Kết nối Socket.IO không JWT hoặc cố gắng join/subscribe room `user:{otherUserId}` / `project:{otherProjectId}` | Handshake bị từ chối hoặc join room bị từ chối (Denied) | Not run |
 | TC-SEC-03 | FR-WS-01 | Xóa Owner cuối | 409 | Passed trên PostgreSQL test |
 | TC-SEC-04 | FR-WS-01 | Accept invite sai email hoặc hết hạn | 403 hoặc 422; không membership | Passed trên PostgreSQL test |
-| TC-TASK-02 | NFR-07 | Hai request move cùng version | Một thành công, một 409 | Not run |
+| TC-TASK-02 | NFR-07 | Hai request move cùng version | Một thành công, một 409 | PASSED · PostgreSQL integration |
 | TC-AI-02 | NFR-04 | Provider trả JSON sai hoặc 31 tasks (Zod schema fail) | FAILED; 0 task | Not run |
 | TC-AI-03 | NFR-04 | Provider timeout | FAILED; không task | Not run |
 | TC-AI-04 | FR-AI-01 | Confirm hai lần đồng thời | Cùng IDs, không duplicate | Not run |

@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  mockNotifications,
-  type NotificationItem,
-} from '@/mocks/fixtures/notification.fixtures';
+import { mockNotifications, type NotificationItem } from '@/mocks/fixtures/notification.fixtures';
 import { cn } from '@/utils/cn.util';
 
 function timeAgo(iso: string) {
@@ -30,9 +27,7 @@ export function NotificationsPage() {
   const unreadCount = items.filter((n) => !n.isRead).length;
 
   function markRead(id: string) {
-    setItems((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
-    );
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
   }
 
   function markAllRead() {
@@ -116,7 +111,12 @@ export function NotificationsPage() {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <p className={cn('text-sm', n.isRead ? 'text-[var(--foreground-secondary)]' : 'text-[var(--foreground)]')}>
+              <p
+                className={cn(
+                  'text-sm',
+                  n.isRead ? 'text-[var(--foreground-secondary)]' : 'text-[var(--foreground)]',
+                )}
+              >
                 {n.message}
               </p>
               <div className="mt-1 flex items-center gap-2">

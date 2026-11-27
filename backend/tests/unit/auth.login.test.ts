@@ -49,7 +49,9 @@ describe('LoginUserUseCase', () => {
     userRepository = {
       emailExists: vi.fn(),
       create: vi.fn(),
-      findCredentialsByEmail: vi.fn().mockResolvedValue({ id: '11111111-1111-4111-8111-111111111111', passwordHash }),
+      findCredentialsByEmail: vi
+        .fn()
+        .mockResolvedValue({ id: '11111111-1111-4111-8111-111111111111', passwordHash }),
       findPublicById: vi.fn(),
     };
     refreshTokenRepository = {

@@ -20,8 +20,7 @@ function isDuplicateEmailError(error: unknown): boolean {
   }
 
   const driverError = error.meta?.driverAdapterError as
-    | { cause?: { constraint?: { index?: string } } }
-    | undefined;
+    { cause?: { constraint?: { index?: string } } } | undefined;
   return driverError?.cause?.constraint?.index === 'users_email_lower_uidx';
 }
 

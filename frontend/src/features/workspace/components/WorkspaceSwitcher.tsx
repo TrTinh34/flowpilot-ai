@@ -92,9 +92,7 @@ export function WorkspaceSwitcher() {
                 {ws.name[0]}
               </div>
               <span className="flex-1 truncate text-left">{ws.name}</span>
-              {ws.id === active?.id && (
-                <Check className="size-3.5 shrink-0" aria-hidden="true" />
-              )}
+              {ws.id === active?.id && <Check className="size-3.5 shrink-0" aria-hidden="true" />}
             </button>
           ))}
 

@@ -76,10 +76,7 @@ function SidebarContent({
     <div className="flex h-full flex-col overflow-hidden">
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-[var(--sidebar-border)] px-3 shrink-0">
-        <Logo
-          className="text-[var(--color-primary)]"
-          showName={!collapsed}
-        />
+        <Logo className="text-[var(--color-primary)]" showName={!collapsed} />
       </div>
 
       {/* Workspace switcher */}
@@ -158,7 +155,10 @@ function SidebarContent({
           <div className="absolute bottom-full left-2 right-2 mb-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] py-1 shadow-lg z-50">
             <Link
               to="/settings/profile"
-              onClick={() => { setUserMenuOpen(false); onNavigate?.(); }}
+              onClick={() => {
+                setUserMenuOpen(false);
+                onNavigate?.();
+              }}
               className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--surface-secondary)] transition-colors"
             >
               <User className="size-4" aria-hidden="true" />
@@ -271,9 +271,7 @@ export function AppShellLayout({ children }: PropsWithChildren) {
         </header>
 
         {/* Scrollable page content */}
-        <main className="flex-1 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

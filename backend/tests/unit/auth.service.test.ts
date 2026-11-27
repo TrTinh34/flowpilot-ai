@@ -79,7 +79,10 @@ describe('RegisterUserUseCase', () => {
     const app = express();
     app.use(requestIdMiddleware);
     app.use(express.json());
-    app.use('/api/v1/auth', createAuthRouter(controller, (_req, _res, next) => next()));
+    app.use(
+      '/api/v1/auth',
+      createAuthRouter(controller, (_req, _res, next) => next()),
+    );
     app.use(errorMiddleware);
 
     const res = await request(app).post('/api/v1/auth/register').send(input);

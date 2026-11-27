@@ -238,7 +238,8 @@ it('accepts repeated logout with a known revoked token that has not expired', as
 it.each(['missing', 'malformed', 'unknown', 'expired'])(
   'returns 401 for a %s logout cookie',
   async (scenario) => {
-    if (scenario === 'unknown') vi.mocked(refreshTokenRepository.findByTokenHash).mockResolvedValue(null);
+    if (scenario === 'unknown')
+      vi.mocked(refreshTokenRepository.findByTokenHash).mockResolvedValue(null);
     if (scenario === 'expired') {
       vi.mocked(refreshTokenRepository.findByTokenHash).mockResolvedValue({
         ...record,

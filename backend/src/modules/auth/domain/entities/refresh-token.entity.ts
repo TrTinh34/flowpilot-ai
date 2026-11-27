@@ -19,8 +19,6 @@ export function isRefreshTokenExpired(
   return record.expiresAt <= now;
 }
 
-export function isRefreshTokenRevoked(
-  record: Pick<RefreshTokenRecord, 'revokedAt'>,
-): boolean {
+export function isRefreshTokenRevoked(record: Pick<RefreshTokenRecord, 'revokedAt'>): boolean {
   return record.revokedAt !== null;
 }

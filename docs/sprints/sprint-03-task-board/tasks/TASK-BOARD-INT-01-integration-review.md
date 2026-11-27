@@ -42,4 +42,4 @@ Kiểm chứng các tiêu chí và cập nhật báo cáo triển khai.
 
 ## Development Report Reference
 
-Chưa triển khai.
+[Báo cáo kiểm chứng TASK-BOARD-INT-01](../../../reports/03-task-board/TASK-BOARD-INT-01-integration-review.md).
