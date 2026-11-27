@@ -1,21 +1,6 @@
-import { CommentFailure } from '../../domain/comment.js';
+import { CollaborationFailure } from '../../domain/collaboration-failure.js';
 import type { CommentReader, CommentUnitOfWork } from '../ports/comments.port.js';
-
-interface TaskActor {
-  taskId: string;
-  actorId: string;
-}
-
-async function requireAccess(reader: Pick<CommentReader, 'findAccess'>, input: TaskActor) {
-  const access = await reader.findAccess(input.taskId, input.actorId);
-  if (!access) throw new CommentFailure('not_found', 'Task not found.');
-  if (!access.canRead) throw new CommentFailure('forbidden', 'You cannot access this task.');
-  return access;
-}
-
-function requireActive(status: 'ACTIVE' | 'ARCHIVED') {
-  if (status === 'ARCHIVED') throw new CommentFailure('archived', 'This project is archived.');
-}
+import { requireActive, requireAccess, type TaskActor } from './task-access.js';
 
 export class ListTaskComments {
   constructor(private readonly reader: CommentReader) {}
@@ -46,7 +31,7 @@ export class AddTaskComment {
           recipientIds,
         );
         if (members.length !== recipientIds.length) {
-          throw new CommentFailure(
+          throw new CollaborationFailure(
             'invalid_mention',
             'Mentioned users must belong to the project.',
           );

@@ -42,4 +42,4 @@ Kiểm chứng tiêu chí nghiệm thu và cập nhật báo cáo triển khai.
 
 ## Development Report Reference
 
-Chờ báo cáo triển khai.
+[Báo cáo COL-03](../../../reports/05-collaboration/COL-03-attachment-api.md).

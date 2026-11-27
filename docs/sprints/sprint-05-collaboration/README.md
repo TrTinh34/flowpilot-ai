@@ -4,7 +4,7 @@
 
 - Ngày mở — 2026-11-27
 - Trạng thái — IN_PROGRESS
-- Tiến độ — 2/5 task
+- Tiến độ — 3/5 task
 - Nguồn — [US-COL-01](../../07-Backlog-Roadmap.md#us-col-01--bình-luận-mention-đính-kèm)
 
 ## Sprint Goal
@@ -21,7 +21,7 @@ Schema, Comment API, Attachment API, tích hợp giao diện và kiểm thử. P
 |---|---|---|---|
 | COL-01 | [Schema và migration](tasks/COL-01-collaboration-schema.md) | COMPLETED | TASK-01 |
 | COL-02 | [Comment API và mention](tasks/COL-02-comment-api.md) | COMPLETED | COL-01, TASK-02 |
-| COL-03 | [Attachment API và lưu trữ](tasks/COL-03-attachment-api.md) | PENDING | COL-01, TASK-02 |
+| COL-03 | [Attachment API và lưu trữ](tasks/COL-03-attachment-api.md) | COMPLETED | COL-01, TASK-02 |
 | COL-04 | [Tích hợp giao diện Collaboration](tasks/COL-04-collaboration-frontend.md) | PENDING | COL-02, COL-03, UI-05 |
 | COL-INT-01 | [Kiểm thử tích hợp và Sprint Review](tasks/COL-INT-01-integration-review.md) | PENDING | COL-01–04 |
 
@@ -46,6 +46,8 @@ Cần fake storage cho kiểm thử và cấu hình object storage khi triển k
 COL-01 đã kiểm chứng migration và ràng buộc trên PostgreSQL test. [Báo cáo COL-01](../../reports/05-collaboration/COL-01-collaboration-schema.md)
 
 COL-02 đã kiểm chứng Comment API, quyền theo task và tính nguyên tử của sự kiện mention. [Báo cáo COL-02](../../reports/05-collaboration/COL-02-comment-api.md)
+
+COL-03 đã kiểm chứng upload, danh sách, URL tải xuống và cleanup bằng PostgreSQL và fake storage. [Báo cáo COL-03](../../reports/05-collaboration/COL-03-attachment-api.md)
 
 ## Sprint Retrospective
 

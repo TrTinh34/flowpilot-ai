@@ -1,16 +1,36 @@
+import { S3Client } from '@aws-sdk/client-s3';
 import cors from 'cors';
 import express, { type Express } from 'express';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 import { corsOptions } from './config/cors.js';
+import { env } from './config/env.js';
 import { logger } from './config/logger.js';
+import { S3Storage } from './integrations/storage/s3-storage.provider.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import { notFoundMiddleware } from './middlewares/not-found.middleware.js';
 import { apiRateLimiter } from './middlewares/rate-limit.middleware.js';
 import { requestIdMiddleware } from './middlewares/request-id.middleware.js';
-import { rootRouter } from './routes/index.js';
+import type { AttachmentStorage } from './modules/collaboration/index.js';
+import { createRootRouter } from './routes/index.js';
 
-export function createApp(): Express {
+const storage = env.S3_BUCKET
+  ? new S3Storage(
+      new S3Client({
+        region: env.S3_REGION,
+        endpoint: env.S3_ENDPOINT || undefined,
+        forcePathStyle: Boolean(env.S3_ENDPOINT),
+        requestChecksumCalculation: 'WHEN_REQUIRED',
+        credentials:
+          env.S3_ACCESS_KEY && env.S3_SECRET_KEY
+            ? { accessKeyId: env.S3_ACCESS_KEY, secretAccessKey: env.S3_SECRET_KEY }
+            : undefined,
+      }),
+      env.S3_BUCKET,
+    )
+  : undefined;
+
+export function createApp(options: { attachmentStorage?: AttachmentStorage } = {}): Express {
   const app = express();
 
   app.disable('x-powered-by');
@@ -27,7 +47,7 @@ export function createApp(): Express {
   );
   app.use(apiRateLimiter);
 
-  app.use('/', rootRouter);
+  app.use('/', createRootRouter(options.attachmentStorage ?? storage));
 
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);
