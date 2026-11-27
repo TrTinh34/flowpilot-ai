@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import type { Task, TaskStatus } from '@/features/task/types/task.types';
+import { TaskMetadata } from '@/features/task/components/TaskMetadata';
 import { boardColumns } from '../types/board.types';
 
 interface Props {
@@ -13,6 +14,9 @@ interface Props {
   onDrag: (task: Task | null) => void;
   onDrop: () => void;
   acceptsDrop: boolean;
+  dropTarget: boolean;
+  onDragOver: () => void;
+  assigneeName?: string;
 }
 
 export function KanbanCard({
@@ -25,11 +29,15 @@ export function KanbanCard({
   onDrag,
   onDrop,
   acceptsDrop,
+  dropTarget,
+  onDragOver,
+  assigneeName,
 }: Props) {
   const enabled = canMove && !pending;
   return (
     <li
-      className="space-y-2 rounded border bg-[var(--card)] p-3"
+      className="min-w-0 space-y-3 rounded-lg border border-border bg-card p-3 shadow-sm data-[drop-target=true]:border-primary data-[drop-target=true]:ring-2 data-[drop-target=true]:ring-primary"
+      data-drop-target={dropTarget}
       draggable={enabled}
       onDragStart={(event) => {
         if (!enabled) return;
@@ -39,7 +47,11 @@ export function KanbanCard({
       }}
       onDragEnd={() => onDrag(null)}
       onDragOver={(event) => {
-        if (acceptsDrop) event.preventDefault();
+        if (acceptsDrop) {
+          event.preventDefault();
+          event.stopPropagation();
+          onDragOver();
+        }
       }}
       onDrop={(event) => {
         if (!acceptsDrop) return;
@@ -48,12 +60,15 @@ export function KanbanCard({
         onDrop();
       }}
     >
-      <Link to={`/tasks/${task.id}`} className="block break-words font-medium underline">
+      <Link
+        to={`/tasks/${task.id}`}
+        className="block break-words font-semibold hover:text-action-link hover:underline"
+      >
         {task.title}
       </Link>
-      <p className="text-xs">
-        {task.priority}
-        {task.dueDate ? ` · ${task.dueDate.slice(0, 10)}` : ''}
+      <TaskMetadata task={task} showStatus={false} />
+      <p className="break-words text-sm text-muted-foreground">
+        {assigneeName ?? (task.assigneeId ? 'Assigned member' : 'Unassigned')}
       </p>
       {canMove && (
         <div className="flex flex-wrap items-center gap-2">
@@ -64,7 +79,7 @@ export function KanbanCard({
             id={`move-${task.id}`}
             value={task.status}
             disabled={pending}
-            className="rounded border px-2 py-1 text-xs"
+            className="rounded border border-input bg-card px-2 py-1 text-xs"
             onChange={(event) => onMove(event.currentTarget.value as TaskStatus)}
           >
             {boardColumns.map(({ status, label }) => (

@@ -12,6 +12,7 @@ import { createTask, getTask, updateTask } from '../api/task.api';
 import type { TaskFields } from '../types/task.types';
 import { TaskLinks } from './SubtaskList';
 import { TaskForm } from './TaskForm';
+import { TaskMetadata } from './TaskMetadata';
 
 export function TaskDetailPage() {
   const { taskId = '' } = useParams();
@@ -68,95 +69,109 @@ function TaskDetail({ taskId }: { taskId: string }) {
   const item = task.data;
   const assignee = members.find(({ userId }) => userId === item.assigneeId);
   return (
-    <div className="mx-auto max-w-4xl space-y-5 px-page-gutter py-8">
+    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
       <Link to={`/projects/${projectId}/tasks`} className="underline">
         Back to project tasks
       </Link>
-      <h1 className="break-all text-2xl font-semibold">{item.title}</h1>
-      <p className="whitespace-pre-wrap break-words">{item.description}</p>
-      <p>
-        Priority {item.priority} · {item.status.replaceAll('_', ' ')}
-      </p>
-      <p>
-        Assignee:{' '}
-        {assignee?.user.displayName ?? (item.assigneeId ? 'Assigned member' : 'Unassigned')}
-      </p>
-      <p>Due date: {item.dueDate?.slice(0, 10) ?? 'None'}</p>
-      {item.parentId && (
-        <Link to={`/tasks/${item.parentId}`} className="underline">
-          Parent task
-        </Link>
-      )}
+      <h1 className="break-words text-2xl font-semibold">{item.title}</h1>
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(15rem,20rem)]">
+        <div className="min-w-0 space-y-5">
+          {item.description && (
+            <p className="whitespace-pre-wrap break-words">{item.description}</p>
+          )}
+          <Tabs defaultValue="details">
+            <TabsList className="h-auto max-w-full flex-wrap justify-start">
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="comments">Comments</TabsTrigger>
+              <TabsTrigger value="attachments">Attachments</TabsTrigger>
+            </TabsList>
 
-      <Tabs defaultValue="details">
-        <TabsList>
-          <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="comments">Comments</TabsTrigger>
-          <TabsTrigger value="attachments">Attachments</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="details" className="space-y-4 pt-4">
-          {access.isPending && <p role="status">Loading project permissions…</p>}
-          {access.isError && <p role="alert">{extractApiErrorMessage(access.error)}</p>}
-          {access.data?.project.status === 'ARCHIVED' && (
-            <p>This project is archived and read-only.</p>
-          )}
-          {canEdit && (
-            <TaskForm
-              key={item.version}
-              initial={item}
-              members={members}
-              label="Save task"
-              pending={edit.isPending || conflict}
-              onSubmit={(fields) => edit.mutate({ ...fields, version: item.version })}
-            />
-          )}
-          {conflict ? (
-            <div className="space-y-2">
-              <p role="alert">
-                This task was changed. Reload the latest version before saving again.
-              </p>
-              <Button
-                variant="outline"
-                disabled={task.isFetching}
-                onClick={() => {
-                  void task.refetch().then((result) => {
-                    if (result.isSuccess) edit.reset();
-                  });
-                }}
-              >
-                Reload task
-              </Button>
-            </div>
-          ) : (
-            edit.isError && <p role="alert">{extractApiErrorMessage(edit.error)}</p>
-          )}
-          {!item.parentId && (
-            <section className="space-y-3">
-              <h2 className="text-lg font-semibold">Subtasks</h2>
-              {item.subtasks.length ? <TaskLinks tasks={item.subtasks} /> : <p>No subtasks yet.</p>}
+            <TabsContent value="details" className="space-y-4 pt-4">
+              {access.isPending && <p role="status">Loading project permissions…</p>}
+              {access.isError && <p role="alert">{extractApiErrorMessage(access.error)}</p>}
+              {access.data?.project.status === 'ARCHIVED' && (
+                <p>This project is archived and read-only.</p>
+              )}
               {canEdit && (
                 <TaskForm
-                  key={addSubtask.data?.id ?? 'create'}
+                  key={item.version}
+                  initial={item}
                   members={members}
-                  label="Add subtask"
-                  pending={addSubtask.isPending}
-                  onSubmit={(fields) => addSubtask.mutate(fields)}
+                  label="Save task"
+                  pending={edit.isPending || conflict}
+                  onSubmit={(fields) => edit.mutate({ ...fields, version: item.version })}
                 />
               )}
-              {addSubtask.isError && <p role="alert">{extractApiErrorMessage(addSubtask.error)}</p>}
-            </section>
+              {conflict ? (
+                <div className="space-y-2">
+                  <p role="alert">
+                    This task was changed. Reload the latest version before saving again.
+                  </p>
+                  <Button
+                    variant="outline"
+                    disabled={task.isFetching}
+                    onClick={() => {
+                      void task.refetch().then((result) => {
+                        if (result.isSuccess) edit.reset();
+                      });
+                    }}
+                  >
+                    Reload task
+                  </Button>
+                </div>
+              ) : (
+                edit.isError && <p role="alert">{extractApiErrorMessage(edit.error)}</p>
+              )}
+              {!item.parentId && (
+                <section className="space-y-3 rounded-xl border bg-card p-4">
+                  <h2 className="text-lg font-semibold">Subtasks</h2>
+                  {item.subtasks.length ? (
+                    <TaskLinks tasks={item.subtasks} />
+                  ) : (
+                    <p>No subtasks yet.</p>
+                  )}
+                  {canEdit && (
+                    <TaskForm
+                      key={addSubtask.data?.id ?? 'create'}
+                      members={members}
+                      label="Add subtask"
+                      pending={addSubtask.isPending}
+                      onSubmit={(fields) => addSubtask.mutate(fields)}
+                    />
+                  )}
+                  {addSubtask.isError && (
+                    <p role="alert">{extractApiErrorMessage(addSubtask.error)}</p>
+                  )}
+                </section>
+              )}
+            </TabsContent>
+
+            <TabsContent value="comments" className="pt-4">
+              <CommentSection taskId={taskId} canWrite={canCollaborate} members={members} />
+            </TabsContent>
+
+            <TabsContent value="attachments" className="pt-4">
+              <AttachmentUploader taskId={taskId} canWrite={canCollaborate} />
+            </TabsContent>
+          </Tabs>
+        </div>
+        <aside
+          aria-label="Task metadata"
+          className="order-first min-w-0 self-start space-y-3 rounded-xl border bg-card p-4 lg:order-none"
+        >
+          <TaskMetadata task={item} />
+          <p className="break-words text-sm">
+            Assignee:{' '}
+            {assignee?.user.displayName ?? (item.assigneeId ? 'Assigned member' : 'Unassigned')}
+          </p>
+          {!item.dueDate && <p className="text-sm text-muted-foreground">No due date</p>}
+          {item.parentId && (
+            <Link to={`/tasks/${item.parentId}`} className="text-sm underline">
+              Parent task
+            </Link>
           )}
-        </TabsContent>
-
-        <TabsContent value="comments" className="pt-4">
-          <CommentSection taskId={taskId} canWrite={canCollaborate} members={members} />
-        </TabsContent>
-
-        <TabsContent value="attachments" className="pt-4">
-          <AttachmentUploader taskId={taskId} canWrite={canCollaborate} />
-        </TabsContent>
-      </Tabs>
+        </aside>
+      </div>
     </div>
   );
 }

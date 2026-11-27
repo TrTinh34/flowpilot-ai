@@ -97,7 +97,9 @@ it('reorders a card before another card via drag and drop', async () => {
   const dataTransfer = { setData: vi.fn() };
   fireEvent.dragStart(card, { dataTransfer });
   fireEvent.dragOver(target, { dataTransfer });
+  expect(target).toHaveAttribute('data-drop-target', 'true');
   fireEvent.drop(target, { dataTransfer });
+  expect(target).toHaveAttribute('data-drop-target', 'false');
   await waitFor(() =>
     expect(moveBoardTask).toHaveBeenCalledWith({
       taskId: 'second',

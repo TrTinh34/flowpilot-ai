@@ -2,6 +2,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
+import { ErrorState } from '@/components/common/ErrorState';
+import { LoadingState } from '@/components/common/LoadingState';
+import { PageHeader } from '@/components/common/PageHeader';
 import { loadBoardTasks, moveBoardTask } from '@/features/board/api/board.api';
 import { KanbanBoard } from '@/features/board/components/KanbanBoard';
 import { getProjectMembers } from '@/features/project/api/project.api';
@@ -40,18 +43,23 @@ function ProjectBoard({ projectId }: { projectId: string }) {
 
   return (
     <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
-      <Link to={`/projects/${projectId}/tasks`} className="underline">
+      <Link to={`/projects/${projectId}/tasks`} className="text-action-link underline">
         Project tasks
       </Link>
-      <h1 className="text-2xl font-semibold">
-        Kanban{access.data ? ` Â· ${access.data.project.name}` : ''}
-      </h1>
-      {(board.isPending || access.isPending) && <p role="status">Loading boardâ€¦</p>}
+      <PageHeader title="Kanban" description={access.data?.project.name} />
+      {(board.isPending || access.isPending) && <LoadingState label="Loading board" />}
       {(board.isError || access.isError) && (
-        <p role="alert">{extractApiErrorMessage(board.error ?? access.error)}</p>
+        <ErrorState
+          title="Could not load the board"
+          message={extractApiErrorMessage(board.error ?? access.error)}
+          onRetry={() => {
+            if (board.isError) void board.refetch();
+            if (access.isError) void access.refetch();
+          }}
+        />
       )}
       {access.data?.project.status === 'ARCHIVED' && <p>This project is archived and read-only.</p>}
-      {move.isPending && <p role="status">Updating boardâ€¦</p>}
+      {move.isPending && <p role="status">Updating board…</p>}
       {move.isError && (
         <p role="alert">
           {conflict
@@ -62,6 +70,9 @@ function ProjectBoard({ projectId }: { projectId: string }) {
       {board.isSuccess && access.isSuccess && (
         <KanbanBoard
           tasks={board.data}
+          assignees={
+            new Map(access.data.data.map(({ userId, user }) => [userId, user.displayName]))
+          }
           pending={move.isPending}
           canMove={(task) =>
             access.data.project.status === 'ACTIVE' &&

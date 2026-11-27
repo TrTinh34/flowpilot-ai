@@ -6,7 +6,7 @@
 | Task Name | Kanban Board & Task Details |
 | Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 8h |
 | Dependencies | REDESIGN-09 |
 | Related Requirements | Board và Task Detail · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,10 +48,10 @@ Move bằng keyboard và focus hợp lý.
 PATCH move thật, 409 tải lại; preserve access.
 
 ## Implementation Checklist
-- [ ] Style cards
-- [ ] feedback
-- [ ] detail
-- [ ] conflict smoke
+- [x] Style cards
+- [x] feedback
+- [x] detail
+- [x] conflict smoke
 
 ## Expected Deliverables
 Board và Detail UI.
@@ -67,6 +67,8 @@ RTL/a11y và browser board.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo triển khai](../../../reports/frontend-redesign/REDESIGN-10-kanban.md).
 
 ## Next Task
 REDESIGN-11.
