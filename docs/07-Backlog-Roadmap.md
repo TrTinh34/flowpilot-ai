@@ -28,8 +28,8 @@
 
 - REDESIGN-06 hoàn thành Dashboard với My Tasks dùng API thật và Demo chỉ bật trong dev. Timebox B đạt 6/6 task, chờ Developer Review. [Báo cáo REDESIGN-06](reports/frontend-redesign/REDESIGN-06-dashboard.md)
 
-- [Sprint 08 — Timebox C](sprints/sprint-08-frontend-collaboration-quality/README.md) đã mở với REDESIGN-11. [Báo cáo REDESIGN-11](reports/frontend-redesign/REDESIGN-11-collaboration.md)
-- Re-audit & Refinement Planning (`ui-ux-pro-max`): Đã đánh giá lại `REDESIGN-01..11` và đề xuất nhánh `REFINE-01..07` (~31h triển khai trong Timebox R riêng trước `REDESIGN-12..16`), chờ Developer Review. [Re-audit](reports/frontend-redesign/frontend-reaudit-report.md) · [Refinement Planning](reports/frontend-redesign/refinement-planning-report.md)
+- [Sprint 08 — Timebox C](sprints/sprint-08-frontend-collaboration-quality/README.md) đã hoàn thành `6/6` task (`REDESIGN-11..16`), chờ Developer Review. [REDESIGN-11](reports/frontend-redesign/REDESIGN-11-collaboration.md) · [REDESIGN-12](reports/frontend-redesign/REDESIGN-12-notifications.md) · [REDESIGN-13](reports/frontend-redesign/REDESIGN-13-ai-planner.md) · [REDESIGN-14](reports/frontend-redesign/REDESIGN-14-settings.md) · [REDESIGN-15](reports/frontend-redesign/REDESIGN-15-responsive-accessibility.md) · [REDESIGN-16](reports/frontend-redesign/REDESIGN-16-visual-qa.md)
+- Re-audit & Refinement (`ui-ux-pro-max`): Hoàn thành `REFINE-03..07` (Design System V2, Shared UI & Shell, toàn bộ màn core, Chrome E2E QA & Lighthouse Accessibility `100`); `typecheck`, `lint` (0 warnings), `format`, `97/97` tests (`16/16` files) và `build` (`498.48 kB`, `0` fixture leaks) đều `PASSED`. [Implementation Report](reports/frontend-redesign/REFINE-03-to-06-implementation.md) · [REFINE-07](reports/frontend-redesign/REFINE-07-regression-visual-qa.md) · [Re-audit](reports/frontend-redesign/frontend-reaudit-report.md) · [Refinement Planning](reports/frontend-redesign/refinement-planning-report.md)
 
 ## Backlog
 

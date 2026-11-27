@@ -6,7 +6,7 @@
 | Task Name | Frontend Integration & Visual QA |
 | Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
 | Priority | P0 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 8h |
 | Dependencies | REDESIGN-05–15, REFINE-07 |
 | Related Requirements | Toàn app · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,10 +48,10 @@ Manual keyboard + checks WCAG mục tiêu.
 Real integrations/permissions preserved; demo on/off.
 
 ## Implementation Checklist
-- [ ] Chạy checks
-- [ ] smoke
-- [ ] compare
-- [ ] publish report
+- [x] Chạy checks
+- [x] smoke
+- [x] compare
+- [x] publish report
 
 ## Expected Deliverables
 QA matrix, screenshots, sign-off.

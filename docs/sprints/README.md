@@ -11,7 +11,7 @@
 | Sprint 05 | Collaboration | Bình luận, mention và tệp đính kèm trên Task Detail | COMPLETED | 5/5 task. GitHub Actions đạt. | Hoàn tất | [Sprint 05](sprint-05-collaboration/README.md) |
 | Sprint 06 | Frontend Redesign & UI/UX Enhancement | Design System, shared UI, shell và baseline cho redesign MVP | COMPLETED | Timebox A đạt 5/5 task | Hoàn tất | [Sprint 06](sprint-06-frontend-redesign/README.md) |
 | Sprint 07 | Frontend Redesign · Core flows | Redesign Auth, Dashboard, Workspace, Projects, Task Lists và Kanban | IN_PROGRESS | Timebox B · 6/6 task, chờ Developer Review | Sprint 06 | [Sprint 07](sprint-07-frontend-core-flows/README.md) |
-| Sprint 08 | Frontend Redesign · Collaboration & Quality | Collaboration, Notifications, AI, Settings, responsive accessibility và Visual QA (kèm đề xuất Timebox R · Refinement) | IN_PROGRESS | Timebox C · 1/6 task + Refinement Planning (REFINE-01..02 IN_REVIEW) | Sprint 07 | [Sprint 08](sprint-08-frontend-collaboration-quality/README.md) |
+| Sprint 08 | Frontend Redesign · Collaboration & Quality | Collaboration, Notifications, AI, Settings, responsive accessibility và Visual QA (kèm Timebox R · Refinement) | IN_PROGRESS | Timebox C · 6/6 task (`REDESIGN-11..16` COMPLETED, chờ Developer Review) · Timebox R (`REFINE-03..07` COMPLETED) | Sprint 07 | [Sprint 08](sprint-08-frontend-collaboration-quality/README.md) |
 
 ## Nguồn quản lý
 
