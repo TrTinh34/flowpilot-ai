@@ -8,8 +8,8 @@
 | Priority | P0 |
 | Status | PENDING |
 | Estimated Effort | 7h |
-| Dependencies | REDESIGN-05–14 |
-| Related Requirements | Toàn app · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
+| Dependencies | REDESIGN-05–14, REFINE-07 |
+| Related Requirements | Toàn app · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
 
 ## Current Implementation
 Chưa có chứng cứ đủ viewport/a11y.
@@ -42,7 +42,7 @@ Rà các primitives và route states.
 360/390/768/1024/1280/1440/1920.
 
 ## Accessibility Requirements
-WCAG 2.2 AA target, keyboard/no trap/visible focus, 200% zoom.
+WCAG 2.2 AA target (bao gồm mục tiêu `ui-ux-pro-max` CRITICAL/HIGH): contrast `>= 4.5:1` text / `>= 3:1` UI controls cho cả Light & Dark, focus-not-obscured (`scroll-padding-top`), keyboard-only navigation, dialog focus trap/return, 200% zoom, `prefers-reduced-motion`, không dùng emoji làm icon.
 
 ## API Integration Requirements
 Verify states real/demo bằng fixtures/test env.

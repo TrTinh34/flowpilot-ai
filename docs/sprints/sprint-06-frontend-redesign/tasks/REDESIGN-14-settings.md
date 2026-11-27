@@ -8,8 +8,8 @@
 | Priority | P1 |
 | Status | PENDING |
 | Estimated Effort | 4h |
-| Dependencies | REDESIGN-04, REDESIGN-07 |
-| Related Requirements | Profile · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
+| Dependencies | REDESIGN-04, REDESIGN-07, REFINE-03, REFINE-04 |
+| Related Requirements | Profile · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
 
 ## Current Implementation
 Thông tin từ auth store, không update API.
@@ -33,30 +33,30 @@ Reading width, sections Account / Workspace.
 Reuse auth query/store, giữ logout behavior.
 
 ## Component Requirements
-Avatar, SectionHeader, read-only fields.
+PageHeader, Avatar (`size="lg"`), Card (`rounded-[var(--radius-md)] border-border`), read-only `<dl>` account fields, link tới Workspace Settings (`/workspaces`).
 
 ## Layout Requirements
-Settings tối đa 760px.
+Settings tối đa 760px, tuân thủ Design System V2 (xóa inline avatar tự chế, `rounded-xl`, và các đoạn text hứa hẹn tính năng tương lai).
 
 ## Responsive Requirements
-390 single column và email wrap.
+390/360 single column và email wrap (`[overflow-wrap:anywhere]`).
 
 ## Accessibility Requirements
-Heading, links có tên, no tab stops giả.
+Heading một cấp `<h1>`, links có accessible name, no tab stops giả.
 
 ## API Integration Requirements
 GET /auth/me hỗ trợ read.
 
 ## Implementation Checklist
-- [ ] Nhóm dữ liệu
-- [ ] nav thật
-- [ ] màn hẹp
+- [ ] Bỏ thông tin lặp và bỏ text hứa hẹn tính năng chưa có
+- [ ] Áp Design System V2 (`PageHeader`, `Avatar`, `Card`)
+- [ ] Thêm link điều hướng Workspace Settings thật và test màn hẹp 360px
 
 ## Expected Deliverables
-Profile/Settings UI.
+Profile/Settings UI theo Design System V2.
 
 ## Acceptance Criteria
-Không hiện action edit giả, link Workspace Settings đúng, email không tràn.
+Không hiện action edit giả hay lời hứa tính năng, link Workspace Settings đúng, email không tràn ở 360px, không lặp dữ liệu tên/email 2 lần.
 
 ## Testing Requirements
 RTL auth states và mobile browser.

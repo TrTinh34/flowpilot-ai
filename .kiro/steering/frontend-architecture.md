@@ -19,7 +19,7 @@ Frontend áp dụng **Feature-based Architecture** kết hợp Layered Architect
 | `src/components/common/` | Shared app-level components (ErrorBoundary, EmptyState, ErrorState, LoadingState) |
 | `src/layouts/` | AuthLayout, AppShellLayout |
 | `src/features/<name>/` | Business-specific: api/, components/, schemas/ (Zod), types/ |
-| `src/pages/` | Route-level composition chỉ — không chứa logic |
+| `src/pages/` | Route-level composition chỉ — không chứa logic; mọi page trong `AppRouter.tsx` phải nằm tại đây (`pages/task/TaskDetailPage.tsx`) |
 | `src/hooks/` | Reusable React hooks |
 | `src/services/` | Shared HTTP client infrastructure (api-client.ts) |
 | `src/lib/` | Library config: env.ts, query-client.ts |
@@ -85,6 +85,9 @@ Dùng Tailwind utility classes tham chiếu tokens. Không hardcode màu hex tro
 - Không import circular
 - Không localStorage cho tokens
 - Không sử dụng placeholder thay cho label trong forms
+- Không export Page component từ `features/` (luôn đặt tại `src/pages/`)
+- Không để mock/demo fixture chạy hoặc rò rỉ vào production (`DEV && VITE_USE_MOCK_API === 'true'`)
+- Hỗ trợ route-level code splitting (`React.lazy` + `Suspense`) trong `AppRouter.tsx` để giữ main bundle gọn
 
 ## Testing
 

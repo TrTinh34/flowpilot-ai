@@ -29,6 +29,7 @@
 - REDESIGN-06 hoàn thành Dashboard với My Tasks dùng API thật và Demo chỉ bật trong dev. Timebox B đạt 6/6 task, chờ Developer Review. [Báo cáo REDESIGN-06](reports/frontend-redesign/REDESIGN-06-dashboard.md)
 
 - [Sprint 08 — Timebox C](sprints/sprint-08-frontend-collaboration-quality/README.md) đã mở với REDESIGN-11. [Báo cáo REDESIGN-11](reports/frontend-redesign/REDESIGN-11-collaboration.md)
+- Re-audit & Refinement Planning (`ui-ux-pro-max`): Đã đánh giá lại `REDESIGN-01..11` và đề xuất nhánh `REFINE-01..07` (~31h triển khai trong Timebox R riêng trước `REDESIGN-12..16`), chờ Developer Review. [Re-audit](reports/frontend-redesign/frontend-reaudit-report.md) · [Refinement Planning](reports/frontend-redesign/refinement-planning-report.md)
 
 ## Backlog
 

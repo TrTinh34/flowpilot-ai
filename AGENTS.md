@@ -50,8 +50,12 @@ Postman CLI is installed on this device, and can be used for API Engineering wor
 - Access token: lưu in-memory trong Zustand. Không bao giờ lưu vào localStorage. Refresh token là HttpOnly cookie — không đọc từ JS.
 - Design system: CSS custom properties trong `styles/index.css`. Tailwind v4 `@theme` extension. Không hardcode hex color trong components.
 - Mock API: check `import.meta.env.VITE_USE_MOCK_API`. Mock fixtures trong `mocks/fixtures/`. Không bao giờ enable mock trong production.
-- Trước khi implement UI, đọc Task Spec của Sprint đang được giao và Design System đã duyệt. Với Sprint 06, xem `docs/sprints/sprint-06-frontend-redesign/README.md` và `docs/design/frontend/`.
-- Với redesign, chờ duyệt visual direction và task tương ứng. Giữ API thật và hiển thị lỗi thật, chỉ dùng Demo với feature được phép. Kiểm chứng màn render, keyboard và responsive theo Task Spec, ghi evidence trong Development Report.
+- Trước khi implement UI được giao, bắt buộc đọc:
+  1. `.agents/skills/ui-ux-pro-max/SKILL.md` (áp dụng `--design-system`, `--domain`, `--stack` khi thiết kế/sửa UI — không áp dụng cho task backend-only).
+  2. Design System đã duyệt ([Design System](docs/design/frontend/design-system.md)), [Component Inventory](docs/design/frontend/component-inventory.md) và [Screen Specs](docs/design/frontend/screen-specifications.md).
+  3. Task Spec & source code hiện có của feature tương ứng.
+- Tái sử dụng shared UI trong `components/ui/` và `components/common/` (`Select`, `Textarea`, `Avatar`, `StatusBadge`, `PriorityBadge`, `ConfirmDialog`, `PageHeader`, `LoadingState`, `EmptyState`, `ErrorState`, `FormErrorBanner`); không viết CSS class trùng lặp, không dùng `border` trơn (luôn dùng `border-border` / `border-input`), không dùng `rounded-xl` cho card (`rounded-[var(--radius-md)]`), không dùng emoji làm icon.
+- Giữ API contracts, auth security behavior và architectural boundaries. Giữ API thật và hiển thị lỗi thật, chỉ dùng Demo với feature được phép (`DEV && VITE_USE_MOCK_API === 'true'`). Kiểm chứng giao diện render thực tế, keyboard và responsive (`360–1920px`) theo Task Spec, ghi evidence trong Development Report và cập nhật trạng thái Task dựa trên bằng chứng đã xác minh.
 - Viết ít nhất render + interaction + error state tests cho mỗi component mới (Vitest + RTL).
 - Chạy `npm --prefix frontend run typecheck`, `lint`, `test`, `build` trước khi đóng Task.
 - Reports frontend: `docs/reports/frontend/`.

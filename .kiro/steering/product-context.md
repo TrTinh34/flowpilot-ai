@@ -53,10 +53,10 @@ d:\flowpilot-ai\
 
 ## Trạng thái triển khai hiện tại
 
-- Backend AUTH-01 → AUTH-05: COMPLETED (Register, Login, Refresh, Logout APIs)
-- AUTH-06, AUTH-07, AUTH-INT-01: PARTIAL
-- AUTH-08 (UI/UX Design): PENDING — đây là scope hiện tại
-- AUTH-09 → AUTH-12: PENDING
+- Backend Sprints 01–03 & 05: COMPLETED (`auth` Clean Architecture; `workspace`, `project`, `task`, `board`, `collaboration` mounted và verified trên PostgreSQL test).
+- Frontend Sprints 04, 06 (Timebox A 5/5), 07 (Timebox B 6/6, chờ Developer Review), 08 (`REDESIGN-11` COMPLETED; `REDESIGN-12..16` PENDING).
+- Đang ở giai đoạn **Frontend Re-audit & Refinement Planning** (`REFINE-01..02` `IN_REVIEW`, `REFINE-03..07` `PENDING` chờ Developer Approval).
+- Nguồn trạng thái chính thức: `docs/sprints/README.md` và `docs/reports/README.md`.
 
 ## Security model
 

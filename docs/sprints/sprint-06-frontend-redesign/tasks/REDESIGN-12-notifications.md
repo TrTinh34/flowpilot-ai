@@ -8,8 +8,8 @@
 | Priority | P1 |
 | Status | PENDING |
 | Estimated Effort | 6h |
-| Dependencies | REDESIGN-04 |
-| Related Requirements | Bell và Inbox · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
+| Dependencies | REDESIGN-04, REFINE-03, REFINE-04 |
+| Related Requirements | Bell và Inbox · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
 
 ## Current Implementation
 Hai state fixture riêng.
@@ -33,30 +33,31 @@ Reading column, All/Unread, action theo khả năng.
 Demo store source duy nhất, adapter chỉ bật dev flag.
 
 ## Component Requirements
-Bell, NotificationRow, tabs, EmptyState.
+NotificationBell, shared Notification store/adapter, Tabs (`All` / `Unread`), Badge, Button, EmptyState; xóa stub `NotificationInbox.tsx` nếu không dùng hoặc chuyển thành component thật.
 
 ## Layout Requirements
-Reading width ≤820px.
+Reading width ≤820px; tuân thủ Design System V2 (`rounded-[var(--radius-md)]`, `border-border`, `tabular-nums`, không hardcode hex).
 
 ## Responsive Requirements
-360 rows wrap và mark action có chỗ.
+360 rows wrap và mark action có chỗ (`>= 24px` target / `44px` mobile hit area).
 
 ## Accessibility Requirements
-Unread có label, bell accessible name.
+Unread có label (`role="status"` cập nhật số lượng có ngữ cảnh), bell accessible name, keyboard Escape trả focus.
 
 ## API Integration Requirements
-Demo khi có flag; routes OpenAPI chưa mount.
+Demo chỉ bật khi `import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true'`; production hiển thị EmptyState thật; routes OpenAPI chưa mount.
 
 ## Implementation Checklist
-- [ ] Tách fixtures
-- [ ] đồng bộ actions
-- [ ] test mode
+- [ ] Tách fixtures và áp guard `VITE_USE_MOCK_API`
+- [ ] Đồng bộ state giữa Bell và Inbox
+- [ ] Áp Design System V2 tokens, Tabs, Badge, EmptyState và xóa hardcoded hex
+- [ ] Test mode on/off và production bundle
 
 ## Expected Deliverables
-Inbox/Bell dùng cùng state.
+Inbox/Bell dùng cùng state theo Design System V2.
 
 ## Acceptance Criteria
-Mark read ở bell cập nhật inbox ngay; demo off không có fixture.
+Mark read ở bell cập nhật inbox ngay; demo off/production không seed `mockNotifications`; zero hardcoded colors hay `rounded-xl` trên panel.
 
 ## Testing Requirements
 RTL grouped/read sync, browser keyboard.

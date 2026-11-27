@@ -8,8 +8,8 @@
 | Priority | P0 |
 | Status | PENDING |
 | Estimated Effort | 8h |
-| Dependencies | REDESIGN-05–15 |
-| Related Requirements | Toàn app · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
+| Dependencies | REDESIGN-05–15, REFINE-07 |
+| Related Requirements | Toàn app · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
 
 ## Current Implementation
 CI unit/RTL sẵn có và baseline mới.
@@ -57,7 +57,7 @@ Real integrations/permissions preserved; demo on/off.
 QA matrix, screenshots, sign-off.
 
 ## Acceptance Criteria
-Mỗi screen có before/after, states/error, hai mode, zero lỗi P0/P1 mở và pass CI nếu được giao.
+Mỗi screen (`REDESIGN-05..14` + `REFINE-03..06`) có before/after, states/error, kiểm tra Live vs Demo mode (production không lộ mock fixture ở Notifications/Dashboard/AI), zero lỗi P0/P1 mở, zero ESLint warnings, bundle check và pass CI nếu được giao.
 
 ## Testing Requirements
 typecheck/lint/format/build/test, browser network/keyboard và route regression.
