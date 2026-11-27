@@ -16,6 +16,7 @@
 
 - Ưu tiên design tokens, shared UI và shell, sau đó nâng cấp core screens và QA qua các timebox tiếp theo. [Sprint Backlog](sprints/sprint-06-frontend-redesign/README.md#sprint-backlog)
 - REDESIGN-02 đã áp dụng Design System và kiểm tra trên Edge. [Báo cáo REDESIGN-02](reports/frontend-redesign/REDESIGN-02-design-system.md)
+- REDESIGN-03 đã áp dụng shared UI cho Projects và task lists. [Báo cáo REDESIGN-03](reports/frontend-redesign/REDESIGN-03-shared-components.md)
 - My Tasks local có corrective task riêng cho schema đã thiếu. Notification, Dashboard/audit và AI backend giữ nguyên backlog feature. [Frontend Audit](design/frontend/frontend-audit.md)
 
 ## Backlog

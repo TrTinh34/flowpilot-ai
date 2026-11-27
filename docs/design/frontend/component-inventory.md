@@ -12,3 +12,14 @@
 | Date Picker, Progress, Skeleton, Toast, Empty, Error | Native date, progress/ad hoc status | Dùng native date trước; progress có label; skeleton cùng kích thước; empty CTA theo quyền; retry và lỗi validation theo trường |
 
 Size/contrast ở [Design System](design-system.md). Shared primitive đặt trong `components/ui`, composition dùng chung đặt `components/common`, card có business rules ở feature. Giữ API, state và data mapping ở feature. Chỉ hợp nhất sau khi kiểm tra caller và snapshots hiện tại.
+
+## Component đã dùng trong REDESIGN-03
+
+| Component | Caller | Quy ước |
+|---|---|---|
+| `PageHeader` | Projects, My Tasks, Project Tasks | Một H1, action slot có thể xuống dòng |
+| `LoadingState`, `EmptyState`, `ErrorState` | Projects, My Tasks, Project Tasks | Skeleton có nhãn status. Empty có heading và action tùy quyền. Error dùng alert và nhận callback Retry |
+| `Pagination` | Projects, My Tasks, Project Tasks | Nhận page/hasNext từ caller, ẩn khi trang đầu không có bước kế tiếp |
+| `FieldLabel` | Create Project và Task Form | Label liên kết control bằng ID |
+| `Dialog` | Create Project | Radix modal, có title/description, giữ và trả focus. Busy khóa đóng và submit theo caller |
+| `Badge` | Project status | Luôn có chữ Active hoặc Archived bên cạnh màu |

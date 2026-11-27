@@ -6,7 +6,7 @@
 | Task Name | Shared UI Components |
 | Sprint ID | Sprint 06 · Timebox A |
 | Priority | P0 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 8h |
 | Dependencies | REDESIGN-02 |
 | Related Requirements | Shared components · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Accessible names, Escape, focus restore, live region.
 Components chỉ nhận props/status.
 
 ## Implementation Checklist
-- [ ] Rà callers
-- [ ] bổ sung variants/states
-- [ ] RTL
+- [x] Rà callers
+- [x] Bổ sung variants và states
+- [x] Kiểm thử RTL và Edge
 
 ## Expected Deliverables
 Primitives và ví dụ thật.
@@ -66,6 +66,8 @@ RTL render/interaction/error, keyboard, lint/build.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo REDESIGN-03](../../../reports/frontend-redesign/REDESIGN-03-shared-components.md).
 
 ## Next Task
 REDESIGN-04.

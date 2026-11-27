@@ -78,4 +78,4 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Sprint 4 — Frontend Foundation Implementation | 9/9 Tasks COMPLETED. AppShell, Dashboard, Notifications, Collaboration, AI Planner, Settings, 69 tests pass. |
 | Sprint 5 — Collaboration | Hoàn thành 5/5 task. PostgreSQL, fake storage, Edge và GitHub Actions đều đạt. |
 | Sprint 6 — Frontend Redesign Planning | Audit, direction và task specs chờ developer review. [Báo cáo planning](frontend-redesign/sprint-planning-report.md) |
-| Sprint 6 — Frontend Redesign Implementation | Timebox A đạt 2/5 task. [REDESIGN-02 — Design System](frontend-redesign/REDESIGN-02-design-system.md) |
+| Sprint 6 — Frontend Redesign Implementation | Timebox A đạt 3/5 task. [REDESIGN-02 — Design System](frontend-redesign/REDESIGN-02-design-system.md) · [REDESIGN-03 — Shared UI](frontend-redesign/REDESIGN-03-shared-components.md) |

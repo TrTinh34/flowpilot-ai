@@ -1,10 +1,15 @@
-import { useState, type FormEvent } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
+import { LoadingState } from '@/components/common/LoadingState';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Pagination } from '@/components/common/Pagination';
+import { Badge } from '@/components/ui/badge';
 import { createProject, listProjects } from '@/features/project/api/project.api';
+import { CreateProjectDialog } from '@/features/project/components/CreateProjectDialog';
 import { listWorkspaceMembers } from '@/features/workspace/api/workspace.api';
 import { extractApiErrorMessage } from '@/services/api-client';
 
@@ -16,8 +21,6 @@ export function ProjectsPage() {
 function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
   const revision = useAuthStore((state) => state.sessionRevision);
   const [page, setPage] = useState(0);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState('');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const directory = useQuery({
@@ -29,85 +32,73 @@ function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
     queryFn: () => listProjects(workspaceId, page),
   });
   const role = directory.data?.workspace.role;
+  const canCreate = directory.isSuccess && (role === 'OWNER' || role === 'ADMIN');
 
-  async function create(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const values = new FormData(event.currentTarget);
-    setPending(true);
-    setError('');
-    try {
-      const project = await createProject(workspaceId, {
-        name: String(values.get('name') ?? ''),
-        managerId: String(values.get('managerId') ?? ''),
-      });
-      await queryClient.invalidateQueries({ queryKey: ['projects', revision, workspaceId] });
-      navigate(`/projects/${project.id}`);
-    } catch (cause) {
-      setError(extractApiErrorMessage(cause));
-    } finally {
-      setPending(false);
-    }
+  async function create(input: { name: string; managerId: string }) {
+    const project = await createProject(workspaceId, input);
+    await queryClient.invalidateQueries({ queryKey: ['projects', revision, workspaceId] });
+    navigate(`/projects/${project.id}`);
   }
 
   return (
     <main className="mx-auto max-w-4xl space-y-5 px-5 py-10">
-      <Link to={`/workspaces?workspace=${workspaceId}`} className="underline">
+      <Link to={`/workspaces?workspace=${workspaceId}`} className="text-action-link underline">
         Back to workspace
       </Link>
-      <h1 className="text-2xl font-semibold">
-        Projects{directory.data ? ` · ${directory.data.workspace.name}` : ''}
-      </h1>
-      {(role === 'OWNER' || role === 'ADMIN') && (
-        <form className="flex flex-wrap items-end gap-3" onSubmit={(event) => void create(event)}>
-          <label className="grid gap-1">
-            Project name
-            <Input name="name" required />
-          </label>
-          <label className="grid gap-1">
-            Project manager
-            <select name="managerId" required defaultValue="">
-              <option value="" disabled>
-                Select a member
-              </option>
-              {directory.data?.data.map((member) => (
-                <option key={member.userId} value={member.userId}>
-                  {member.user.displayName}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button disabled={pending}>Create project</Button>
-        </form>
+      <PageHeader
+        title={directory.data ? `Projects · ${directory.data.workspace.name}` : 'Projects'}
+        actions={
+          canCreate && <CreateProjectDialog members={directory.data.data} onCreate={create} />
+        }
+      />
+      {directory.isError && (
+        <ErrorState
+          title="Could not load workspace details"
+          message={extractApiErrorMessage(directory.error)}
+          onRetry={() => void directory.refetch()}
+        />
       )}
-      {error && <p role="alert">{error}</p>}
-      {projects.isPending && <p role="status">Loading projects…</p>}
-      {projects.isError && <p role="alert">{extractApiErrorMessage(projects.error)}</p>}
-      {projects.data?.data.length === 0 && <p>No projects on this page.</p>}
-      <ul className="space-y-2">
-        {projects.data?.data.map((project) => (
-          <li
-            key={project.id}
-            className="flex items-center justify-between gap-3 rounded border p-3"
-          >
-            <Link to={`/projects/${project.id}`} className="min-w-0 break-all underline">
-              {project.name}
-            </Link>
-            <span>{project.status === 'ARCHIVED' ? 'Archived' : 'Active'}</span>
-          </li>
+      {projects.isPending && <LoadingState label="Loading projects" />}
+      {projects.isError && (
+        <ErrorState
+          title="Could not load projects"
+          message={extractApiErrorMessage(projects.error)}
+          onRetry={() => void projects.refetch()}
+        />
+      )}
+      {projects.isSuccess &&
+        (projects.data.data.length ? (
+          <ul className="space-y-2">
+            {projects.data.data.map((project) => (
+              <li
+                key={project.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-md)] border border-border bg-card p-3"
+              >
+                <Link
+                  to={`/projects/${project.id}`}
+                  className="min-w-0 break-words text-action-link underline"
+                >
+                  {project.name}
+                </Link>
+                <Badge tone={project.status === 'ACTIVE' ? 'success' : 'neutral'}>
+                  {project.status === 'ARCHIVED' ? 'Archived' : 'Active'}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState
+            title="No projects on this page."
+            description={
+              canCreate ? 'Create a project to organize your workspace’s tasks.' : undefined
+            }
+          />
         ))}
-      </ul>
-      <div className="flex gap-2">
-        <Button variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          disabled={!projects.data || projects.data.data.length < projects.data.size}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </Button>
-      </div>
+      <Pagination
+        page={page}
+        hasNext={projects.isSuccess && projects.data.data.length >= projects.data.size}
+        onPageChange={setPage}
+      />
     </main>
   );
 }

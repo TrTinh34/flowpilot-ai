@@ -1,5 +1,6 @@
 import { useId, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
+import { FieldLabel } from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
 import type { ProjectMember } from '@/features/project/api/project.api';
 import { taskPriorities, type TaskFields, type TaskPriority } from '../types/task.types';
@@ -16,6 +17,7 @@ export function TaskForm({ initial, members, onSubmit, pending, label }: Props) 
   const titleId = useId();
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending) return;
     const fields = new FormData(event.currentTarget);
     const title = String(fields.get('title') ?? '').trim();
     if (!title) {
@@ -37,14 +39,15 @@ export function TaskForm({ initial, members, onSubmit, pending, label }: Props) 
 
   return (
     <form className="grid max-w-xl gap-3 rounded border p-4" onSubmit={submit}>
-      <label htmlFor={titleId}>Task title</label>
-      <Input
-        id={titleId}
-        name="title"
-        required
-        defaultValue={initial?.title}
-        onInput={(event) => event.currentTarget.setCustomValidity('')}
-      />
+      <FieldLabel label="Task title" htmlFor={titleId}>
+        <Input
+          id={titleId}
+          name="title"
+          required
+          defaultValue={initial?.title}
+          onInput={(event) => event.currentTarget.setCustomValidity('')}
+        />
+      </FieldLabel>
       <label className="grid gap-1">
         Description
         <textarea

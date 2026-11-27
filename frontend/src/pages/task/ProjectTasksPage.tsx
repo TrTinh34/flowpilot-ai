@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
-import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
+import { LoadingState } from '@/components/common/LoadingState';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Pagination } from '@/components/common/Pagination';
 import { getProjectMembers } from '@/features/project/api/project.api';
 import { createTask, listProjectTasks } from '@/features/task/api/task.api';
 import { TaskLinks } from '@/features/task/components/SubtaskList';
@@ -45,11 +49,21 @@ function ProjectTasks({ projectId }: { projectId: string }) {
       <Link to={`/projects/${projectId}`} className="underline">
         Project settings
       </Link>
-      <h1 className="text-2xl font-semibold">Project tasks</h1>
-      {project.data?.project.name && <p>{project.data.project.name}</p>}
-      {(tasks.isPending || project.isPending) && <p role="status">Loading project tasks…</p>}
-      {(tasks.isError || project.isError) && (
-        <p role="alert">{extractApiErrorMessage(tasks.error ?? project.error)}</p>
+      <PageHeader title="Project tasks" description={project.data?.project.name} />
+      {(tasks.isPending || project.isPending) && <LoadingState label="Loading project tasks" />}
+      {tasks.isError && (
+        <ErrorState
+          title="Could not load project tasks"
+          message={extractApiErrorMessage(tasks.error)}
+          onRetry={() => void tasks.refetch()}
+        />
+      )}
+      {project.isError && (
+        <ErrorState
+          title="Could not load project details"
+          message={extractApiErrorMessage(project.error)}
+          onRetry={() => void project.refetch()}
+        />
       )}
       {project.data?.canManage && project.data.project.status === 'ACTIVE' && (
         <TaskForm
@@ -60,24 +74,17 @@ function ProjectTasks({ projectId }: { projectId: string }) {
         />
       )}
       {create.isError && <p role="alert">{extractApiErrorMessage(create.error)}</p>}
-      {tasks.data &&
+      {tasks.isSuccess &&
         (tasks.data.data.length ? (
           <TaskLinks tasks={tasks.data.data} />
         ) : (
-          <p>No tasks on this page.</p>
+          <EmptyState title="No tasks on this page." />
         ))}
-      <div className="flex gap-2">
-        <Button variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          disabled={!tasks.data || tasks.data.data.length < tasks.data.size}
-          onClick={() => setPage(page + 1)}
-        >
-          Next
-        </Button>
-      </div>
+      <Pagination
+        page={page}
+        hasNext={tasks.isSuccess && tasks.data.data.length >= tasks.data.size}
+        onPageChange={setPage}
+      />
     </main>
   );
 }
