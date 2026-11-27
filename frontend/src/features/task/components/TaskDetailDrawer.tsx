@@ -29,6 +29,7 @@ function TaskDetail({ taskId }: { taskId: string }) {
     enabled: Boolean(projectId),
   });
   const canEdit = access.data?.canManage && access.data.project.status === 'ACTIVE';
+  const canCollaborate = access.data?.project.status === 'ACTIVE';
   const members = access.data?.data ?? [];
 
   async function reconcile() {
@@ -149,11 +150,11 @@ function TaskDetail({ taskId }: { taskId: string }) {
         </TabsContent>
 
         <TabsContent value="comments" className="pt-4">
-          <CommentSection />
+          <CommentSection taskId={taskId} canWrite={canCollaborate} members={members} />
         </TabsContent>
 
         <TabsContent value="attachments" className="pt-4">
-          <AttachmentUploader />
+          <AttachmentUploader taskId={taskId} canWrite={canCollaborate} />
         </TabsContent>
       </Tabs>
     </main>

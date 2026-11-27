@@ -1,103 +1,127 @@
-import { useRef, useState } from 'react';
-import { Send } from 'lucide-react';
-import { mockComments, type Comment } from '@/mocks/fixtures/collaboration.fixtures';
-import { cn } from '@/utils/cn.util';
+﻿import { useState, type FormEvent } from 'react';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@/app/store/auth.store';
+import { Button } from '@/components/ui/button';
+import type { ProjectMember } from '@/features/project/api/project.api';
+import { extractApiErrorMessage } from '@/services/api-client';
+import { listComments, postComment } from '../api/collaboration.api';
 
-function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const h = Math.floor(diff / 3_600_000);
-  if (h < 1) return 'just now';
-  if (h < 24) return `${h}h ago`;
-  return `${Math.floor(h / 24)}d ago`;
+interface Props {
+  taskId: string;
+  canWrite: boolean;
+  members: ProjectMember[];
 }
 
-/** Task comment thread with mock data. Backend API will replace mock when ready. */
-export function CommentSection() {
-  const [comments, setComments] = useState<Comment[]>(mockComments);
-  const [text, setText] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+export function CommentSection({ taskId, canWrite, members }: Props) {
+  const revision = useAuthStore((state) => state.sessionRevision);
+  const client = useQueryClient();
+  const [body, setBody] = useState('');
+  const [mentionIds, setMentionIds] = useState<string[]>([]);
+  const key = ['task-comments', revision, taskId];
+  const comments = useInfiniteQuery({
+    queryKey: key,
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) => listComments(taskId, pageParam),
+    getNextPageParam: (last) => (last.data.length === last.size ? last.page + 1 : undefined),
+  });
+  const post = useMutation({
+    mutationFn: (input: { body: string; mentionIds: string[] }) => postComment(taskId, input),
+    onSuccess: async () => {
+      setBody('');
+      setMentionIds([]);
+      await client.invalidateQueries({ queryKey: key });
+    },
+  });
 
-  function handleSubmit() {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    setComments((prev) => [
-      ...prev,
-      {
-        id: `c-${Date.now()}`,
-        authorName: 'You',
-        content: trimmed,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-    setText('');
-    textareaRef.current?.focus();
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    if (canWrite && body.trim() && mentionIds.length <= 100 && !post.isPending) {
+      post.mutate({ body: body.trim(), mentionIds });
+    }
   }
 
+  const thread = comments.data?.pages.flatMap((page) => page.data) ?? [];
+  const latest = post.data;
+  const visible =
+    latest && !thread.some(({ id }) => id === latest.id) ? [...thread, latest] : thread;
   return (
-    <section className="space-y-4" aria-label="Comments">
-      <p className="text-xs text-[var(--foreground-muted)]">
-        Mock comments — backend Collaboration API coming soon.
-      </p>
-
-      {/* Thread */}
-      {comments.length === 0 ? (
-        <p className="text-sm text-[var(--foreground-muted)]">No comments yet. Be the first!</p>
-      ) : (
+    <section aria-label="Comments" className="space-y-4">
+      {comments.isPending && <p role="status">Loading comments…</p>}
+      {comments.isError && <p role="alert">{extractApiErrorMessage(comments.error)}</p>}
+      {comments.isSuccess && visible.length === 0 && <p>No comments yet.</p>}
+      {visible.length > 0 && (
         <ul className="space-y-3">
-          {comments.map((c) => (
-            <li key={c.id} className="flex items-start gap-3">
-              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-xs font-semibold">
-                {c.authorName[0]}
+          {visible.map((comment) => (
+            <li key={comment.id} className="space-y-1 rounded-xl bg-[var(--surface-secondary)] p-3">
+              <div className="flex items-center gap-2 text-xs">
+                <strong>{comment.authorName}</strong>
+                <time className="text-[var(--foreground-muted)]" dateTime={comment.createdAt}>
+                  {new Date(comment.createdAt).toLocaleString()}
+                </time>
               </div>
-              <div className="flex-1 rounded-xl bg-[var(--surface-secondary)] px-3.5 py-2.5">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-semibold text-[var(--foreground)]">
-                    {c.authorName}
-                  </span>
-                  <span className="text-[10px] text-[var(--foreground-muted)]">
-                    {timeAgo(c.createdAt)}
-                  </span>
-                </div>
-                <p className="text-sm text-[var(--foreground)]">{c.content}</p>
-              </div>
+              <p className="whitespace-pre-wrap break-words text-sm">{comment.body}</p>
             </li>
           ))}
         </ul>
       )}
-
-      {/* Compose */}
-      <div className="flex items-end gap-2">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-xs font-semibold mt-1">
-          Y
-        </div>
-        <div className="flex-1 relative">
-          <textarea
-            ref={textareaRef}
-            rows={2}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSubmit();
-            }}
-            placeholder="Add a comment… (Ctrl+Enter to send)"
-            aria-label="Add a comment"
-            className={cn(
-              'w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface)]',
-              'px-3.5 py-2.5 text-sm placeholder:text-[var(--foreground-muted)] outline-none',
-              'focus-visible:border-[var(--color-primary)] focus-visible:ring-[3px] focus-visible:ring-[var(--color-primary)]/20',
-            )}
-          />
-        </div>
-        <button
+      {comments.hasNextPage && (
+        <Button
           type="button"
-          onClick={handleSubmit}
-          disabled={!text.trim()}
-          aria-label="Post comment"
-          className="flex items-center justify-center rounded-xl bg-[var(--color-primary)] p-2.5 text-white hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-40"
+          variant="outline"
+          disabled={comments.isFetchingNextPage}
+          onClick={() => void comments.fetchNextPage()}
         >
-          <Send className="size-4" aria-hidden="true" />
-        </button>
-      </div>
+          Load more comments
+        </Button>
+      )}
+      {canWrite && (
+        <form onSubmit={submit} className="space-y-3">
+          <label className="grid gap-1">
+            Add a comment
+            <textarea
+              className="rounded-lg border bg-[var(--surface)] p-2"
+              rows={3}
+              value={body}
+              disabled={post.isPending}
+              onChange={(event) => setBody(event.target.value)}
+            />
+          </label>
+          {members.length > 0 && (
+            <details>
+              <summary className="cursor-pointer text-sm">Mention project members</summary>
+              <label className="grid gap-1 text-sm">
+                Recipients
+                <select
+                  multiple
+                  className="max-h-32 rounded-lg border p-2"
+                  value={mentionIds}
+                  disabled={post.isPending}
+                  onChange={(event) =>
+                    setMentionIds(
+                      Array.from(event.currentTarget.selectedOptions, ({ value }) => value),
+                    )
+                  }
+                >
+                  {members.map(({ userId, user }) => (
+                    <option key={userId} value={userId}>
+                      {user.displayName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {mentionIds.length > 100 && <p role="alert">Select up to 100 members.</p>}
+            </details>
+          )}
+          <Button
+            type="submit"
+            disabled={!body.trim() || post.isPending || mentionIds.length > 100}
+          >
+            {post.isPending ? 'Posting…' : 'Post comment'}
+          </Button>
+        </form>
+      )}
+      {post.isError && <p role="alert">{extractApiErrorMessage(post.error)}</p>}
+      {post.isSuccess && <p role="status">Comment posted.</p>}
     </section>
   );
 }

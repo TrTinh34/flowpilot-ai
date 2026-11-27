@@ -68,11 +68,11 @@ Trạng thái của các API endpoint theo góc nhìn frontend. Cập nhật: 20
 
 | Endpoint | Method | Frontend Use | Status | Sprint |
 |---|---|---|---|---|
-| `/tasks/:id/comments` | GET | Comment thread | 🟡 MOCK API REQUIRED | Backend Sprint 05 |
-| `/tasks/:id/comments` | POST | Post comment | 🟡 MOCK API REQUIRED | Backend Sprint 05 |
-| `/tasks/:id/attachments` | GET | Attachment list | 🟡 MOCK API REQUIRED | Backend Sprint 05 |
-| `/tasks/:id/attachments` | POST | Upload attachment | 🟡 MOCK API REQUIRED | Backend Sprint 05 |
-| `/attachments/:id` | GET | Download link | 🟡 MOCK API REQUIRED | Backend Sprint 05 |
+| `/tasks/:id/comments` | GET | Comment thread | ✅ REAL API AVAILABLE | COL-02 |
+| `/tasks/:id/comments` | POST | Post comment | ✅ REAL API AVAILABLE | COL-02 |
+| `/tasks/:id/attachments` | GET | Attachment list | ✅ REAL API AVAILABLE | COL-03 |
+| `/tasks/:id/attachments` | POST | Upload attachment | ✅ REAL API AVAILABLE | COL-03 |
+| `/attachments/:id/download` | GET | Download link | ✅ REAL API AVAILABLE | COL-03 |
 
 ## Notification
 
@@ -97,10 +97,9 @@ Trạng thái của các API endpoint theo góc nhìn frontend. Cập nhật: 20
 
 | Status | Count |
 |---|---|
-| ✅ REAL API AVAILABLE | 20 |
-| 🟡 MOCK API REQUIRED | 12 |
+| ✅ REAL API AVAILABLE | 29 |
+| 🟡 MOCK API REQUIRED | 9 |
 | ❓ CONTRACT NOT DEFINED | 0 |
 | 🔴 BLOCKED | 0 |
 
-12 endpoints cần mock trong Sprint 04. Backend sẽ implement Sprint 05 (COL+NOTI+DASH) và Sprint 06 (AI).
-Khi backend ready, chỉ cần flip `VITE_USE_MOCK_API=false` và verify integration.
+Collaboration dùng API thật từ COL-04. Các endpoint Dashboard, Notification và AI còn theo backlog riêng.
