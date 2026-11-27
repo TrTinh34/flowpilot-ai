@@ -1,18 +1,25 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { useAuthStore } from '@/app/store/auth.store';
 import * as api from '@/features/workspace/api/workspace.api';
 import { AcceptInvitePage } from '@/pages/workspace/AcceptInvitePage';
 import { WorkspaceSettingsPage } from '@/pages/workspace/WorkspaceSettingsPage';
 
 vi.mock('@/features/workspace/api/workspace.api');
-afterEach(() => {
+beforeEach(() => {
   vi.resetAllMocks();
   useAuthStore.getState().clearAuth();
 });
+afterEach(() => {
+  cleanup();
+});
+
+function makeClient() {
+  return new QueryClient({ defaultOptions: { queries: { retry: false } } });
+}
 
 it('allows an owner to invite and see the local invitation link', async () => {
   const workspace = { id: 'workspace', name: 'Studio', role: 'OWNER' as const };
@@ -28,7 +35,7 @@ it('allows an owner to invite and see the local invitation link', async () => {
     previewUrl: 'http://localhost:5173/invitations/accept#token=fixture',
   });
   render(
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={makeClient()}>
       <MemoryRouter>
         <WorkspaceSettingsPage />
       </MemoryRouter>
@@ -54,7 +61,7 @@ it('keeps the invitation draft when the API rejects it', async () => {
   vi.mocked(api.listWorkspaceMembers).mockResolvedValue({ workspace, data: [] });
   vi.mocked(api.sendInvitation).mockRejectedValue(new Error('Invitation already pending.'));
   render(
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={makeClient()}>
       <MemoryRouter>
         <WorkspaceSettingsPage />
       </MemoryRouter>
@@ -62,7 +69,7 @@ it('keeps the invitation draft when the API rejects it', async () => {
   );
   const user = userEvent.setup();
   await user.click(await screen.findByRole('button', { name: 'Invite member' }));
-  const dialog = within(screen.getByRole('dialog'));
+  const dialog = within(await screen.findByRole('dialog'));
   expect(dialog.queryByRole('option', { name: 'Admin' })).not.toBeInTheDocument();
   const field = dialog.getByLabelText('Invite email');
   await user.type(field, 'guest@example.test');
@@ -86,7 +93,7 @@ it('gives regular members only their own leave action and requires confirmation'
   });
   vi.mocked(api.removeWorkspaceMember).mockResolvedValue();
   render(
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={makeClient()}>
       <MemoryRouter>
         <WorkspaceSettingsPage />
       </MemoryRouter>
@@ -98,13 +105,13 @@ it('gives regular members only their own leave action and requires confirmation'
   expect(screen.queryByRole('button', { name: 'Remove member' })).not.toBeInTheDocument();
   await user.click(leave);
   await user.keyboard('{Escape}');
-  expect(leave).toHaveFocus();
+  await waitFor(() => expect(leave).toHaveFocus());
   expect(api.removeWorkspaceMember).not.toHaveBeenCalled();
   await user.click(leave);
   await user.click(
-    within(screen.getByRole('dialog')).getByRole('button', { name: 'Leave workspace' }),
+    within(await screen.findByRole('dialog')).getByRole('button', { name: 'Leave workspace' }),
   );
-  expect(api.removeWorkspaceMember).toHaveBeenCalledWith(workspace.id, 'self');
+  await waitFor(() => expect(api.removeWorkspaceMember).toHaveBeenCalledWith(workspace.id, 'self'));
 });
 
 it('explains that an expired invitation needs a new link', async () => {

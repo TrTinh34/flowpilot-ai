@@ -1,9 +1,16 @@
-import { useRef, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { MessageSquare } from 'lucide-react';
 import { useAuthStore } from '@/app/store/auth.store';
+import { Avatar } from '@/components/common/Avatar';
+import { EmptyState } from '@/components/common/EmptyState';
 import { ErrorState } from '@/components/common/ErrorState';
+import { FormErrorBanner } from '@/components/common/FormErrorBanner';
 import { LoadingState } from '@/components/common/LoadingState';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import type { ProjectMember } from '@/features/project/api/project.api';
 import { extractApiErrorMessage } from '@/services/api-client';
 import { listComments, postComment } from '../api/collaboration.api';
@@ -20,6 +27,7 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
   const [body, setBody] = useState('');
   const [mentionIds, setMentionIds] = useState<string[]>([]);
   const posting = useRef(false);
+  const inputId = useId();
   const key = ['task-comments', revision, taskId];
   const comments = useInfiniteQuery({
     queryKey: key,
@@ -51,9 +59,10 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
   const latest = post.data;
   const visible =
     latest && !thread.some(({ id }) => id === latest.id) ? [...thread, latest] : thread;
+
   return (
     <section aria-label="Comments" className="space-y-4">
-      {comments.isPending && <LoadingState label="Loading comments" />}
+      {comments.isPending && <LoadingState label="Loading comments" variant="list" />}
       {comments.isError && (
         <ErrorState
           title="Could not load comments"
@@ -64,26 +73,26 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
         />
       )}
       {comments.isSuccess && visible.length === 0 && (
-        <p className="text-secondary">No comments yet.</p>
+        <EmptyState compact icon={MessageSquare} title="No comments yet." />
       )}
       {visible.length > 0 && (
-        <ul className="divide-y divide-border rounded-xl border border-border bg-card px-4">
+        <ul className="divide-y divide-border rounded-[var(--radius-md)] border border-border bg-card px-4">
           {visible.map((comment) => (
-            <li key={comment.id} className="flex min-w-0 items-start gap-3 py-4">
-              <span
-                aria-hidden="true"
-                className="grid size-8 shrink-0 place-items-center rounded-full bg-muted font-semibold text-action-link"
-              >
-                {Array.from(comment.authorName)[0]?.toLocaleUpperCase()}
-              </span>
+            <li key={comment.id} className="flex min-w-0 items-start gap-3 py-3.5">
+              <Avatar name={comment.authorName} size="sm" tone="subtle" />
               <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <strong className="min-w-0 [overflow-wrap:anywhere]">{comment.authorName}</strong>
-                  <time className="text-secondary text-xs" dateTime={comment.createdAt}>
+                <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                  <strong className="min-w-0 text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
+                    {comment.authorName}
+                  </strong>
+                  <time
+                    className="text-xs tabular-nums text-muted-foreground"
+                    dateTime={comment.createdAt}
+                  >
                     {new Date(comment.createdAt).toLocaleString()}
                   </time>
                 </div>
-                <p className="whitespace-pre-wrap text-sm [overflow-wrap:anywhere]">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground [overflow-wrap:anywhere]">
                   {comment.body}
                 </p>
               </div>
@@ -95,6 +104,7 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
         <Button
           type="button"
           variant="outline"
+          size="sm"
           disabled={comments.isFetchingNextPage}
           onClick={() => void comments.fetchNextPage()}
         >
@@ -102,35 +112,44 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
         </Button>
       )}
       {canWrite && (
-        <form onSubmit={submit} className="space-y-3 rounded-xl border border-border bg-card p-4">
-          <label className="grid gap-1">
-            Add a comment
-            <textarea
-              className="w-full min-w-0 rounded-lg border border-input bg-background p-3"
+        <form
+          onSubmit={submit}
+          className="space-y-3 rounded-[var(--radius-md)] border border-border bg-card p-4"
+        >
+          <div className="grid gap-1.5">
+            <Label htmlFor={inputId}>Add a comment</Label>
+            <Textarea
+              id={inputId}
+              name="body"
               rows={3}
               value={body}
               disabled={post.isPending}
+              placeholder="Write a comment or update…"
               onChange={(event) => setBody(event.target.value)}
             />
-          </label>
+          </div>
           {members.length > 0 && (
-            <details className="rounded-lg border border-border p-2">
-              <summary className="cursor-pointer p-1 text-sm font-medium">
-                Mention project members{mentionIds.length > 0 && ` (${mentionIds.length})`}
+            <details className="rounded-[var(--radius)] border border-border bg-muted/40 px-3 py-2">
+              <summary className="flex cursor-pointer items-center justify-between gap-2 text-sm font-medium text-foreground">
+                Mention project members
+                {mentionIds.length > 0 && <Badge tone="primary">{mentionIds.length}</Badge>}
               </summary>
               <fieldset
                 disabled={post.isPending}
-                className="mt-2 max-h-44 space-y-1 overflow-y-auto p-1"
+                className="mt-2 max-h-44 space-y-1 overflow-y-auto pt-1"
               >
                 <legend className="sr-only">Mention recipients</legend>
                 {members.map(({ userId, user }) => (
                   <label
                     key={userId}
-                    className="flex min-w-0 items-start gap-2 rounded-md px-2 py-2 hover:bg-muted"
+                    htmlFor={`mention-${userId}`}
+                    className="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-[var(--radius-sm)] px-2 py-1.5 text-sm hover:bg-card"
                   >
                     <input
+                      id={`mention-${userId}`}
+                      name="mentionIds"
                       type="checkbox"
-                      className="mt-0.5 shrink-0"
+                      className="size-4 shrink-0 accent-[var(--action-primary)]"
                       checked={mentionIds.includes(userId)}
                       onChange={(event) => {
                         const checked = event.currentTarget.checked;
@@ -139,23 +158,34 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
                         );
                       }}
                     />
+                    <Avatar name={user.displayName} size="xs" />
                     <span className="min-w-0 [overflow-wrap:anywhere]">{user.displayName}</span>
                   </label>
                 ))}
               </fieldset>
-              {mentionIds.length > 100 && <p role="alert">Select up to 100 members.</p>}
+              {mentionIds.length > 100 && (
+                <p role="alert" className="mt-1 text-xs text-[var(--color-error-text)]">
+                  Select up to 100 members.
+                </p>
+              )}
             </details>
           )}
-          <Button
-            type="submit"
-            disabled={!body.trim() || post.isPending || mentionIds.length > 100}
-          >
-            {post.isPending ? 'Posting…' : 'Post comment'}
-          </Button>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Button
+              type="submit"
+              disabled={!body.trim() || post.isPending || mentionIds.length > 100}
+            >
+              {post.isPending ? 'Posting…' : 'Post comment'}
+            </Button>
+            {post.isSuccess && (
+              <p role="status" className="text-xs font-medium text-[var(--success-text)]">
+                Comment posted.
+              </p>
+            )}
+          </div>
         </form>
       )}
-      {post.isError && <p role="alert">{extractApiErrorMessage(post.error)}</p>}
-      {post.isSuccess && <p role="status">Comment posted.</p>}
+      <FormErrorBanner message={post.isError ? extractApiErrorMessage(post.error) : undefined} />
     </section>
   );
 }

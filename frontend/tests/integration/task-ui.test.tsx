@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { getProjectMembers } from '@/features/project/api/project.api';
 import * as api from '@/features/task/api/task.api';
-import { TaskDetailPage } from '@/features/task/components/TaskDetailDrawer';
+import { TaskDetailPage } from '@/pages/task/TaskDetailPage';
 import type { TaskDetail } from '@/features/task/types/task.types';
 import { MyTasksPage } from '@/pages/task/MyTasksPage';
 import { ProjectTasksPage } from '@/pages/task/ProjectTasksPage';
@@ -109,6 +109,7 @@ it('creates a subtask with the route task as parent', async () => {
   const section = (await screen.findByRole('heading', { name: 'Subtasks' })).closest('section')!;
   const user = userEvent.setup();
   const form = within(section);
+  await user.click(await form.findByRole('button', { name: 'New subtask' }));
   await user.type(await form.findByLabelText('Task title'), 'Review draft');
   await user.click(form.getByRole('button', { name: 'Add subtask' }));
   expect(api.createTask).toHaveBeenCalledWith(

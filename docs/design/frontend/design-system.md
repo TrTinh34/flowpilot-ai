@@ -1,6 +1,6 @@
 # Design System · FlowPilot AI (V2 Proposed)
 
-> **Trạng thái:** `PROPOSED (Pending Developer Approval)` — Cập nhật từ Baseline V1 (Sprint 06) dựa trên kết quả kiểm toán `frontend-reaudit-report.md` và khuyến nghị từ `ui-ux-pro-max` Skill.
+> **Trạng thái:** `APPROVED & APPLIED (REFINE-03)` — Đã áp dụng vào `frontend/src/styles/index.css` từ Baseline V1 (Sprint 06) dựa trên `frontend-reaudit-report.md` và khuyến nghị từ `ui-ux-pro-max` Skill.
 > **Nguồn thực thi duy nhất:** `frontend/src/styles/index.css` (CSS Custom Properties + Tailwind v4 `@theme static` / `@theme inline`). Không tạo Design System song song.
 
 ---

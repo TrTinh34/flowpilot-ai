@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { Task, TaskStatus } from '@/features/task/types/task.types';
 import { boardColumns, type BoardMove } from '../types/board.types';
-import { KanbanCard } from './KanbanCard';
+import { KanbanColumn } from './KanbanColumn';
 
 interface Props {
   tasks: Task[];
@@ -49,68 +49,36 @@ export function KanbanBoard({ tasks, canMove, pending, onMove, assignees }: Prop
       role="region"
       aria-label="Kanban columns"
       tabIndex={0}
-      className="min-w-0 overflow-x-auto rounded-xl pb-3 focus-visible:outline-offset-[-2px]"
+      className="min-w-0 overflow-x-auto pb-2 focus-visible:outline-offset-[-2px]"
     >
-      <div className="grid min-w-[62rem] grid-cols-4 gap-4">
+      <div className="grid min-w-[68rem] grid-cols-4 gap-4">
         {boardColumns.map(({ status, label }) => {
           const column = tasks.filter((task) => task.status === status);
           return (
-            <section
+            <KanbanColumn
               key={status}
-              aria-label={label}
-              className="min-h-56 min-w-0 rounded-xl border border-border bg-muted p-3 data-[drop-target=true]:border-primary data-[drop-target=true]:ring-1 data-[drop-target=true]:ring-primary"
-              data-drop-target={dropTarget === status}
-              onDragOver={(event) => {
-                if (canDrop) {
-                  event.preventDefault();
-                  setDropTarget(status);
-                }
+              status={status}
+              label={label}
+              tasks={column}
+              canMove={canMove}
+              pending={pending}
+              canDrop={canDrop}
+              dropTarget={dropTarget}
+              assignees={assignees}
+              onColumnDragOver={() => setDropTarget(status)}
+              onColumnDragLeave={() => setDropTarget(null)}
+              onColumnDrop={() => drop(status)}
+              onCardDragOver={(id) => setDropTarget(id)}
+              onCardDrag={(value) => {
+                setDragged(value);
+                setDropTarget(null);
               }}
-              onDragLeave={(event) => {
-                if (
-                  !(event.relatedTarget instanceof Node) ||
-                  !event.currentTarget.contains(event.relatedTarget)
-                ) {
-                  setDropTarget(null);
-                }
+              onCardDrop={(beforeId) => drop(status, beforeId)}
+              onMove={(task, target, position) => {
+                focusAfterMove.current = `move-${task.id}`;
+                move(task, target, position);
               }}
-              onDrop={(event) => {
-                if (!canDrop) return;
-                event.preventDefault();
-                drop(status);
-              }}
-            >
-              <h2 className="mb-3 flex justify-between font-semibold">
-                {label}
-                <span className="text-sm">{column.length}</span>
-              </h2>
-              {column.length === 0 && <p className="min-h-16 text-sm">No tasks</p>}
-              <ul className="space-y-2">
-                {column.map((task, index) => (
-                  <KanbanCard
-                    key={task.id}
-                    task={task}
-                    index={index}
-                    count={column.length}
-                    canMove={canMove(task)}
-                    pending={pending}
-                    acceptsDrop={canDrop}
-                    assigneeName={task.assigneeId ? assignees?.get(task.assigneeId) : undefined}
-                    dropTarget={dropTarget === task.id}
-                    onDragOver={() => setDropTarget(task.id)}
-                    onDrag={(value) => {
-                      setDragged(value);
-                      setDropTarget(null);
-                    }}
-                    onDrop={() => drop(status, task.id)}
-                    onMove={(target, position) => {
-                      focusAfterMove.current = `move-${task.id}`;
-                      move(task, target, position);
-                    }}
-                  />
-                ))}
-              </ul>
-            </section>
+            />
           );
         })}
       </div>

@@ -1,5 +1,6 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { FolderKanban } from 'lucide-react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -7,9 +8,10 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { LoadingState } from '@/components/common/LoadingState';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Pagination } from '@/components/common/Pagination';
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FieldLabel } from '@/components/ui/field-label';
+import { Select } from '@/components/ui/select';
 import { WorkspaceFormDialog } from '@/features/workspace/components/WorkspaceFormDialog';
 import { WorkspaceMemberRow } from '@/features/workspace/components/WorkspaceMemberRow';
 import {
@@ -21,8 +23,15 @@ import {
   sendInvitation,
   transferWorkspace,
   type WorkspaceMember,
+  type WorkspaceRole,
 } from '@/features/workspace/api/workspace.api';
 import { extractApiErrorMessage } from '@/services/api-client';
+
+const ROLE_TONE: Record<WorkspaceRole, BadgeTone> = {
+  OWNER: 'primary',
+  ADMIN: 'info',
+  MEMBER: 'neutral',
+};
 
 export function WorkspaceSettings() {
   const revision = useAuthStore((state) => state.sessionRevision);
@@ -84,7 +93,7 @@ export function WorkspaceSettings() {
   }
 
   return (
-    <div className="w-full min-w-0 space-y-6 px-page-gutter py-8">
+    <div className="w-full min-w-0 space-y-6 px-page-gutter py-6">
       <PageHeader
         title="Workspace settings"
         description="Manage workspace access and membership."
@@ -97,7 +106,7 @@ export function WorkspaceSettings() {
           />
         }
       />
-      <div className="grid min-w-0 items-start gap-5 lg:grid-cols-[minmax(13rem,18rem)_minmax(0,1fr)]">
+      <div className="grid min-w-0 items-start gap-5 lg:grid-cols-[minmax(14rem,18rem)_minmax(0,1fr)]">
         <section className="space-y-4 rounded-[var(--radius-md)] border border-border bg-card p-4">
           <h2 className="text-section-title">Workspaces</h2>
           {workspaces.isPending && <LoadingState label="Loading workspaces" />}
@@ -109,18 +118,18 @@ export function WorkspaceSettings() {
             />
           )}
           {workspaces.isSuccess && !workspaceId && (
-            <EmptyState title="No workspaces on this page." />
+            <EmptyState compact headingLevel="h3" title="No workspaces on this page." />
           )}
           {workspaceId && (
             <FieldLabel htmlFor="workspace-selection" label="Workspace">
-              <select
+              <Select
                 id="workspace-selection"
+                name="workspaceId"
                 value={workspaceId}
                 onChange={(event) => {
                   setSearch({ workspace: event.target.value });
                   setInvitation(undefined);
                 }}
-                className="h-11 w-full min-w-0 rounded-[var(--radius)] border border-input bg-card px-3 text-sm"
               >
                 {!pageSelection && (
                   <option value={workspaceId}>{selected?.name ?? 'Selected workspace'}</option>
@@ -130,7 +139,7 @@ export function WorkspaceSettings() {
                     {workspace.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </FieldLabel>
           )}
           <Pagination
@@ -143,23 +152,26 @@ export function WorkspaceSettings() {
             }}
           />
           {selected && (
-            <Button asChild variant="outline" size="sm">
-              <Link to={`/workspaces/${selected.id}/projects`}>Browse projects</Link>
+            <Button asChild variant="outline" size="sm" className="w-full justify-start">
+              <Link to={`/workspaces/${selected.id}/projects`}>
+                <FolderKanban aria-hidden="true" />
+                Browse projects
+              </Link>
             </Button>
           )}
         </section>
 
         {workspaceId && (
           <div className="min-w-0 space-y-5">
-            <section className="space-y-4 rounded-[var(--radius-md)] border border-border bg-card p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0 space-y-1">
+            <section className="space-y-3 rounded-[var(--radius-md)] border border-border bg-card p-4 sm:p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+                <div className="min-w-0 space-y-0.5">
                   <h2 className="text-section-title">Members</h2>
                   {selected && <p className="text-secondary break-words">{selected.name}</p>}
                 </div>
-                {role && <Badge tone={role === 'OWNER' ? 'success' : 'neutral'}>{role}</Badge>}
+                {role && <Badge tone={ROLE_TONE[role]}>{role}</Badge>}
               </div>
-              {members.isPending && <LoadingState label="Loading members" />}
+              {members.isPending && <LoadingState label="Loading members" variant="list" />}
               {members.isError && (
                 <ErrorState
                   title="Could not load members"
@@ -169,7 +181,7 @@ export function WorkspaceSettings() {
               )}
               {role &&
                 (members.data?.data.length ? (
-                  <ul className="divide-y divide-border rounded-[var(--radius-md)] border border-border">
+                  <ul className="divide-y divide-border">
                     {members.data.data.map((member) => (
                       <WorkspaceMemberRow
                         key={workspaceId + ':' + member.userId}
@@ -182,13 +194,13 @@ export function WorkspaceSettings() {
                     ))}
                   </ul>
                 ) : (
-                  <EmptyState title="No members found." />
+                  <EmptyState compact headingLevel="h3" title="No members found." />
                 ))}
             </section>
             {canInvite && (
-              <section className="space-y-3 rounded-[var(--radius-md)] border border-border bg-card p-4">
+              <section className="space-y-3 rounded-[var(--radius-md)] border border-border bg-card p-4 sm:p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="space-y-1">
+                  <div className="space-y-0.5">
                     <h2 className="text-section-title">Invitations</h2>
                     <p className="text-secondary">Invite teammates to this workspace.</p>
                   </div>
@@ -200,8 +212,8 @@ export function WorkspaceSettings() {
                   />
                 </div>
                 {invitation?.workspaceId === workspaceId && (
-                  <div className="space-y-1 text-sm">
-                    <p role="status" className="text-[var(--success-text)]">
+                  <div className="space-y-1 rounded-[var(--radius)] border border-[var(--color-success-border)] bg-[var(--color-success-bg)] p-3 text-sm">
+                    <p role="status" className="font-medium text-[var(--success-text)]">
                       Invitation created.
                     </p>
                     {invitation.previewUrl && (

@@ -4,6 +4,11 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, expect, it, vi } from 'vitest';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { PriorityBadge } from '@/components/common/PriorityBadge';
+import { StatusBadge } from '@/components/common/StatusBadge';
+import { Select } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { createProject, listProjects } from '@/features/project/api/project.api';
 import { listMyTasks } from '@/features/task/api/task.api';
 import { listWorkspaceMembers } from '@/features/workspace/api/workspace.api';
@@ -125,4 +130,42 @@ it('shows project status in text and hides Create project for members', async ()
   expect(within(card).getByText('Archived')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Projects · Studio' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Create project' })).not.toBeInTheDocument();
+});
+
+it('renders Select, Textarea, StatusBadge, PriorityBadge, and ConfirmDialog error state', async () => {
+  const user = userEvent.setup();
+  const onConfirm = vi.fn().mockRejectedValueOnce(new Error('Permission denied'));
+  render(
+    <div>
+      <label htmlFor="sel">Status</label>
+      <Select id="sel" defaultValue="TODO">
+        <option value="TODO">To do</option>
+        <option value="DONE">Done</option>
+      </Select>
+      <label htmlFor="txt">Notes</label>
+      <Textarea id="txt" placeholder="Enter notes" />
+      <StatusBadge status="IN_REVIEW" />
+      <PriorityBadge priority="URGENT" />
+      <ConfirmDialog
+        title="Delete item"
+        description="Confirm this action."
+        confirmLabel="Confirm delete"
+        danger
+        onConfirm={onConfirm}
+        trigger={<button type="button">Delete</button>}
+      />
+    </div>,
+  );
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Status' }), 'DONE');
+  expect(screen.getByRole('combobox', { name: 'Status' })).toHaveValue('DONE');
+  await user.type(screen.getByRole('textbox', { name: 'Notes' }), 'Refined');
+  expect(screen.getByRole('textbox', { name: 'Notes' })).toHaveValue('Refined');
+  expect(screen.getByText('In review')).toBeInTheDocument();
+  expect(screen.getByText('Urgent')).toBeInTheDocument();
+
+  await user.click(screen.getByRole('button', { name: 'Delete' }));
+  const dialog = within(await screen.findByRole('dialog', { name: 'Delete item' }));
+  await user.click(dialog.getByRole('button', { name: 'Confirm delete' }));
+  expect(await dialog.findByRole('alert')).toHaveTextContent('Permission denied');
+  expect(onConfirm).toHaveBeenCalledTimes(1);
 });

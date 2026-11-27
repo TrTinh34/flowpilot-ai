@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { FieldLabel } from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { FormErrorBanner } from '@/components/common/FormErrorBanner';
 import type { WorkspaceMember } from '@/features/workspace/api/workspace.api';
 import { extractApiErrorMessage } from '@/services/api-client';
 
@@ -29,14 +31,21 @@ export function CreateProjectDialog({
     event.preventDefault();
     if (submitting.current) return;
     const values = new FormData(event.currentTarget);
+    const name = String(values.get('name') ?? '').trim();
+    const manager = String(values.get('managerId') ?? '');
+    if (!name) {
+      setError('Enter a project name.');
+      return;
+    }
+    if (!manager) {
+      setError('Select a project manager.');
+      return;
+    }
     submitting.current = true;
     setPending(true);
     setError('');
     try {
-      await onCreate({
-        name: String(values.get('name') ?? ''),
-        managerId: String(values.get('managerId') ?? ''),
-      });
+      await onCreate({ name, managerId: manager });
       changeOpen(false);
     } catch (cause) {
       setError(extractApiErrorMessage(cause));
@@ -60,14 +69,7 @@ export function CreateProjectDialog({
           <Input id={nameId} name="name" required readOnly={pending} />
         </FieldLabel>
         <FieldLabel label="Project manager" htmlFor={managerId}>
-          <select
-            id={managerId}
-            name="managerId"
-            required
-            disabled={pending}
-            defaultValue=""
-            className="h-11 w-full min-w-0 rounded-[var(--radius)] border border-input bg-card px-3 text-sm text-foreground"
-          >
+          <Select id={managerId} name="managerId" required disabled={pending} defaultValue="">
             <option value="" disabled>
               Select a member
             </option>
@@ -76,16 +78,14 @@ export function CreateProjectDialog({
                 {member.user.displayName}
               </option>
             ))}
-          </select>
+          </Select>
         </FieldLabel>
-        {error && (
-          <p role="alert" className="break-words text-sm text-[var(--color-error-text)]">
-            {error}
-          </p>
-        )}
-        <Button type="submit" disabled={pending}>
-          {pending ? 'Creating…' : 'Create project'}
-        </Button>
+        <FormErrorBanner message={error} />
+        <div className="flex justify-end">
+          <Button type="submit" disabled={pending}>
+            {pending ? 'Creating…' : 'Create project'}
+          </Button>
+        </div>
       </form>
     </Dialog>
   );

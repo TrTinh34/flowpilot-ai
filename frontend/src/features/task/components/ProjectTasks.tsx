@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { CheckSquare, Columns3, Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -8,6 +9,7 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Pagination } from '@/components/common/Pagination';
 import { FormErrorBanner } from '@/components/common/FormErrorBanner';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { getProjectMembers } from '@/features/project/api/project.api';
@@ -46,17 +48,28 @@ export function ProjectTasks({ projectId }: { projectId: string }) {
   );
 
   return (
-    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
+    <div className="w-full min-w-0 space-y-6 px-page-gutter py-6">
       <PageHeader
         title="Project tasks"
         description={project.data?.project.name}
+        badge={
+          project.data?.project.status === 'ARCHIVED' && (
+            <Badge tone="neutral">Archived · read-only</Badge>
+          )
+        }
         actions={
           <>
             <Button asChild variant="outline">
-              <Link to={`/projects/${projectId}/board`}>Kanban board</Link>
+              <Link to={`/projects/${projectId}/board`}>
+                <Columns3 aria-hidden="true" />
+                Kanban board
+              </Link>
             </Button>
             <Button asChild variant="outline">
-              <Link to={`/projects/${projectId}`}>Project settings</Link>
+              <Link to={`/projects/${projectId}`}>
+                <Settings aria-hidden="true" />
+                Project settings
+              </Link>
             </Button>
             {project.isSuccess &&
               project.data.canManage &&
@@ -88,7 +101,9 @@ export function ProjectTasks({ projectId }: { projectId: string }) {
           </>
         }
       />
-      {(tasks.isPending || project.isPending) && <LoadingState label="Loading project tasks" />}
+      {(tasks.isPending || project.isPending) && (
+        <LoadingState label="Loading project tasks" variant="list" />
+      )}
       {tasks.isError && (
         <ErrorState
           title="Could not load project tasks"
@@ -107,7 +122,15 @@ export function ProjectTasks({ projectId }: { projectId: string }) {
         (tasks.data.data.length ? (
           <TaskList tasks={tasks.data.data} assignees={assignees} />
         ) : (
-          <EmptyState title="No tasks on this page." />
+          <EmptyState
+            icon={CheckSquare}
+            title="No tasks on this page."
+            description={
+              project.data?.canManage && project.data?.project.status === 'ACTIVE'
+                ? 'Use Create task to add work to this project.'
+                : undefined
+            }
+          />
         ))}
       <Pagination
         page={page}

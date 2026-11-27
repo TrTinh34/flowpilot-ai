@@ -1,84 +1,16 @@
-import { useRef, useState } from 'react';
+import { Avatar } from '@/components/common/Avatar';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Dialog } from '@/components/ui/dialog';
-import { FormErrorBanner } from '@/components/common/FormErrorBanner';
 import type { WorkspaceMember, WorkspaceRole } from '@/features/workspace/api/workspace.api';
-import { extractApiErrorMessage } from '@/services/api-client';
 
 type MemberAction = 'role' | 'transfer' | 'remove';
 
-function ConfirmAction({
-  label,
-  description,
-  danger,
-  onConfirm,
-}: {
-  label: string;
-  description: string;
-  danger?: boolean;
-  onConfirm: () => Promise<void>;
-}) {
-  const [open, setOpen] = useState(false);
-  const [error, setError] = useState('');
-  const [pending, setPending] = useState(false);
-  const busy = useRef(false);
-  function changeOpen(next: boolean) {
-    setOpen(next);
-    if (!next) setError('');
-  }
-  async function confirm() {
-    if (busy.current) return;
-    busy.current = true;
-    setPending(true);
-    setError('');
-    try {
-      await onConfirm();
-      changeOpen(false);
-    } catch (cause) {
-      setError(extractApiErrorMessage(cause));
-    } finally {
-      busy.current = false;
-      setPending(false);
-    }
-  }
-  return (
-    <Dialog
-      title={label}
-      description={description}
-      open={open}
-      onOpenChange={changeOpen}
-      busy={pending}
-      trigger={
-        <Button variant="outline" size="sm" type="button">
-          {label}
-        </Button>
-      }
-    >
-      <div className="mt-4 space-y-3">
-        <FormErrorBanner message={error} />
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={pending}
-            onClick={() => changeOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant={danger ? 'destructive' : 'default'}
-            disabled={pending}
-            onClick={() => void confirm()}
-          >
-            {pending ? 'Saving…' : label}
-          </Button>
-        </div>
-      </div>
-    </Dialog>
-  );
-}
+const ROLE_TONE: Record<WorkspaceRole, BadgeTone> = {
+  OWNER: 'primary',
+  ADMIN: 'info',
+  MEMBER: 'neutral',
+};
 
 export function WorkspaceMemberRow({
   member,
@@ -100,41 +32,51 @@ export function WorkspaceMemberRow({
   const leaveLabel = isSelf ? 'Leave workspace' : 'Remove member';
 
   return (
-    <li className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <li className="flex flex-col gap-3 py-3 first:pt-1 last:pb-1 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-center gap-3">
-        <span
-          aria-hidden="true"
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-muted font-semibold text-action-link"
-        >
-          {name[0]?.toUpperCase()}
-        </span>
-        <div className="min-w-0">
-          <p className="break-words text-sm font-semibold">
+        <Avatar name={name} size="md" tone="subtle" />
+        <div className="min-w-0 space-y-1">
+          <p className="break-words text-sm font-semibold text-foreground">
             {name}
-            {isSelf && <span className="ml-1 font-normal text-muted-foreground">(you)</span>}
+            {isSelf && <span className="ml-1.5 font-normal text-muted-foreground">(you)</span>}
           </p>
-          <Badge tone={member.role === 'OWNER' ? 'success' : 'neutral'}>{member.role}</Badge>
+          <Badge tone={ROLE_TONE[member.role]}>{member.role}</Badge>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {canManageTarget && (
-          <ConfirmAction
-            label={member.role === 'ADMIN' ? 'Make Member' : 'Make Admin'}
+          <ConfirmDialog
+            title={member.role === 'ADMIN' ? 'Make Member' : 'Make Admin'}
             description={`Change the workspace role for ${name}?`}
+            confirmLabel={member.role === 'ADMIN' ? 'Make Member' : 'Make Admin'}
             onConfirm={() => onAction('role', member)}
+            trigger={
+              <Button variant="outline" size="sm" type="button">
+                {member.role === 'ADMIN' ? 'Make Member' : 'Make Admin'}
+              </Button>
+            }
           />
         )}
         {viewerRole === 'OWNER' && member.role !== 'OWNER' && (
-          <ConfirmAction
-            label="Transfer ownership"
+          <ConfirmDialog
+            title="Transfer ownership"
             description={`Transfer ownership to ${name}? Your role will become Admin.`}
+            confirmLabel="Transfer ownership"
             onConfirm={() => onAction('transfer', member)}
+            trigger={
+              <Button variant="outline" size="sm" type="button">
+                Transfer ownership
+              </Button>
+            }
           />
         )}
-        {cannotLeave && <p className="text-secondary">Transfer ownership before leaving.</p>}
+        {cannotLeave && (
+          <p className="text-xs text-muted-foreground">Transfer ownership before leaving.</p>
+        )}
         {((isSelf && !cannotLeave) || canManageTarget) && (
-          <ConfirmAction
-            label={leaveLabel}
+          <ConfirmDialog
+            title={leaveLabel}
+            confirmLabel={leaveLabel}
             danger
             description={
               isSelf
@@ -142,6 +84,11 @@ export function WorkspaceMemberRow({
                 : `${name} will lose access to this workspace.`
             }
             onConfirm={() => onAction('remove', member)}
+            trigger={
+              <Button variant="outline" size="sm" type="button">
+                {leaveLabel}
+              </Button>
+            }
           />
         )}
       </div>

@@ -3,10 +3,12 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { listProjects } from '@/features/project/api/project.api';
 import { listMyTasks } from '@/features/task/api/task.api';
 import { listWorkspaces } from '@/features/workspace/api/workspace.api';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 
+vi.mock('@/features/project/api/project.api');
 vi.mock('@/features/task/api/task.api');
 vi.mock('@/features/workspace/api/workspace.api');
 
@@ -26,6 +28,11 @@ beforeEach(() => {
   vi.stubEnv('DEV', true);
   vi.stubEnv('VITE_USE_MOCK_API', 'false');
   vi.mocked(listMyTasks).mockResolvedValue({ data: [], page: 0, size: 20 });
+  vi.mocked(listProjects).mockResolvedValue({
+    data: [{ id: 'proj-1', workspaceId: 'studio', name: 'Launch Platform', status: 'ACTIVE' }],
+    page: 0,
+    size: 20,
+  });
   vi.mocked(listWorkspaces).mockResolvedValue({
     data: [{ id: 'studio', name: 'Studio North', role: 'MEMBER' }],
     page: 0,
@@ -35,7 +42,7 @@ beforeEach(() => {
 
 afterEach(() => vi.unstubAllEnvs());
 
-it('shows live links and a genuine empty state with Demo disabled', async () => {
+it('shows live links, workspace projects, and a genuine empty state with Demo disabled', async () => {
   show();
   expect(await screen.findByRole('link', { name: 'Projects' })).toHaveAttribute(
     'href',
@@ -43,6 +50,10 @@ it('shows live links and a genuine empty state with Demo disabled', async () => 
   );
   expect(screen.getByRole('link', { name: 'Open My Tasks' })).toHaveAttribute('href', '/my-tasks');
   expect(await screen.findByText('No tasks assigned to you yet.')).toBeVisible();
+  expect(await screen.findByRole('link', { name: 'Launch Platform' })).toHaveAttribute(
+    'href',
+    '/projects/proj-1',
+  );
   expect(screen.queryByText('Total tasks')).not.toBeInTheDocument();
 });
 

@@ -1,4 +1,4 @@
-﻿import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Dialog, DropdownMenu } from 'radix-ui';
 import {
@@ -6,6 +6,7 @@ import {
   Building2,
   CheckSquare,
   ChevronRight,
+  Columns3,
   FolderKanban,
   LayoutDashboard,
   LogOut,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/app/store/auth.store';
 import { useUiStore } from '@/app/store/ui.store';
+import { Avatar } from '@/components/common/Avatar';
 import { Logo } from '@/components/common/Logo';
 import { Button } from '@/components/ui/button';
 import { useLogout } from '@/features/auth/hooks/useLogout';
@@ -58,26 +60,34 @@ function ShellNavigation({
       ],
     },
   ];
+  const projectShortcuts = project
+    ? [
+        { label: 'Tasks', to: `/projects/${project.id}/tasks`, icon: CheckSquare },
+        { label: 'Board', to: `/projects/${project.id}/board`, icon: Columns3 },
+        { label: 'Project settings', to: `/projects/${project.id}`, icon: Settings },
+      ]
+    : [];
   const user = useAuthStore((state) => state.user);
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Link
         to="/dashboard"
         aria-label="FlowPilot AI home"
-        className="flex h-16 shrink-0 items-center justify-center px-3"
+        className="flex h-[var(--topbar-height)] shrink-0 items-center justify-center px-3"
       >
         <Logo className={cn('text-action-link', !collapsed && 'mr-auto')} showName={!collapsed} />
       </Link>
       <div className="shrink-0 border-y border-border p-2">
         <WorkspaceSwitcher workspaces={workspaces} active={workspace} collapsed={collapsed} />
       </div>
-      <nav aria-label="Main navigation" className="flex-1 space-y-4 overflow-y-auto px-2 py-4">
+      <nav aria-label="Main navigation" className="flex-1 space-y-4 overflow-y-auto px-2 py-3">
         {groups.map(({ name, items }) => (
-          <ul key={name} aria-label={name} className="space-y-1">
+          <ul key={name} aria-label={name} className="space-y-0.5">
             {!collapsed && (
               <li
                 aria-hidden="true"
-                className="px-2 pb-1 text-caption font-semibold uppercase tracking-wide"
+                className="px-2.5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
               >
                 {name}
               </li>
@@ -92,14 +102,14 @@ function ShellNavigation({
                     title={collapsed ? label : undefined}
                     aria-current={current ? 'page' : contextActive ? 'location' : undefined}
                     className={cn(
-                      'relative flex min-h-10 items-center gap-2.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted',
+                      'relative flex h-9 items-center gap-2.5 rounded-[var(--radius)] px-2.5 text-sm font-medium text-muted-foreground transition-colors duration-[var(--duration-ui)] hover:bg-muted hover:text-foreground',
                       (current || contextActive) &&
-                        'bg-muted text-action-link before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-action',
+                        'bg-muted text-action-link before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-action',
                       collapsed && 'justify-center px-0',
                     )}
                   >
                     <Icon className="size-4 shrink-0" aria-hidden="true" />
-                    {!collapsed && <span>{label}</span>}
+                    {!collapsed && <span className="truncate">{label}</span>}
                   </Link>
                 </li>
               );
@@ -109,38 +119,51 @@ function ShellNavigation({
         {project && !collapsed && (
           <section
             aria-label="Current project shortcuts"
-            className="space-y-1 border-t border-border px-2 pt-3"
+            className="space-y-1 border-t border-border pt-3"
           >
-            <p className="truncate text-caption font-semibold">{project.name}</p>
-            <div className="flex flex-wrap gap-3 text-sm">
-              <Link
-                to={`/projects/${project.id}/tasks`}
-                className="text-action-link hover:underline"
-              >
-                Tasks
-              </Link>
-              <Link
-                to={`/projects/${project.id}/board`}
-                className="text-action-link hover:underline"
-              >
-                Board
-              </Link>
-            </div>
+            <p className="truncate px-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {project.name}
+            </p>
+            <ul className="space-y-0.5">
+              {projectShortcuts.map(({ label, to, icon: Icon }) => {
+                const active = pathname === to;
+                return (
+                  <li key={to}>
+                    <Link
+                      to={to}
+                      aria-current={active ? 'page' : undefined}
+                      className={cn(
+                        'flex h-8 items-center gap-2 rounded-[var(--radius)] px-2.5 text-sm text-muted-foreground transition-colors duration-[var(--duration-ui)] hover:bg-muted hover:text-foreground',
+                        active && 'bg-muted font-medium text-action-link',
+                      )}
+                    >
+                      <Icon className="size-3.5 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         )}
       </nav>
       {user && (
         <div
           className={cn(
-            'flex shrink-0 items-center gap-2 border-t border-border p-3',
+            'flex shrink-0 items-center gap-2.5 border-t border-border p-3',
             collapsed && 'justify-center p-2',
           )}
         >
-          <Avatar name={user.displayName} />
+          <Avatar name={user.displayName} size="sm" tone="brand" />
           {!collapsed && (
-            <span className="min-w-0 truncate text-sm font-semibold" title={user.displayName}>
-              {user.displayName}
-            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-foreground" title={user.displayName}>
+                {user.displayName}
+              </p>
+              <p className="truncate text-xs text-muted-foreground" title={user.email}>
+                {user.email}
+              </p>
+            </div>
           )}
         </div>
       )}
@@ -148,37 +171,26 @@ function ShellNavigation({
   );
 }
 
-function Avatar({ name }: { name: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className="grid size-8 shrink-0 place-items-center rounded-full bg-action text-xs font-semibold text-action-foreground"
-    >
-      {name[0]?.toUpperCase() ?? 'U'}
-    </span>
-  );
-}
-
 function AccountMenu() {
   const user = useAuthStore((state) => state.user);
   const { logout, isLoggingOut } = useLogout();
   const item =
-    'flex cursor-default items-center gap-2 rounded px-2 py-2 text-sm outline-offset-[-2px] data-[highlighted]:bg-muted';
+    'flex cursor-pointer items-center gap-2 rounded-[var(--radius-sm)] px-2.5 py-2 text-sm outline-offset-[-2px] data-[highlighted]:bg-muted';
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         aria-label="User menu"
-        className="grid size-10 shrink-0 place-items-center rounded-md hover:bg-muted"
+        className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-[var(--radius)] transition-colors hover:bg-muted"
       >
-        <Avatar name={user?.displayName ?? 'User'} />
+        <Avatar name={user?.displayName ?? 'User'} size="sm" tone="brand" />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           align="end"
           sideOffset={6}
-          className="z-[60] w-52 max-w-[calc(100vw-2rem)] rounded-[var(--radius-md)] border border-border bg-card p-1 text-foreground shadow-[var(--shadow-popover)]"
+          className="z-[var(--z-popover)] w-52 max-w-[calc(100vw-2rem)] rounded-[var(--radius-md)] border border-border bg-card p-1 text-foreground shadow-[var(--shadow-popover)]"
         >
-          <DropdownMenu.Label className="truncate px-2 py-1.5 text-sm font-semibold">
+          <DropdownMenu.Label className="truncate px-2.5 py-1.5 text-sm font-semibold">
             {user?.displayName ?? 'User'}
           </DropdownMenu.Label>
           <DropdownMenu.Item asChild className={item}>
@@ -222,15 +234,19 @@ function Breadcrumbs({ context }: { context: ShellContext }) {
           <li key={path} className="hidden min-w-0 max-w-44 items-center gap-1.5 sm:flex">
             <Link
               to={path}
-              className="min-w-0 truncate text-muted-foreground hover:underline"
+              className="min-w-0 truncate text-muted-foreground transition-colors hover:text-foreground hover:underline"
               title={label}
             >
               {label}
             </Link>
-            <ChevronRight className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
           </li>
         ))}
-        <li className="min-w-0 truncate font-semibold" aria-current="page" title={title}>
+        <li
+          className="min-w-0 truncate font-semibold text-foreground"
+          aria-current="page"
+          title={title}
+        >
           {title}
         </li>
       </ol>
@@ -265,7 +281,7 @@ export function AppShellLayout({ children }: PropsWithChildren) {
           event.preventDefault();
           main.current?.focus();
         }}
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[70] focus:rounded-md focus:bg-card focus:p-3"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[var(--z-skip-link)] focus:rounded-[var(--radius)] focus:border focus:border-border focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-[var(--shadow-popover)]"
       >
         Skip to content
       </a>
@@ -273,20 +289,20 @@ export function AppShellLayout({ children }: PropsWithChildren) {
         id="desktop-sidebar"
         aria-label="Sidebar"
         className={cn(
-          'hidden shrink-0 border-r border-border bg-card lg:block',
-          sidebarOpen ? 'w-60' : 'w-16',
+          'hidden shrink-0 border-r border-sidebar-border bg-sidebar transition-[width] duration-[var(--duration-ui)] ease-ui lg:block',
+          sidebarOpen ? 'w-[var(--sidebar-width)]' : 'w-[var(--sidebar-rail-width)]',
         )}
       >
         <ShellNavigation context={context} collapsed={!sidebarOpen} />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-card px-page-gutter sm:gap-3">
+        <header className="flex h-[var(--topbar-height)] shrink-0 items-center gap-2 border-b border-border bg-card px-page-gutter sm:gap-3">
           <Dialog.Root open={drawerOpen} onOpenChange={(open) => setDrawer({ routeKey, open })}>
             <Dialog.Trigger asChild>
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
+                size="icon-sm"
                 className="lg:hidden"
                 aria-label="Open navigation menu"
               >
@@ -294,8 +310,8 @@ export function AppShellLayout({ children }: PropsWithChildren) {
               </Button>
             </Dialog.Trigger>
             <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 lg:hidden" />
-              <Dialog.Content className="fixed inset-y-0 left-0 z-50 w-72 max-w-[calc(100vw-1rem)] bg-card shadow-[var(--shadow-dialog)] lg:hidden">
+              <Dialog.Overlay className="fixed inset-0 z-[var(--z-drawer)] bg-black/50 lg:hidden" />
+              <Dialog.Content className="fixed inset-y-0 left-0 z-[var(--z-modal)] w-72 max-w-[calc(100vw-1rem)] border-r border-border bg-sidebar shadow-[var(--shadow-dialog)] lg:hidden">
                 <Dialog.Title className="sr-only">Navigation menu</Dialog.Title>
                 <Dialog.Description className="sr-only">
                   Switch workspaces or open an application section.
@@ -305,7 +321,7 @@ export function AppShellLayout({ children }: PropsWithChildren) {
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    className="absolute right-2 top-3 z-10"
+                    className="absolute right-2 top-3 z-[var(--z-sticky)]"
                     aria-label="Close navigation menu"
                   >
                     <X aria-hidden="true" />

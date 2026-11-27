@@ -1,11 +1,13 @@
-﻿import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Download, FileText, Upload } from 'lucide-react';
+import { Download, FileText, Image as ImageIcon, Paperclip, Upload } from 'lucide-react';
 import { useAuthStore } from '@/app/store/auth.store';
+import { EmptyState } from '@/components/common/EmptyState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { LoadingState } from '@/components/common/LoadingState';
 import { Button } from '@/components/ui/button';
 import { extractApiErrorMessage } from '@/services/api-client';
+import { cn } from '@/utils/cn.util';
 import { getAttachmentDownload, listAttachments, uploadAttachment } from '../api/collaboration.api';
 
 const FILE_TYPES = ['application/pdf', 'image/png', 'image/jpeg'];
@@ -19,9 +21,11 @@ function formatBytes(bytes: number) {
 
 export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWrite: boolean }) {
   const revision = useAuthStore((state) => state.sessionRevision);
+  const fileInputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadLock = useRef(false);
   const [validationError, setValidationError] = useState<string>();
+  const [isDragging, setIsDragging] = useState(false);
   const client = useQueryClient();
   const key = ['task-attachments', revision, taskId];
   const attachments = useInfiniteQuery({
@@ -64,17 +68,24 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
   const latest = upload.data;
   const visible =
     latest && !listed.some(({ id }) => id === latest.id) ? [...listed, latest] : listed;
+
   return (
     <section aria-label="Attachments" className="space-y-4">
       {canWrite && (
         <div
-          className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-input bg-card p-5 text-center"
+          className={cn(
+            'flex flex-col items-center gap-2 rounded-[var(--radius-md)] border border-dashed bg-card p-5 text-center transition-colors duration-[var(--duration-ui)]',
+            isDragging ? 'border-action bg-action/5' : 'border-input',
+          )}
           onDragOver={(event) => {
             event.preventDefault();
+            setIsDragging(true);
             event.dataTransfer.dropEffect = uploadLock.current ? 'none' : 'copy';
           }}
+          onDragLeave={() => setIsDragging(false)}
           onDrop={(event) => {
             event.preventDefault();
+            setIsDragging(false);
             handleFiles(event.dataTransfer.files);
           }}
         >
@@ -86,9 +97,13 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
           >
             <Upload aria-hidden="true" /> Upload file
           </Button>
-          <p className="text-secondary text-sm">Drag a PDF, PNG, or JPEG here. Max 10 MiB.</p>
+          <p className="text-xs text-muted-foreground">
+            Drag a PDF, PNG, or JPEG here. Max 10 MiB.
+          </p>
           <input
             ref={inputRef}
+            id={fileInputId}
+            name="attachment"
             type="file"
             accept={FILE_TYPES.join(',')}
             aria-label="Choose attachment"
@@ -101,18 +116,28 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
         </div>
       )}
       {upload.isPending && (
-        <p role="status" className="text-secondary [overflow-wrap:anywhere]">
+        <p
+          role="status"
+          className="text-xs font-medium text-muted-foreground [overflow-wrap:anywhere]"
+        >
           Uploading {upload.variables?.name}…
         </p>
       )}
-      {upload.isSuccess && <p role="status">File uploaded.</p>}
+      {upload.isSuccess && (
+        <p
+          role="status"
+          className="rounded-[var(--radius)] border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-3 py-2 text-xs font-medium text-[var(--success-text)]"
+        >
+          File uploaded.
+        </p>
+      )}
       {(validationError || upload.isError) && (
         <ErrorState
           title="Could not upload the file"
           message={validationError ?? extractApiErrorMessage(upload.error)}
         />
       )}
-      {attachments.isPending && <LoadingState label="Loading attachments" />}
+      {attachments.isPending && <LoadingState label="Loading attachments" variant="list" />}
       {attachments.isError && (
         <ErrorState
           title="Could not load attachments"
@@ -130,45 +155,56 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
           message={extractApiErrorMessage(download.error)}
         />
       )}
-      {download.isPending && <p role="status">Preparing download…</p>}
+      {download.isPending && (
+        <p role="status" className="text-xs font-medium text-muted-foreground">
+          Preparing download…
+        </p>
+      )}
       {attachments.isSuccess && visible.length === 0 && (
-        <p className="text-secondary">No attachments yet.</p>
+        <EmptyState compact icon={Paperclip} title="No attachments yet." />
       )}
       {visible.length > 0 && (
-        <ul className="divide-y divide-border rounded-xl border border-border bg-card px-4">
-          {visible.map((file) => (
-            <li key={file.id} className="flex min-w-0 items-start gap-3 py-3">
-              <span className="grid size-8 shrink-0 place-items-center rounded-md bg-muted text-action-link">
-                <FileText className="size-4" aria-hidden="true" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="font-medium [overflow-wrap:anywhere]">{file.filename}</p>
-                <p className="text-secondary flex flex-wrap gap-x-2 text-xs">
-                  {formatBytes(file.sizeBytes)}
-                  <time dateTime={file.createdAt}>
-                    {new Date(file.createdAt).toLocaleDateString()}
-                  </time>
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={download.isPending}
-                className="shrink-0"
-                onClick={() => download.mutate(file.id)}
-                aria-label={`Download ${file.filename}`}
-              >
-                <Download aria-hidden="true" />
-              </Button>
-            </li>
-          ))}
+        <ul className="divide-y divide-border rounded-[var(--radius-md)] border border-border bg-card px-4">
+          {visible.map((file) => {
+            const isImage = file.mimeType.startsWith('image/');
+            const Icon = isImage ? ImageIcon : FileText;
+            return (
+              <li key={file.id} className="flex min-w-0 items-start gap-3 py-3">
+                <span className="grid size-8 shrink-0 place-items-center rounded-[var(--radius)] border border-border bg-muted text-action-link">
+                  <Icon className="size-4" aria-hidden="true" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground [overflow-wrap:anywhere]">
+                    {file.filename}
+                  </p>
+                  <p className="flex flex-wrap gap-x-2 text-xs tabular-nums text-muted-foreground">
+                    <span>{formatBytes(file.sizeBytes)}</span>
+                    <time dateTime={file.createdAt}>
+                      {new Date(file.createdAt).toLocaleDateString()}
+                    </time>
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  disabled={download.isPending}
+                  className="shrink-0"
+                  onClick={() => download.mutate(file.id)}
+                  aria-label={`Download ${file.filename}`}
+                >
+                  <Download aria-hidden="true" />
+                </Button>
+              </li>
+            );
+          })}
         </ul>
       )}
       {attachments.hasNextPage && (
         <Button
           type="button"
           variant="outline"
+          size="sm"
           disabled={attachments.isFetchingNextPage}
           onClick={() => void attachments.fetchNextPage()}
         >

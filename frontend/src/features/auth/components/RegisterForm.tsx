@@ -1,4 +1,4 @@
-﻿import { useId, useRef, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 import { useWatch, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
@@ -161,7 +161,7 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
           })}
         </ul>
       </div>
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" size="comfortable" className="w-full" disabled={isSubmitting}>
         {isSubmitting && <Loader2 className="size-4 motion-safe:animate-spin" aria-hidden="true" />}
         {isSubmitting ? 'Creating account…' : 'Create Account'}
       </Button>

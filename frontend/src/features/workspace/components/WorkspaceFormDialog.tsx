@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { FieldLabel } from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { FormErrorBanner } from '@/components/common/FormErrorBanner';
 import { extractApiErrorMessage } from '@/services/api-client';
 
@@ -86,22 +87,18 @@ export function WorkspaceFormDialog(props: Props) {
         </FieldLabel>
         {!create && (
           <FieldLabel label="Role" htmlFor={roleId}>
-            <select
-              id={roleId}
-              name="role"
-              defaultValue="MEMBER"
-              disabled={pending}
-              className="h-11 w-full rounded-[var(--radius)] border border-input bg-card px-3"
-            >
+            <Select id={roleId} name="role" defaultValue="MEMBER" disabled={pending}>
               <option value="MEMBER">Member</option>
               {props.canInviteAdmin && <option value="ADMIN">Admin</option>}
-            </select>
+            </Select>
           </FieldLabel>
         )}
         <FormErrorBanner message={error} />
-        <Button type="submit" disabled={pending}>
-          {pending ? 'Saving…' : create ? label : 'Send invitation'}
-        </Button>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={pending}>
+            {pending ? 'Saving…' : create ? label : 'Send invitation'}
+          </Button>
+        </div>
       </form>
     </Dialog>
   );

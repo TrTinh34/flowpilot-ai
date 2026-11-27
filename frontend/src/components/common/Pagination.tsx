@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function Pagination({
@@ -20,9 +21,13 @@ export function Pagination({
         disabled={page === 0}
         onClick={() => onPageChange(page - 1)}
       >
+        <ChevronLeft aria-hidden="true" />
         Previous
       </Button>
-      <span className="text-secondary" aria-live="polite">
+      <span
+        className="px-2 text-xs font-medium tabular-nums text-muted-foreground"
+        aria-live="polite"
+      >
         Page {page + 1}
       </span>
       <Button
@@ -33,6 +38,7 @@ export function Pagination({
         onClick={() => onPageChange(page + 1)}
       >
         Next
+        <ChevronRight aria-hidden="true" />
       </Button>
     </nav>
   );

@@ -50,9 +50,9 @@ export function AcceptWorkspaceInvitation() {
               {pending ? 'Joining…' : 'Accept invitation'}
             </Button>
           )}
-          <Link to="/workspaces" className="text-action-link underline">
-            Back to workspaces
-          </Link>
+          <Button asChild variant="outline">
+            <Link to="/workspaces">Back to workspaces</Link>
+          </Button>
         </div>
       </section>
     </div>

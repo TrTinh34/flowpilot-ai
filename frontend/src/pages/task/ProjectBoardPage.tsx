@@ -1,10 +1,14 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Settings } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
 import { ErrorState } from '@/components/common/ErrorState';
+import { FormErrorBanner } from '@/components/common/FormErrorBanner';
 import { LoadingState } from '@/components/common/LoadingState';
 import { PageHeader } from '@/components/common/PageHeader';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { loadBoardTasks, moveBoardTask } from '@/features/board/api/board.api';
 import { KanbanBoard } from '@/features/board/components/KanbanBoard';
 import { getProjectMembers } from '@/features/project/api/project.api';
@@ -42,12 +46,28 @@ function ProjectBoard({ projectId }: { projectId: string }) {
     move.error.response?.data?.code === 'TASK_VERSION_CONFLICT';
 
   return (
-    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
-      <Link to={`/projects/${projectId}/tasks`} className="text-action-link underline">
-        Project tasks
-      </Link>
-      <PageHeader title="Kanban" description={access.data?.project.name} />
-      {(board.isPending || access.isPending) && <LoadingState label="Loading board" />}
+    <div className="w-full min-w-0 space-y-5 px-page-gutter py-6">
+      <PageHeader
+        backLink={{ to: `/projects/${projectId}/tasks`, label: 'Project tasks' }}
+        title="Kanban"
+        description={access.data?.project.name}
+        badge={
+          access.data?.project.status === 'ARCHIVED' && (
+            <Badge tone="neutral">Archived · read-only</Badge>
+          )
+        }
+        actions={
+          <Button asChild variant="outline">
+            <Link to={`/projects/${projectId}`}>
+              <Settings aria-hidden="true" />
+              Project settings
+            </Link>
+          </Button>
+        }
+      />
+      {(board.isPending || access.isPending) && (
+        <LoadingState label="Loading board" variant="board" />
+      )}
       {(board.isError || access.isError) && (
         <ErrorState
           title="Could not load the board"
@@ -58,15 +78,25 @@ function ProjectBoard({ projectId }: { projectId: string }) {
           }}
         />
       )}
-      {access.data?.project.status === 'ARCHIVED' && <p>This project is archived and read-only.</p>}
-      {move.isPending && <p role="status">Updating board…</p>}
-      {move.isError && (
-        <p role="alert">
-          {conflict
-            ? 'The board changed. Review the latest order before moving again.'
-            : extractApiErrorMessage(move.error)}
+      {access.data?.project.status === 'ARCHIVED' && (
+        <p className="rounded-[var(--radius)] border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
+          This project is archived and read-only.
         </p>
       )}
+      {move.isPending && (
+        <p role="status" className="text-xs font-medium text-muted-foreground">
+          Updating board…
+        </p>
+      )}
+      <FormErrorBanner
+        message={
+          move.isError
+            ? conflict
+              ? 'The board changed. Review the latest order before moving again.'
+              : extractApiErrorMessage(move.error)
+            : undefined
+        }
+      />
       {board.isSuccess && access.isSuccess && (
         <KanbanBoard
           tasks={board.data}

@@ -1,13 +1,17 @@
-﻿import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { FolderKanban, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { LoadingState } from '@/components/common/LoadingState';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Pagination } from '@/components/common/Pagination';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select } from '@/components/ui/select';
 import { ProjectCard } from './ProjectCard';
 import { createProject, listProjects } from '@/features/project/api/project.api';
 import { CreateProjectDialog } from '@/features/project/components/CreateProjectDialog';
@@ -19,6 +23,8 @@ export function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
+  const searchId = useId();
+  const statusId = useId();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const directory = useQuery({
@@ -46,11 +52,9 @@ export function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
   }
 
   return (
-    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
-      <Link to={`/workspaces?workspace=${workspaceId}`} className="text-action-link underline">
-        Back to workspace
-      </Link>
+    <div className="w-full min-w-0 space-y-6 px-page-gutter py-6">
       <PageHeader
+        backLink={{ to: `/workspaces?workspace=${workspaceId}`, label: 'Back to workspace' }}
         title={directory.data ? `Projects · ${directory.data.workspace.name}` : 'Projects'}
         description="Browse projects and open their tasks or settings."
         actions={
@@ -64,7 +68,7 @@ export function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
           onRetry={() => void directory.refetch()}
         />
       )}
-      {projects.isPending && <LoadingState label="Loading projects" />}
+      {projects.isPending && <LoadingState label="Loading projects" variant="cards" />}
       {projects.isError && (
         <ErrorState
           title="Could not load projects"
@@ -75,29 +79,44 @@ export function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
       {projects.isSuccess &&
         (pageProjects.length > 0 ? (
           <section className="space-y-4" aria-label="Workspace projects">
-            <div className="flex flex-wrap items-end gap-3">
-              <label className="grid w-full gap-1 text-sm sm:max-w-xs">
-                Search this page
-                <Input
-                  type="search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                />
-              </label>
-              <label className="grid gap-1 text-sm">
-                Project status
-                <select
-                  className="h-11 rounded-[var(--radius)] border border-input bg-card px-3"
+            <div className="flex flex-wrap items-end gap-3 rounded-[var(--radius-md)] border border-border bg-card p-3">
+              <div className="grid w-full min-w-0 gap-1.5 sm:max-w-xs">
+                <Label htmlFor={searchId} className="text-xs font-medium text-muted-foreground">
+                  Search this page
+                </Label>
+                <div className="relative">
+                  <Search
+                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <Input
+                    id={searchId}
+                    name="search"
+                    type="search"
+                    placeholder="Filter projects…"
+                    className="pl-9"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid min-w-[10rem] gap-1.5">
+                <Label htmlFor={statusId} className="text-xs font-medium text-muted-foreground">
+                  Project status
+                </Label>
+                <Select
+                  id={statusId}
+                  name="status"
                   value={status}
                   onChange={(event) => setStatus(event.target.value)}
                 >
                   <option value="">All statuses</option>
                   <option value="ACTIVE">Active</option>
                   <option value="ARCHIVED">Archived</option>
-                </select>
-              </label>
+                </Select>
+              </div>
             </div>
-            <p className="text-caption" aria-live="polite">
+            <p className="text-caption tabular-nums" aria-live="polite">
               {matching.length} of {pageProjects.length} projects on this page
             </p>
             {matching.length > 0 ? (
@@ -108,23 +127,28 @@ export function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
               </ul>
             ) : (
               <EmptyState
+                compact
+                icon={FolderKanban}
                 title="No matching projects."
                 action={
-                  <button
-                    className="text-action-link underline"
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       setSearch('');
                       setStatus('');
                     }}
                   >
                     Clear filters
-                  </button>
+                  </Button>
                 }
               />
             )}
           </section>
         ) : (
           <EmptyState
+            icon={FolderKanban}
             title="No projects on this page."
             description={canCreate ? 'Use Create project to start organizing work.' : undefined}
           />

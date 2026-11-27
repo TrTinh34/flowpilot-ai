@@ -1,7 +1,9 @@
-import { useId, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { FieldLabel } from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import type { ProjectMember } from '@/features/project/api/project.api';
 import { taskPriorities, type TaskFields, type TaskPriority } from '../types/task.types';
 
@@ -13,21 +15,33 @@ type Props = {
   label: string;
 };
 
+const PRIORITY_LABEL: Record<TaskPriority, string> = {
+  LOW: 'Low',
+  MEDIUM: 'Medium',
+  HIGH: 'High',
+  URGENT: 'Urgent',
+};
+
 export function TaskForm({ initial, members, onSubmit, pending, label }: Props) {
   const titleId = useId();
+  const descriptionId = useId();
+  const priorityId = useId();
+  const assigneeId = useId();
+  const dueDateId = useId();
+  const [titleError, setTitleError] = useState<string>();
+
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending) return;
     const fields = new FormData(event.currentTarget);
     const title = String(fields.get('title') ?? '').trim();
     if (!title) {
+      setTitleError('Enter a task title.');
       const input = event.currentTarget.elements.namedItem('title');
-      if (input instanceof HTMLInputElement) {
-        input.setCustomValidity('Enter a task title.');
-        input.reportValidity();
-      }
+      if (input instanceof HTMLInputElement) input.focus();
       return;
     }
+    setTitleError(undefined);
     onSubmit({
       title,
       description: String(fields.get('description') ?? '').trim(),
@@ -38,60 +52,72 @@ export function TaskForm({ initial, members, onSubmit, pending, label }: Props) 
   }
 
   return (
-    <form className="grid max-w-xl gap-3 rounded border p-4" onSubmit={submit}>
+    <form className="grid max-w-xl gap-4" noValidate onSubmit={submit}>
       <FieldLabel label="Task title" htmlFor={titleId}>
         <Input
           id={titleId}
           name="title"
           required
           defaultValue={initial?.title}
-          onInput={(event) => event.currentTarget.setCustomValidity('')}
+          aria-invalid={Boolean(titleError)}
+          aria-describedby={titleError ? `${titleId}-error` : undefined}
+          onChange={() => {
+            if (titleError) setTitleError(undefined);
+          }}
+        />
+        {titleError && (
+          <p
+            id={`${titleId}-error`}
+            role="alert"
+            className="text-xs text-[var(--color-error-text)]"
+          >
+            {titleError}
+          </p>
+        )}
+      </FieldLabel>
+      <FieldLabel label="Description" htmlFor={descriptionId}>
+        <Textarea
+          id={descriptionId}
+          name="description"
+          rows={3}
+          defaultValue={initial?.description}
+          placeholder="Add context, acceptance notes, or links…"
         />
       </FieldLabel>
-      <label className="grid gap-1">
-        Description
-        <textarea
-          className="rounded border p-2"
-          name="description"
-          defaultValue={initial?.description}
-        />
-      </label>
       <div className="grid gap-3 sm:grid-cols-3">
-        <label className="grid gap-1">
-          Priority
-          <select
-            className="rounded border p-2"
-            name="priority"
-            defaultValue={initial?.priority ?? 'MEDIUM'}
-          >
+        <FieldLabel label="Priority" htmlFor={priorityId}>
+          <Select id={priorityId} name="priority" defaultValue={initial?.priority ?? 'MEDIUM'}>
             {taskPriorities.map((priority) => (
-              <option key={priority}>{priority}</option>
+              <option key={priority} value={priority}>
+                {PRIORITY_LABEL[priority]}
+              </option>
             ))}
-          </select>
-        </label>
-        <label className="grid gap-1">
-          Assignee
-          <select
-            className="min-w-0 rounded border p-2"
-            name="assigneeId"
-            defaultValue={initial?.assigneeId ?? ''}
-          >
+          </Select>
+        </FieldLabel>
+        <FieldLabel label="Assignee" htmlFor={assigneeId}>
+          <Select id={assigneeId} name="assigneeId" defaultValue={initial?.assigneeId ?? ''}>
             <option value="">Unassigned</option>
             {members.map((member) => (
               <option key={member.userId} value={member.userId}>
                 {member.user.displayName}
               </option>
             ))}
-          </select>
-        </label>
-        <label className="grid gap-1">
-          Due date
-          <Input name="dueDate" type="date" defaultValue={initial?.dueDate?.slice(0, 10)} />
-        </label>
+          </Select>
+        </FieldLabel>
+        <FieldLabel label="Due date" htmlFor={dueDateId}>
+          <Input
+            id={dueDateId}
+            name="dueDate"
+            type="date"
+            defaultValue={initial?.dueDate?.slice(0, 10)}
+          />
+        </FieldLabel>
       </div>
-      <Button className="justify-self-start" disabled={pending}>
-        {pending ? 'Saving…' : label}
-      </Button>
+      <div className="flex justify-start">
+        <Button type="submit" disabled={pending}>
+          {pending ? 'Saving…' : label}
+        </Button>
+      </div>
     </form>
   );
 }

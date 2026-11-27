@@ -68,7 +68,7 @@ it('keeps workspace breadcrumbs in sync when switching workspaces and going back
   const breadcrumb = screen.getByRole('navigation', { name: 'Breadcrumb' });
   const sidebar = within(screen.getByRole('complementary', { name: 'Sidebar' }));
   expect(await within(breadcrumb).findByRole('link', { name: 'Studio' })).toBeInTheDocument();
-  await user.click(sidebar.getByRole('button', { name: 'Switch workspace' }));
+  await user.click(sidebar.getByRole('button', { name: /Switch workspace/i }));
   await user.click(await screen.findByRole('menuitemradio', { name: 'Lab' }));
   expect(await within(breadcrumb).findByRole('link', { name: 'Lab' })).toBeInTheDocument();
   expect(sidebar.getByRole('link', { name: 'Projects' })).toHaveAttribute('aria-current', 'page');
@@ -94,7 +94,7 @@ it('keeps a single main landmark and exposes a working skip link and accessible 
     'false',
   );
   expect(screen.getByRole('link', { name: 'My Tasks' })).toHaveAttribute('aria-current', 'page');
-  expect(screen.getByRole('button', { name: 'Switch workspace' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Switch workspace/i })).toBeInTheDocument();
 });
 
 it('restores drawer focus on Escape and closes on navigation without reopening on back', async () => {

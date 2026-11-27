@@ -1,4 +1,4 @@
-﻿import { useRef, useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
@@ -62,7 +62,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
           {...register('password')}
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" size="comfortable" className="w-full" disabled={isSubmitting}>
         {isSubmitting && <Loader2 className="size-4 motion-safe:animate-spin" aria-hidden="true" />}
         {isSubmitting ? 'Signing in…' : 'Sign In'}
       </Button>

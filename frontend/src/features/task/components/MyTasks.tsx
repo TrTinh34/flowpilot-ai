@@ -1,6 +1,6 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { CheckSquare } from 'lucide-react';
 import { useAuthStore } from '@/app/store/auth.store';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -19,12 +19,9 @@ export function MyTasks() {
     queryFn: () => listMyTasks(page),
   });
   return (
-    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
-      <Link to="/" className="text-action-link underline">
-        Home
-      </Link>
+    <div className="w-full min-w-0 space-y-6 px-page-gutter py-6">
       <PageHeader title="My Tasks" description="Tasks assigned to you across your projects." />
-      {tasks.isPending && <LoadingState label="Loading assigned tasks" />}
+      {tasks.isPending && <LoadingState label="Loading assigned tasks" variant="list" />}
       {tasks.isError && (
         <ErrorState
           title="Could not load assigned tasks"
@@ -37,6 +34,7 @@ export function MyTasks() {
           <TaskList tasks={tasks.data.data} showProject />
         ) : (
           <EmptyState
+            icon={CheckSquare}
             title="No assigned tasks on this page."
             description="Tasks assigned to you appear here."
           />

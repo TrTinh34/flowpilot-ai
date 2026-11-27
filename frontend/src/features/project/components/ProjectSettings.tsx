@@ -1,7 +1,8 @@
-﻿import { useRef, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
+import { Avatar } from '@/components/common/Avatar';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { FormErrorBanner } from '@/components/common/FormErrorBanner';
@@ -12,11 +13,10 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { FieldLabel } from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { addProjectMember, getProjectMembers, updateProject } from '../api/project.api';
 import { listWorkspaceMembers } from '@/features/workspace/api/workspace.api';
 import { extractApiErrorMessage } from '@/services/api-client';
-
-const selectClass = 'h-11 min-w-0 rounded-[var(--radius)] border border-input bg-card px-3 text-sm';
 
 export function ProjectSettings({ projectId }: { projectId: string }) {
   const revision = useAuthStore((state) => state.sessionRevision);
@@ -26,6 +26,8 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
   const [archiveOpen, setArchiveOpen] = useState(false);
   const nameForm = useRef<HTMLFormElement>(null);
   const busy = useRef(false);
+  const memberSelectId = useId();
+  const roleSelectId = useId();
   const detail = useQuery({
     queryKey: ['project-members', revision, projectId],
     queryFn: () => getProjectMembers(projectId),
@@ -62,10 +64,20 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
     }
   }
 
-  function save(status: 'ACTIVE' | 'ARCHIVED') {
+  function readProjectName() {
     const form = nameForm.current;
-    if (!form?.reportValidity()) return;
-    const name = String(new FormData(form).get('name') ?? '');
+    if (!form) return null;
+    const name = String(new FormData(form).get('name') ?? '').trim();
+    if (!name) {
+      setErrors((current) => ({ ...current, save: 'Enter a project name.' }));
+      return null;
+    }
+    return name;
+  }
+
+  function save(status: 'ACTIVE' | 'ARCHIVED') {
+    const name = readProjectName();
+    if (!name) return;
     void run(status === 'ARCHIVED' ? 'archive' : 'save', () =>
       updateProject(projectId, { name, status }),
     );
@@ -86,16 +98,21 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
-      <Link
-        to={workspaceId ? `/workspaces/${workspaceId}/projects` : '/workspaces'}
-        className="text-action-link underline"
-      >
-        Back to projects
-      </Link>
+    <div className="w-full min-w-0 space-y-6 px-page-gutter py-6">
       <PageHeader
+        backLink={{
+          to: workspaceId ? `/workspaces/${workspaceId}/projects` : '/workspaces',
+          label: 'Back to projects',
+        }}
         title={project?.name ?? 'Project settings'}
         description={project?.status === 'ARCHIVED' ? 'Archived · read-only' : undefined}
+        badge={
+          project && (
+            <Badge tone={project.status === 'ACTIVE' ? 'success' : 'neutral'}>
+              {project.status === 'ACTIVE' ? 'Active' : 'Archived'}
+            </Badge>
+          )
+        }
         actions={
           project && (
             <>
@@ -109,7 +126,7 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
           )
         }
       />
-      {detail.isPending && <LoadingState label="Loading project" />}
+      {detail.isPending && <LoadingState label="Loading project" variant="detail" />}
       {detail.isError && (
         <ErrorState
           title="Could not load project"
@@ -119,39 +136,35 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
       )}
       {project && detail.isSuccess && (
         <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)]">
-          <section className="min-w-0 space-y-4 rounded-[var(--radius-lg)] border border-border bg-card p-4 sm:p-5">
+          <section className="min-w-0 space-y-4 rounded-[var(--radius-md)] border border-border bg-card p-4 sm:p-5">
             <h2 className="text-section-title">Project members</h2>
             {detail.data.data.length ? (
               <ul className="divide-y divide-border">
                 {detail.data.data.map((member) => (
                   <li
                     key={member.userId}
-                    className="flex min-w-0 flex-wrap items-center gap-3 py-3"
+                    className="flex min-w-0 flex-wrap items-center gap-3 py-3 first:pt-1 last:pb-1"
                   >
-                    <span
-                      aria-hidden="true"
-                      className="grid size-8 shrink-0 place-items-center rounded-full bg-muted font-semibold text-action-link"
-                    >
-                      {member.user.displayName[0]?.toUpperCase()}
+                    <Avatar name={member.user.displayName} size="sm" tone="subtle" />
+                    <span className="min-w-0 flex-1 break-words text-sm font-medium text-foreground">
+                      {member.user.displayName}
                     </span>
-                    <span className="min-w-0 flex-1 break-words">{member.user.displayName}</span>
-                    <Badge tone={member.role === 'MANAGER' ? 'success' : 'neutral'}>
+                    <Badge tone={member.role === 'MANAGER' ? 'primary' : 'neutral'}>
                       {member.role === 'MANAGER' ? 'Manager' : 'Member'}
                     </Badge>
                   </li>
                 ))}
               </ul>
             ) : (
-              <EmptyState title="No project members." />
+              <EmptyState compact title="No project members." />
             )}
             {canWrite && (
               <form
-                className="grid items-end gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]"
+                className="grid items-end gap-3 border-t border-border pt-4 sm:grid-cols-[minmax(0,1fr)_auto_auto]"
                 onSubmit={add}
               >
-                <label className="grid min-w-0 gap-1 text-sm">
-                  Workspace member
-                  <select className={selectClass} name="userId" required defaultValue="">
+                <FieldLabel label="Workspace member" htmlFor={memberSelectId}>
+                  <Select id={memberSelectId} name="userId" required defaultValue="">
                     <option value="" disabled>
                       Select a member
                     </option>
@@ -160,15 +173,14 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
                         {member.user.displayName}
                       </option>
                     ))}
-                  </select>
-                </label>
-                <label className="grid gap-1 text-sm">
-                  Role
-                  <select className={selectClass} name="role">
+                  </Select>
+                </FieldLabel>
+                <FieldLabel label="Role" htmlFor={roleSelectId}>
+                  <Select id={roleSelectId} name="role">
                     <option value="MEMBER">Member</option>
                     {detail.data.canAssignManager && <option value="MANAGER">Manager</option>}
-                  </select>
-                </label>
+                  </Select>
+                </FieldLabel>
                 <Button type="submit" disabled={pending || !options?.length}>
                   Add member
                 </Button>
@@ -183,16 +195,20 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
             )}
             <FormErrorBanner message={errors.member} />
           </section>
-          <section className="min-w-0 space-y-4 rounded-[var(--radius-lg)] border border-border bg-card p-4 sm:p-5">
+          <section className="min-w-0 space-y-4 rounded-[var(--radius-md)] border border-border bg-card p-4 sm:p-5">
             <h2 className="text-section-title">Project details</h2>
-            <Badge tone={project.status === 'ACTIVE' ? 'success' : 'neutral'}>
-              {project.status === 'ACTIVE' ? 'Active' : 'Archived'}
-            </Badge>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">Status:</span>
+              <Badge tone={project.status === 'ACTIVE' ? 'success' : 'neutral'}>
+                {project.status === 'ACTIVE' ? 'Active' : 'Archived'}
+              </Badge>
+            </div>
             {canWrite && (
               <>
                 <form
                   key={project.name}
                   ref={nameForm}
+                  noValidate
                   className="space-y-3"
                   onSubmit={(event) => {
                     event.preventDefault();
@@ -207,14 +223,15 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
                     Save changes
                   </Button>
                 </form>
-                <div className="border-t border-border pt-3">
+                <div className="border-t border-border pt-4">
                   <Dialog
                     title="Archive project"
                     description="The project will become read-only. The current project name will be saved."
                     open={archiveOpen}
                     busy={pending}
+                    maxWidthClass="max-w-md"
                     onOpenChange={(open) => {
-                      if (open && !nameForm.current?.reportValidity()) return;
+                      if (open && !readProjectName()) return;
                       setArchiveOpen(open);
                       setErrors((current) => ({ ...current, archive: undefined }));
                     }}
@@ -224,9 +241,9 @@ export function ProjectSettings({ projectId }: { projectId: string }) {
                       </Button>
                     }
                   >
-                    <div className="mt-4 space-y-3">
+                    <div className="mt-4 space-y-4">
                       <FormErrorBanner message={errors.archive} />
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap justify-end gap-2">
                         <Button
                           type="button"
                           variant="outline"
