@@ -5,14 +5,26 @@ import {
   createCollaborationModule,
   type AttachmentStorage,
 } from '../modules/collaboration/index.js';
+import {
+  createNotificationModule,
+  type NotificationRealtimePort,
+} from '../modules/notification/index.js';
 import { projectRouter } from '../modules/project/project.routes.js';
 import { myTasksRouter, projectTasksRouter, taskRouter } from '../modules/task/index.js';
 import { invitationRouter, workspaceRouter } from '../modules/workspace/workspace.routes.js';
 
-export function createRootRouter(storage?: AttachmentStorage) {
+export function createRootRouter(
+  storage?: AttachmentStorage,
+  notificationRealtime?: NotificationRealtimePort,
+) {
   const router = Router();
   const { commentRouter, taskAttachmentsRouter, attachmentDownloadRouter } =
     createCollaborationModule(prisma, authenticate, storage);
+  const { notificationRouter } = createNotificationModule(
+    prisma,
+    authenticate,
+    notificationRealtime,
+  );
   router.use('/api/v1/auth', authRouter);
   router.use('/api/v1/workspaces', workspaceRouter);
   router.use('/api/v1/projects/:projectId/tasks', projectTasksRouter);
@@ -23,6 +35,7 @@ export function createRootRouter(storage?: AttachmentStorage) {
   router.use('/api/v1/tasks', taskRouter);
   router.use('/api/v1/me/tasks', myTasksRouter);
   router.use('/api/v1/invitations', invitationRouter);
+  router.use('/api/v1/notifications', notificationRouter);
 
   router.get('/health', async (_req, res) => {
     const dbUp = await checkDatabaseConnection();

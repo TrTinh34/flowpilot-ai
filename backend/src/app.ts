@@ -12,6 +12,7 @@ import { notFoundMiddleware } from './middlewares/not-found.middleware.js';
 import { apiRateLimiter } from './middlewares/rate-limit.middleware.js';
 import { requestIdMiddleware } from './middlewares/request-id.middleware.js';
 import type { AttachmentStorage } from './modules/collaboration/index.js';
+import type { NotificationRealtimePort } from './modules/notification/index.js';
 import { createRootRouter } from './routes/index.js';
 
 const storage = env.S3_BUCKET
@@ -30,7 +31,12 @@ const storage = env.S3_BUCKET
     )
   : undefined;
 
-export function createApp(options: { attachmentStorage?: AttachmentStorage } = {}): Express {
+export function createApp(
+  options: {
+    attachmentStorage?: AttachmentStorage;
+    notificationRealtime?: NotificationRealtimePort;
+  } = {},
+): Express {
   const app = express();
 
   app.disable('x-powered-by');
@@ -47,7 +53,10 @@ export function createApp(options: { attachmentStorage?: AttachmentStorage } = {
   );
   app.use(apiRateLimiter);
 
-  app.use('/', createRootRouter(options.attachmentStorage ?? storage));
+  app.use(
+    '/',
+    createRootRouter(options.attachmentStorage ?? storage, options.notificationRealtime),
+  );
 
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);

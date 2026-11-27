@@ -1886,6 +1886,32 @@ paths:
           type: integer
           minimum: 1
           default: 20
+      - name: unreadOnly
+        in: query
+        schema:
+          type: boolean
+          default: false
+  /notifications/read-all:
+    patch:
+      tags:
+      - NOTI
+      summary: Mark all own notifications read
+      operationId: patch_notifications_read_all
+      responses:
+        '204':
+          description: Success
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /notifications/{notificationId}/read:
     patch:
       tags:

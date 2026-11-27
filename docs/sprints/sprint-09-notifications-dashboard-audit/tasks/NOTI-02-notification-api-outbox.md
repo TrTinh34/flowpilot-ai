@@ -4,7 +4,7 @@
 
 - **Task ID**: `NOTI-02`
 - **Tên Task**: Notification REST API và Outbox Worker
-- **Sprint**: [Sprint 09 — Notifications, Dashboard & Audit Log](../README.md) (`PENDING`)
+- **Sprint**: [Sprint 09 — Notifications, Dashboard & Audit Log](../README.md) (`COMPLETED`)
 - **Ưu tiên**: P0 · **Ước lượng**: 7h
 - **Nguồn**: [US-NOTI-01](../../../07-Backlog-Roadmap.md#us-noti-01--thông-báo-trong-app-và-real-time)
 
@@ -59,4 +59,4 @@ Triển khai module `backend/src/modules/notification/` theo chuẩn Clean Archi
 
 ## Development Report Reference
 
-Chưa có.
+[Báo cáo NOTI-02](../../../reports/06-notifications-dashboard/NOTI-02-notification-api-outbox.md)

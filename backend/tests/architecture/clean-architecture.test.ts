@@ -7,6 +7,7 @@ const SRC_ROOT = path.resolve(import.meta.dirname, '../../src');
 const AUTH_ROOT = path.join(SRC_ROOT, 'modules/auth');
 const TASK_ROOT = path.join(SRC_ROOT, 'modules/task');
 const COLLABORATION_ROOT = path.join(SRC_ROOT, 'modules/collaboration');
+const NOTIFICATION_ROOT = path.join(SRC_ROOT, 'modules/notification');
 const SHARED_ROOT = path.join(SRC_ROOT, 'shared');
 
 function collectTsFiles(dir: string): string[] {
@@ -57,7 +58,12 @@ function toRelPosix(filePath: string): string {
 describe('Clean Architecture Fitness Tests', () => {
   const authFiles = collectTsFiles(AUTH_ROOT);
   const taskFiles = collectTsFiles(TASK_ROOT);
-  const cleanModuleFiles = [...authFiles, ...taskFiles, ...collectTsFiles(COLLABORATION_ROOT)];
+  const cleanModuleFiles = [
+    ...authFiles,
+    ...taskFiles,
+    ...collectTsFiles(COLLABORATION_ROOT),
+    ...collectTsFiles(NOTIFICATION_ROOT),
+  ];
   const sharedFiles = collectTsFiles(SHARED_ROOT);
   const allSrcFiles = collectTsFiles(SRC_ROOT).filter(
     (file) => !toRelPosix(file).startsWith('generated/'),
@@ -162,7 +168,7 @@ describe('Clean Architecture Fitness Tests', () => {
     }
   });
 
-  it('Other modules do not deep-import auth internals', () => {
+  it('Other modules do not deep-import auth or notification internals', () => {
     const externalFiles = allSrcFiles.filter(
       (file) => !toRelPosix(file).startsWith('modules/auth/'),
     );
@@ -183,6 +189,31 @@ describe('Clean Architecture Fitness Tests', () => {
           expect(
             target,
             `${toRelPosix(file)} must import auth via modules/auth/index`,
+          ).not.toContain(forbidden);
+        }
+      }
+    }
+
+    const externalNotiFiles = allSrcFiles.filter(
+      (file) => !toRelPosix(file).startsWith('modules/notification/'),
+    );
+    const forbiddenNotiInternals = [
+      'modules/notification/domain/',
+      'modules/notification/application/',
+      'modules/notification/infrastructure/',
+      'modules/notification/presentation/',
+      'modules/notification/notification.module',
+    ];
+
+    for (const file of externalNotiFiles) {
+      for (const spec of extractImports(file)) {
+        const resolved = resolveRelativeTsPath(file, spec);
+        if (!resolved) continue;
+        const target = toRelPosix(resolved);
+        for (const forbidden of forbiddenNotiInternals) {
+          expect(
+            target,
+            `${toRelPosix(file)} must import notification via modules/notification/index`,
           ).not.toContain(forbidden);
         }
       }

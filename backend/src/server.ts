@@ -1,9 +1,17 @@
 import { app } from './app.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
-import { disconnectDatabase } from './config/prisma.js';
+import { disconnectDatabase, prisma } from './config/prisma.js';
+import { JobRunner } from './jobs/job-runner.js';
+import { createOutboxWorker } from './jobs/outbox.worker.js';
+import { authenticate } from './modules/auth/index.js';
+import { createNotificationModule } from './modules/notification/index.js';
+
+const { processOutbox } = createNotificationModule(prisma, authenticate);
+const jobRunner = new JobRunner([createOutboxWorker(processOutbox, logger)]);
 
 const server = app.listen(env.PORT, () => {
+  jobRunner.start();
   logger.info({ port: env.PORT, env: env.NODE_ENV }, 'FlowPilot AI backend server started');
 });
 
@@ -29,6 +37,7 @@ async function shutdown(signal: string): Promise<void> {
     }
 
     try {
+      await jobRunner.stop();
       await disconnectDatabase();
       logger.info('Database connections closed');
     } catch (dbError) {
