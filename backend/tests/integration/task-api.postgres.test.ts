@@ -234,4 +234,87 @@ describe.skipIf(!testDatabaseUrl)('task and My Tasks API on PostgreSQL', () => {
     expect(managerMyTasks.status).toBe(200);
     expect(managerMyTasks.body.data).toHaveLength(0);
   });
+
+  it('moves and reorders tasks, enforces RBAC, and serializes stale versions', async () => {
+    const board = await db.prisma.project.create({
+      data: {
+        workspaceId: workspaceIds[0],
+        name: 'Board Fixture',
+        members: {
+          create: [
+            { userId: manager.id, role: 'MANAGER' },
+            { userId: member.id, role: 'MEMBER' },
+          ],
+        },
+      },
+    });
+    async function fixture(
+      parentProject: string,
+      position: number,
+      status: 'TODO' | 'IN_PROGRESS',
+      assigneeId?: string,
+    ) {
+      return db.prisma.task.create({
+        data: {
+          projectId: parentProject,
+          title: randomUUID(),
+          description: '',
+          priority: 'LOW',
+          position,
+          status,
+          assigneeId,
+        },
+      });
+    }
+    const head = await fixture(board.id, 0, 'TODO', member.id);
+    const tail = await fixture(board.id, 1, 'TODO');
+    const destination = await fixture(board.id, 0, 'IN_PROGRESS');
+    const archived = await fixture(archivedProjectId, 0, 'TODO');
+    const move = (
+      actor: Actor,
+      taskId: string,
+      status: string,
+      position: number,
+      version: number,
+    ) =>
+      request(app)
+        .patch(`/api/v1/tasks/${taskId}/move`)
+        .set('Authorization', actor.header)
+        .send({ status, position, version });
+
+    expect((await move(outsider, head.id, 'IN_PROGRESS', 0, 0)).status).toBe(404);
+    expect((await move(member, tail.id, 'IN_PROGRESS', 0, 0)).status).toBe(403);
+    expect((await move(manager, archived.id, 'DONE', 0, 0)).status).toBe(409);
+    expect((await move(manager, head.id, 'IN_PROGRESS', -1, 0)).status).toBe(400);
+    expect((await move(manager, head.id, 'IN_PROGRESS', 2, 0)).status).toBe(422);
+
+    const outcomes = await Promise.all([
+      move(member, head.id, 'IN_PROGRESS', 0, 0),
+      move(manager, head.id, 'IN_PROGRESS', 0, 0),
+    ]);
+    expect(outcomes.map((result) => result.status).sort()).toEqual([200, 409]);
+    expect(outcomes.find((result) => result.status === 409)?.body.code).toBe(
+      'TASK_VERSION_CONFLICT',
+    );
+    const after = await db.prisma.task.findMany({ where: { projectId: board.id } });
+    expect(after).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: head.id, status: 'IN_PROGRESS', position: 0, version: 1 }),
+        expect.objectContaining({ id: tail.id, status: 'TODO', position: 0, version: 1 }),
+        expect.objectContaining({
+          id: destination.id,
+          status: 'IN_PROGRESS',
+          position: 1,
+          version: 1,
+        }),
+      ]),
+    );
+    const reordered = await move(manager, destination.id, 'IN_PROGRESS', 0, 1);
+    expect(reordered.status).toBe(200);
+    expect(reordered.body.data).toMatchObject({ position: 0, version: 2 });
+    expect(await db.prisma.task.findUnique({ where: { id: head.id } })).toMatchObject({
+      position: 1,
+      version: 2,
+    });
+  });
 });

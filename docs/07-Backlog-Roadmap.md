@@ -49,6 +49,7 @@
 - Tasks: Prisma Migrate (`tasks` + `version >= 0` check); Express task service/API với Zod validation & optimistic update (`updateMany` theo `version`); UI task detail & subtask (React Hook Form + TanStack Query); integration test (Vitest + Supertest) & RTL component test, review.
 
 ### US-BOARD-01 — Kanban, kéo thả và sắp xếp task
+- BOARD-01 đã kiểm chứng Board Move API, quyền theo project và cập nhật đồng thời trên PostgreSQL test.
 - Epic: BOARD; priority: Must; FR-BOARD-01 / UC-BOARD-01.
 - Story: Là Manager / Member, tôi muốn kanban, kéo thả và sắp xếp task để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Hai cập nhật đồng thời không ghi đè âm thầm; Kiểm tra version khi di chuyển; cập nhật thứ tự nguyên tử.

@@ -7,6 +7,7 @@ import { GetTaskDetailUseCase } from '../../src/modules/task/application/use-cas
 import { ListMyTasksUseCase } from '../../src/modules/task/application/use-cases/list-my-tasks.use-case.js';
 import { ListProjectTasksUseCase } from '../../src/modules/task/application/use-cases/list-project-tasks.use-case.js';
 import { UpdateTaskUseCase } from '../../src/modules/task/application/use-cases/update-task.use-case.js';
+import { MoveTaskUseCase } from '../../src/modules/task/application/use-cases/move-task.use-case.js';
 import {
   InvalidSubtaskParentError,
   InvalidTaskAssigneeError,
@@ -44,6 +45,10 @@ let unitOfWork: TaskUnitOfWork;
 
 beforeEach(() => {
   taskRepository = {
+    lockProject: vi.fn(),
+    listBoardPositions: vi.fn(),
+    moveWithVersion: vi.fn(),
+    updateBoardPositions: vi.fn(),
     findProjectAccess: vi.fn().mockResolvedValue({
       projectId,
       workspaceId,
@@ -76,6 +81,30 @@ beforeEach(() => {
 });
 
 describe('Task Use Cases', () => {
+  it('moves a task after locking the project and repositions affected column entries', async () => {
+    const sibling = randomUUID();
+    vi.mocked(taskRepository.listBoardPositions).mockResolvedValue([
+      { id: taskId, status: 'TODO', position: 0 },
+      { id: sibling, status: 'IN_PROGRESS', position: 0 },
+    ]);
+    vi.mocked(taskRepository.moveWithVersion).mockResolvedValue({
+      ...sampleTask,
+      status: 'IN_PROGRESS',
+      version: 1,
+    });
+    const input = { taskId, actorId, status: 'IN_PROGRESS' as const, position: 0, version: 0 };
+    await expect(new MoveTaskUseCase(unitOfWork).execute(input)).resolves.toMatchObject({
+      version: 1,
+    });
+    expect(taskRepository.lockProject).toHaveBeenCalledWith(projectId, workspaceId);
+    expect(taskRepository.updateBoardPositions).toHaveBeenCalledWith([
+      { id: sibling, position: 1 },
+    ]);
+    await expect(
+      new MoveTaskUseCase(unitOfWork).execute({ ...input, version: 99 }),
+    ).rejects.toBeInstanceOf(TaskVersionConflictError);
+    expect(taskRepository.moveWithVersion).toHaveBeenCalledTimes(1);
+  });
   it('ListProjectTasksUseCase enforces project visibility and paginates', async () => {
     const useCase = new ListProjectTasksUseCase(taskRepository);
     await expect(useCase.execute({ projectId, actorId, page: 0, size: 20 })).resolves.toEqual({
@@ -187,14 +216,16 @@ describe('Task Use Cases', () => {
   it('UpdateTaskUseCase checks permissions, archived status, assignee, and optimistic version', async () => {
     const useCase = new UpdateTaskUseCase(unitOfWork);
 
-    await expect(useCase.execute({ taskId, actorId, version: 0, title: 'Updated' })).resolves.toMatchObject({
+    await expect(
+      useCase.execute({ taskId, actorId, version: 0, title: 'Updated' }),
+    ).resolves.toMatchObject({
       version: 1,
     });
 
     vi.mocked(taskRepository.updateWithVersion).mockResolvedValueOnce(null);
-    await expect(useCase.execute({ taskId, actorId, version: 0, title: 'Stale' })).rejects.toBeInstanceOf(
-      TaskVersionConflictError,
-    );
+    await expect(
+      useCase.execute({ taskId, actorId, version: 0, title: 'Stale' }),
+    ).rejects.toBeInstanceOf(TaskVersionConflictError);
   });
 
   it('ListMyTasksUseCase lists tasks assigned to actor', async () => {

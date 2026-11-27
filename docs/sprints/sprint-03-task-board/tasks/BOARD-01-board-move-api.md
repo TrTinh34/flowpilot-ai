@@ -42,4 +42,4 @@ Kiểm chứng các tiêu chí và cập nhật báo cáo triển khai.
 
 ## Development Report Reference
 
-Chưa triển khai.
+[Development Report BOARD-01](../../../reports/03-task-board/BOARD-01-board-move-api.md)

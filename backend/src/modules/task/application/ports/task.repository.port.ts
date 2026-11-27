@@ -3,6 +3,7 @@ import type {
   TaskDetailEntity,
   TaskEntity,
   TaskPriority,
+  TaskStatus,
 } from '../../domain/entities/task.entity.js';
 
 export interface CreateTaskRecordData {
@@ -27,6 +28,18 @@ export interface UpdateTaskRecordData {
 }
 
 export interface TaskRepository {
+  lockProject(projectId: string, workspaceId: string): Promise<void>;
+  listBoardPositions(
+    projectId: string,
+    statuses: TaskStatus[],
+  ): Promise<Pick<TaskEntity, 'id' | 'status' | 'position'>[]>;
+  moveWithVersion(input: {
+    taskId: string;
+    version: number;
+    status: TaskStatus;
+    position: number;
+  }): Promise<TaskEntity | null>;
+  updateBoardPositions(changes: { id: string; position: number }[]): Promise<void>;
   findProjectAccess(projectId: string, actorId: string): Promise<ProjectTaskAccess | null>;
   findTaskAccess(
     taskId: string,

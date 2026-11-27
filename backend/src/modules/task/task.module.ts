@@ -7,6 +7,7 @@ import { GetTaskDetailUseCase } from './application/use-cases/get-task-detail.us
 import { ListMyTasksUseCase } from './application/use-cases/list-my-tasks.use-case.js';
 import { ListProjectTasksUseCase } from './application/use-cases/list-project-tasks.use-case.js';
 import { UpdateTaskUseCase } from './application/use-cases/update-task.use-case.js';
+import { MoveTaskUseCase } from './application/use-cases/move-task.use-case.js';
 import { PrismaTaskUnitOfWork } from './infrastructure/persistence/prisma-task-unit-of-work.js';
 import { PrismaTaskRepository } from './infrastructure/repositories/prisma-task.repository.js';
 import { TaskController } from './presentation/controllers/task.controller.js';
@@ -29,6 +30,7 @@ export function createTaskModule(deps: TaskModuleDependencies) {
   const createTaskUseCase = new CreateTaskUseCase(taskUnitOfWork);
   const getTaskDetailUseCase = new GetTaskDetailUseCase(taskRepository);
   const updateTaskUseCase = new UpdateTaskUseCase(taskUnitOfWork);
+  const moveTaskUseCase = new MoveTaskUseCase(taskUnitOfWork);
   const listMyTasksUseCase = new ListMyTasksUseCase(taskRepository);
 
   const taskController = new TaskController(
@@ -37,6 +39,7 @@ export function createTaskModule(deps: TaskModuleDependencies) {
     getTaskDetailUseCase,
     updateTaskUseCase,
     listMyTasksUseCase,
+    moveTaskUseCase,
   );
 
   return {
@@ -49,6 +52,7 @@ export function createTaskModule(deps: TaskModuleDependencies) {
       getTaskDetailUseCase,
       updateTaskUseCase,
       listMyTasksUseCase,
+      moveTaskUseCase,
     },
   };
 }

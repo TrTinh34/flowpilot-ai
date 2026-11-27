@@ -14,6 +14,11 @@ export class CreateTaskUseCase {
 
   execute(input: CreateTaskInput): Promise<TaskDto> {
     return this.unitOfWork.execute(async ({ tasks }) => {
+      const initial = await tasks.findProjectAccess(input.projectId, input.actorId);
+      if (!initial) throw new TaskProjectNotFoundError();
+      if (!initial.canWrite) throw new TaskForbiddenError();
+      if (initial.projectStatus === 'ARCHIVED') throw new TaskProjectArchivedError();
+      await tasks.lockProject(initial.projectId, initial.workspaceId);
       const access = await tasks.findProjectAccess(input.projectId, input.actorId);
       if (!access) {
         throw new TaskProjectNotFoundError();

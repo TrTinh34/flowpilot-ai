@@ -25,6 +25,12 @@ export const taskPageQuery = z
 
 export const taskPrioritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']);
 
+export const moveTaskBody = z.strictObject({
+  status: z.enum(['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE']),
+  position: z.number().int().min(0).max(prismaIntMax),
+  version: z.number().int().min(0).max(prismaIntMax),
+});
+
 export const createTaskBody = z.strictObject({
   title: z.string().trim().min(1),
   description: z.string().trim(),

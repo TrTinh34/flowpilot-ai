@@ -2,6 +2,7 @@ import { AppError } from '../../../../errors/app-error.js';
 import { ERROR_CODES } from '../../../../shared/domain/errors/error-codes.js';
 import {
   InvalidSubtaskParentError,
+  InvalidBoardPositionError,
   InvalidTaskAssigneeError,
   ParentTaskNotFoundError,
   TaskForbiddenError,
@@ -31,7 +32,11 @@ export function toTaskAppError(error: unknown): AppError {
   if (error instanceof TaskVersionConflictError) {
     return new AppError(409, ERROR_CODES.TASK_VERSION_CONFLICT, error.message);
   }
-  if (error instanceof InvalidSubtaskParentError || error instanceof InvalidTaskAssigneeError) {
+  if (
+    error instanceof InvalidSubtaskParentError ||
+    error instanceof InvalidTaskAssigneeError ||
+    error instanceof InvalidBoardPositionError
+  ) {
     return new AppError(422, ERROR_CODES.VALIDATION_ERROR, error.message);
   }
 

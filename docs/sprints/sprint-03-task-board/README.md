@@ -5,7 +5,7 @@
 - Sprint ID — Sprint 03
 - Ngày mở — 2026-11-26
 - Trạng thái — IN_PROGRESS
-- Tiến độ — 3/7 Task hoàn thành (2 Feature Task + 1 Architecture Refactoring Task)
+- Tiến độ — 4/7 Task hoàn thành (3 Feature Task + 1 Architecture Refactoring Task)
 - Nguồn — [Product Backlog & Roadmap](../../07-Backlog-Roadmap.md)
 
 ## Sprint Goal
@@ -23,7 +23,7 @@ US-TASK-01 và US-BOARD-01. Bao gồm schema, migration, API, quyền theo proje
 | TASK-01 | [Task schema và migration](tasks/TASK-01-task-database.md) | COMPLETED | PROJ-01 |
 | ARCH-01 | [Migrate Backend Auth to Feature-based Clean Architecture](tasks/ARCH-01-clean-architecture-migration.md) | COMPLETED | Sprint 01–02 Auth & DB |
 | TASK-02 | [Task và My Tasks API](tasks/TASK-02-task-api.md) | COMPLETED | TASK-01, PROJ-02 |
-| BOARD-01 | [Board move API](tasks/BOARD-01-board-move-api.md) | PENDING | TASK-01, TASK-02 |
+| BOARD-01 | [Board move API](tasks/BOARD-01-board-move-api.md) | COMPLETED | TASK-01, TASK-02 |
 | TASK-03 | [Task detail, subtask và My Tasks UI](tasks/TASK-03-task-frontend.md) | PENDING | TASK-02, PROJ-03 |
 | BOARD-02 | [Kanban và điều khiển di chuyển](tasks/BOARD-02-board-frontend.md) | PENDING | BOARD-01, TASK-03 |
 | TASK-BOARD-INT-01 | [Task & Board integration và review](tasks/TASK-BOARD-INT-01-integration-review.md) | PENDING | TASK-01–03, BOARD-01–02 |

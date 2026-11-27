@@ -37,6 +37,12 @@ export class TaskVersionConflictError extends DomainError {
   }
 }
 
+export class InvalidBoardPositionError extends DomainError {
+  constructor() {
+    super(ERROR_CODES.VALIDATION_ERROR, 'Position is outside the destination column.');
+  }
+}
+
 export class InvalidSubtaskParentError extends DomainError {
   constructor() {
     super(ERROR_CODES.VALIDATION_ERROR, 'Subtasks cannot have nested subtasks.');

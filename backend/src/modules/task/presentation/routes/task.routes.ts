@@ -20,6 +20,7 @@ export function createTaskRouter(
   router.use(authenticateMiddleware);
   router.get('/:taskId', controller.getTaskDetail);
   router.patch('/:taskId', controller.updateTask);
+  router.patch('/:taskId/move', controller.moveTask);
   return router;
 }
 

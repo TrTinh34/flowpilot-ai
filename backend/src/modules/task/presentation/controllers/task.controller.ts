@@ -7,9 +7,11 @@ import type { GetTaskDetailUseCase } from '../../application/use-cases/get-task-
 import type { ListMyTasksUseCase } from '../../application/use-cases/list-my-tasks.use-case.js';
 import type { ListProjectTasksUseCase } from '../../application/use-cases/list-project-tasks.use-case.js';
 import type { UpdateTaskUseCase } from '../../application/use-cases/update-task.use-case.js';
+import type { MoveTaskUseCase } from '../../application/use-cases/move-task.use-case.js';
 import { toTaskAppError } from '../presenters/task-error.presenter.js';
 import {
   createTaskBody,
+  moveTaskBody,
   projectTasksParams,
   taskPageQuery,
   taskParams,
@@ -38,6 +40,7 @@ export class TaskController {
     private readonly getTaskDetailUseCase: GetTaskDetailUseCase,
     private readonly updateTaskUseCase: UpdateTaskUseCase,
     private readonly listMyTasksUseCase: ListMyTasksUseCase,
+    private readonly moveTaskUseCase: MoveTaskUseCase,
   ) {}
 
   listProjectTasks = async (req: Request, res: Response): Promise<void> => {
@@ -110,6 +113,18 @@ export class TaskController {
           size,
         }),
       );
+    } catch (error) {
+      throw toTaskAppError(error);
+    }
+  };
+
+  moveTask = async (req: Request, res: Response): Promise<void> => {
+    const { taskId } = parse(taskParams, req.params);
+    const input = parse(moveTaskBody, req.body);
+    try {
+      res.json({
+        data: await this.moveTaskUseCase.execute({ taskId, actorId: actorId(req), ...input }),
+      });
     } catch (error) {
       throw toTaskAppError(error);
     }

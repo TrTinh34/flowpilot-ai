@@ -8,6 +8,7 @@ import type {
   ProjectTaskAccess,
   TaskDetailEntity,
   TaskEntity,
+  TaskStatus,
 } from '../../domain/entities/task.entity.js';
 
 type PrismaDbClient = PrismaClient | Prisma.TransactionClient;
@@ -30,6 +31,45 @@ const taskSelect = {
 
 export class PrismaTaskRepository implements TaskRepository {
   constructor(private readonly client: PrismaDbClient) {}
+
+  async lockProject(projectId: string, workspaceId: string): Promise<void> {
+    // Project and workspace membership mutations acquire the workspace lock first.
+    await this.client
+      .$queryRaw`SELECT id FROM workspaces WHERE id = ${workspaceId}::uuid FOR UPDATE`;
+    await this.client.$queryRaw`SELECT id FROM projects WHERE id = ${projectId}::uuid FOR UPDATE`;
+  }
+
+  listBoardPositions(projectId: string, statuses: TaskStatus[]) {
+    return this.client.task.findMany({
+      where: { projectId, status: { in: statuses } },
+      select: { id: true, status: true, position: true },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }],
+    });
+  }
+
+  async moveWithVersion(input: {
+    taskId: string;
+    version: number;
+    status: TaskStatus;
+    position: number;
+  }) {
+    const result = await this.client.task.updateMany({
+      where: { id: input.taskId, version: input.version },
+      data: { status: input.status, position: input.position, version: { increment: 1 } },
+    });
+    if (result.count === 0) return null;
+    return this.client.task.findUnique({ where: { id: input.taskId }, select: taskSelect });
+  }
+
+  async updateBoardPositions(changes: { id: string; position: number }[]): Promise<void> {
+    if (changes.length === 0) return;
+    await this.client.$executeRaw`
+      UPDATE tasks AS task
+      SET position = shifted.position, version = task.version + 1, updated_at = CURRENT_TIMESTAMP
+      FROM jsonb_to_recordset(${JSON.stringify(changes)}::jsonb) AS shifted(id uuid, position integer)
+      WHERE task.id = shifted.id
+    `;
+  }
 
   async findProjectAccess(projectId: string, actorId: string): Promise<ProjectTaskAccess | null> {
     const project = await this.client.project.findFirst({

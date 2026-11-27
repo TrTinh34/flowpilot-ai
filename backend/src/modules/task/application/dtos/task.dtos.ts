@@ -1,7 +1,20 @@
-import type { TaskDetailEntity, TaskEntity, TaskPriority } from '../../domain/entities/task.entity.js';
+import type {
+  TaskDetailEntity,
+  TaskEntity,
+  TaskPriority,
+  TaskStatus,
+} from '../../domain/entities/task.entity.js';
 
 export type TaskDto = TaskEntity;
 export type TaskDetailDto = TaskDetailEntity;
+
+export interface MoveTaskInput {
+  taskId: string;
+  actorId: string;
+  status: TaskStatus;
+  position: number;
+  version: number;
+}
 
 export interface ListProjectTasksInput {
   projectId: string;
