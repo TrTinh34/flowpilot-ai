@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Check } from 'lucide-react';
+import { ErrorState } from '@/components/common/ErrorState';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  isNotificationDemoEnabled,
-  useNotificationDemoStore,
-} from '@/features/notification/store/notification-demo.store';
+import { useNotificationsFeed } from '@/features/notification/hooks/useNotificationsFeed';
+import { extractApiErrorMessage } from '@/services/api-client';
 import { cn } from '@/utils/cn.util';
 
 function timeAgo(iso: string) {
@@ -17,23 +16,25 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-/** Notification bell icon with unread badge and shared dropdown preview */
+/** Notification bell icon with unread badge and shared live/demo dropdown */
 export function NotificationBell() {
-  const demoEnabled = isNotificationDemoEnabled();
-  const items = useNotificationDemoStore((state) => state.items);
-  const loadDemo = useNotificationDemoStore((state) => state.loadDemo);
-  const markRead = useNotificationDemoStore((state) => state.markRead);
-  const markAllRead = useNotificationDemoStore((state) => state.markAllRead);
+  const {
+    demoEnabled,
+    items,
+    unreadCount,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    markRead,
+    markAllRead,
+    isMutating,
+  } = useNotificationsFeed({ page: 0, size: 20, unreadOnly: false });
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (demoEnabled) void loadDemo();
-  }, [demoEnabled, loadDemo]);
-
-  const unread = demoEnabled ? items.filter((n) => !n.isRead).length : 0;
-  const visibleItems = demoEnabled ? items.slice(0, 5) : [];
+  const visibleItems = items.slice(0, 5);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -60,17 +61,17 @@ export function NotificationBell() {
         variant="ghost"
         size="icon-sm"
         onClick={() => setOpen((v) => !v)}
-        aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ''}`}
+        aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
         aria-expanded={open}
         className="relative"
       >
         <Bell aria-hidden="true" />
-        {unread > 0 && (
+        {unreadCount > 0 && (
           <span
             aria-hidden="true"
             className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-action text-[10px] font-semibold tabular-nums text-action-foreground"
           >
-            {unread > 9 ? '9+' : unread}
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </Button>
@@ -82,18 +83,31 @@ export function NotificationBell() {
               <span className="text-sm font-semibold text-foreground">Notifications</span>
               {demoEnabled && <Badge tone="ai">Demo</Badge>}
             </div>
-            {unread > 0 && (
+            {unreadCount > 0 && (
               <button
                 type="button"
-                onClick={markAllRead}
-                className="cursor-pointer text-xs font-medium text-action-link hover:underline"
+                disabled={isMutating}
+                onClick={() => markAllRead()}
+                className="cursor-pointer text-xs font-medium text-action-link hover:underline disabled:opacity-50"
               >
                 Mark all read
               </button>
             )}
           </div>
 
-          {visibleItems.length === 0 ? (
+          {isError ? (
+            <div className="p-3">
+              <ErrorState
+                title="Could not load notifications"
+                message={extractApiErrorMessage(error)}
+                onRetry={() => void refetch()}
+              />
+            </div>
+          ) : isLoading && visibleItems.length === 0 ? (
+            <p className="px-4 py-6 text-center text-xs text-muted-foreground">
+              Loading notifications…
+            </p>
+          ) : visibleItems.length === 0 ? (
             <p className="px-4 py-6 text-center text-xs text-muted-foreground">
               No notifications yet.
             </p>
@@ -112,7 +126,17 @@ export function NotificationBell() {
                     aria-hidden="true"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-foreground">{n.message}</p>
+                    {!demoEnabled && n.taskId ? (
+                      <Link
+                        to={`/tasks/${n.taskId}`}
+                        onClick={() => setOpen(false)}
+                        className="block text-xs text-foreground hover:text-action-link hover:underline"
+                      >
+                        {n.message}
+                      </Link>
+                    ) : (
+                      <p className="text-xs text-foreground">{n.message}</p>
+                    )}
                     <p className="mt-0.5 text-[11px] tabular-nums text-muted-foreground">
                       {timeAgo(n.createdAt)}
                     </p>
@@ -120,9 +144,10 @@ export function NotificationBell() {
                   {!n.isRead && (
                     <button
                       type="button"
+                      disabled={isMutating}
                       onClick={() => markRead(n.id)}
                       aria-label={`Mark "${n.message}" as read`}
-                      className="shrink-0 cursor-pointer rounded-[var(--radius-sm)] p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-action-link"
+                      className="shrink-0 cursor-pointer rounded-[var(--radius-sm)] p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-action-link disabled:opacity-50"
                     >
                       <Check className="size-3.5" aria-hidden="true" />
                     </button>

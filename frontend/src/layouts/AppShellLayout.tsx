@@ -25,6 +25,7 @@ import { Logo } from '@/components/common/Logo';
 import { Button } from '@/components/ui/button';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { NotificationBell } from '@/features/notification/components/NotificationBell';
+import { useNotificationSocket } from '@/features/notification/hooks/useNotificationSocket';
 import { WorkspaceSwitcher } from '@/features/workspace/components/WorkspaceSwitcher';
 import { cn } from '@/utils/cn.util';
 import { useShellContext } from './useShellContext';
@@ -255,6 +256,7 @@ function Breadcrumbs({ context }: { context: ShellContext }) {
 }
 
 export function AppShellLayout({ children }: PropsWithChildren) {
+  useNotificationSocket();
   const context = useShellContext();
   const { key: routeKey } = useLocation();
   const sidebarOpen = useUiStore((state) => state.isSidebarOpen);

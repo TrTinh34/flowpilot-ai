@@ -1,21 +1,34 @@
+import { createServer } from 'node:http';
 import { app } from './app.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { disconnectDatabase, prisma } from './config/prisma.js';
 import { JobRunner } from './jobs/job-runner.js';
 import { createOutboxWorker } from './jobs/outbox.worker.js';
-import { authenticate } from './modules/auth/index.js';
+import { accessTokenVerifier, authenticate } from './modules/auth/index.js';
 import { createNotificationModule } from './modules/notification/index.js';
+import { createPrismaProjectAccessChecker, createSocketServer } from './sockets/socket.server.js';
 
-const { processOutbox } = createNotificationModule(prisma, authenticate);
+const httpServer = createServer(app);
+const socketServer = createSocketServer(httpServer, {
+  accessTokenVerifier,
+  canAccessProject: createPrismaProjectAccessChecker(prisma),
+  logger,
+});
+
+const { processOutbox } = createNotificationModule(
+  prisma,
+  authenticate,
+  socketServer.notificationRealtime,
+);
 const jobRunner = new JobRunner([createOutboxWorker(processOutbox, logger)]);
 
-const server = app.listen(env.PORT, () => {
+httpServer.listen(env.PORT, () => {
   jobRunner.start();
   logger.info({ port: env.PORT, env: env.NODE_ENV }, 'FlowPilot AI backend server started');
 });
 
-server.on('error', (error: NodeJS.ErrnoException) => {
+httpServer.on('error', (error: NodeJS.ErrnoException) => {
   logger.error({ err: error }, 'Failed to start HTTP server');
   process.exitCode = 1;
 });
@@ -30,14 +43,16 @@ async function shutdown(signal: string): Promise<void> {
 
   logger.info({ signal }, 'Graceful shutdown initiated');
 
-  server.close(async (closeError) => {
+  await jobRunner.stop();
+  await socketServer.close();
+
+  httpServer.close(async (closeError) => {
     if (closeError) {
       logger.error({ err: closeError }, 'Error while closing HTTP server');
       process.exitCode = 1;
     }
 
     try {
-      await jobRunner.stop();
       await disconnectDatabase();
       logger.info('Database connections closed');
     } catch (dbError) {

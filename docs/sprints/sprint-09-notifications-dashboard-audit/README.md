@@ -4,7 +4,7 @@
 
 - Ngày mở — 2026-11-28
 - Trạng thái — IN_PROGRESS
-- Tiến độ — 2/7 task
+- Tiến độ — 3/7 task
 - Nguồn — [US-NOTI-01](../../07-Backlog-Roadmap.md#us-noti-01--thông-báo-trong-app-và-real-time) và [US-DASH-01](../../07-Backlog-Roadmap.md#us-dash-01--dashboard-tiến-độ-my-tasks-audit-log) (tương ứng Sprint 4 trong bảng Roadmap gốc)
 
 ## Sprint Goal
@@ -23,7 +23,7 @@ Cung cấp thông báo trong ứng dụng + real-time qua Socket.IO (từ `outbo
 |---|---|---|---|
 | NOTI-01 | [Schema và migration Notifications](tasks/NOTI-01-notifications-schema.md) | COMPLETED | COL-01 (OutboxEvent) |
 | NOTI-02 | [Notification REST API và Outbox Worker](tasks/NOTI-02-notification-api-outbox.md) | COMPLETED | NOTI-01, COL-02 |
-| NOTI-03 | [Socket.IO Server và tích hợp Notification UI](tasks/NOTI-03-socket-realtime-frontend.md) | PENDING | NOTI-02, REDESIGN-12 |
+| NOTI-03 | [Socket.IO Server và tích hợp Notification UI](tasks/NOTI-03-socket-realtime-frontend.md) | COMPLETED | NOTI-02, REDESIGN-12 |
 | DASH-01 | [Audit Log Schema và Emission Ports](tasks/DASH-01-audit-schema-ports.md) | PENDING | WS-01, PROJ-01, TASK-01 |
 | DASH-02 | [Dashboard Metrics và Audit Query API](tasks/DASH-02-dashboard-audit-api.md) | PENDING | DASH-01, TASK-02 |
 | DASH-03 | [Tích hợp Dashboard Metrics và Audit Timeline UI](tasks/DASH-03-dashboard-audit-frontend.md) | PENDING | DASH-02, REDESIGN-06 |

@@ -4,7 +4,7 @@
 
 - **Task ID**: `NOTI-03`
 - **Tên Task**: Socket.IO Server Real-time và tích hợp Notification UI
-- **Sprint**: [Sprint 09 — Notifications, Dashboard & Audit Log](../README.md) (`PENDING`)
+- **Sprint**: [Sprint 09 — Notifications, Dashboard & Audit Log](../README.md) (`COMPLETED`)
 - **Ưu tiên**: P0 · **Ước lượng**: 6h
 - **Nguồn**: [US-NOTI-01](../../../07-Backlog-Roadmap.md#us-noti-01--thông-báo-trong-app-và-real-time)
 
@@ -60,4 +60,4 @@ Xây dựng Socket.IO server với xác thực JWT lúc handshake và server-man
 
 ## Development Report Reference
 
-Chưa có.
+[Báo cáo NOTI-03](../../../reports/06-notifications-dashboard/NOTI-03-socket-realtime-frontend.md)

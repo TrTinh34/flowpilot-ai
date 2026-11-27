@@ -18,7 +18,6 @@ export default defineConfig({
       'tests/integration/project-task.integration.test.ts',
       'tests/integration/board-concurrency.integration.test.ts',
       'tests/integration/collaboration.integration.test.ts',
-      'tests/integration/notification-socket.integration.test.ts',
       'tests/integration/ai-planning.integration.test.ts',
     ],
   },

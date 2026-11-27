@@ -1,17 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Bell, Check, Mail, MessageSquare, UserPlus } from 'lucide-react';
 import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
 import { LoadingState } from '@/components/common/LoadingState';
 import { PageHeader } from '@/components/common/PageHeader';
+import { Pagination } from '@/components/common/Pagination';
 import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  isNotificationDemoEnabled,
-  useNotificationDemoStore,
-} from '@/features/notification/store/notification-demo.store';
-import type { NotificationItem, NotificationType } from '@/mocks/fixtures/notification.fixtures';
+import { useNotificationsFeed } from '@/features/notification/hooks/useNotificationsFeed';
+import type {
+  NotificationItem,
+  NotificationType,
+} from '@/features/notification/types/notification.types';
+import { extractApiErrorMessage } from '@/services/api-client';
 import { cn } from '@/utils/cn.util';
+
+const PAGE_SIZE = 20;
 
 const TYPE_META: Record<NotificationType, { label: string; tone: BadgeTone; icon: typeof Bell }> = {
   TASK_ASSIGNED: { label: 'Assignment', tone: 'info', icon: Bell },
@@ -33,46 +39,51 @@ function isRecentGroup(iso: string, latestDay: string) {
 }
 
 export function NotificationsPage() {
-  const demoEnabled = isNotificationDemoEnabled();
-  const items = useNotificationDemoStore((state) => state.items);
-  const loading = useNotificationDemoStore((state) => state.loading);
-  const loadDemo = useNotificationDemoStore((state) => state.loadDemo);
-  const markRead = useNotificationDemoStore((state) => state.markRead);
-  const markAllRead = useNotificationDemoStore((state) => state.markAllRead);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  const [page, setPage] = useState(0);
+  const {
+    demoEnabled,
+    items,
+    unreadCount,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    markRead,
+    markAllRead,
+    isMutating,
+  } = useNotificationsFeed({ page, size: PAGE_SIZE, unreadOnly: filter === 'unread' });
 
-  useEffect(() => {
-    if (demoEnabled) void loadDemo();
-  }, [demoEnabled, loadDemo]);
-
-  const activeItems = demoEnabled ? items : [];
-  const unreadCount = activeItems.filter((n) => !n.isRead).length;
-  const visible = filter === 'unread' ? activeItems.filter((n) => !n.isRead) : activeItems;
-  const latestDay = activeItems[0]?.createdAt.slice(0, 10) ?? '';
-  const todayItems = visible.filter((item) => isRecentGroup(item.createdAt, latestDay));
-  const earlierItems = visible.filter((item) => !isRecentGroup(item.createdAt, latestDay));
+  const latestDay = items[0]?.createdAt.slice(0, 10) ?? '';
+  const todayItems = items.filter((item) => isRecentGroup(item.createdAt, latestDay));
+  const earlierItems = items.filter((item) => !isRecentGroup(item.createdAt, latestDay));
 
   const groups: Array<{ heading: string; entries: NotificationItem[] }> = [
     ...(todayItems.length ? [{ heading: 'Latest', entries: todayItems }] : []),
     ...(earlierItems.length ? [{ heading: 'Earlier', entries: earlierItems }] : []),
   ];
 
+  const hasNext = !demoEnabled && items.length >= PAGE_SIZE;
+
   return (
     <div className="mx-auto w-full max-w-[820px] space-y-6 px-page-gutter py-6">
       <PageHeader
         title="Notifications"
         description={
-          demoEnabled
-            ? unreadCount > 0
-              ? `${unreadCount} unread`
-              : 'All caught up'
+          unreadCount > 0
+            ? `${unreadCount} unread`
             : 'Inbox updates for assignments, comments, mentions, and invitations.'
         }
         badge={demoEnabled && <Badge tone="ai">Demo</Badge>}
         actions={
-          demoEnabled &&
           unreadCount > 0 && (
-            <Button type="button" variant="outline" size="sm" onClick={markAllRead}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isMutating}
+              onClick={() => markAllRead()}
+            >
               <Check aria-hidden="true" />
               Mark all read
             </Button>
@@ -80,31 +91,47 @@ export function NotificationsPage() {
         }
       />
 
-      {!demoEnabled ? (
-        <EmptyState
-          icon={Bell}
-          title="No notifications yet."
-          description="Live notification delivery will appear here once the notification service is enabled."
+      {isError ? (
+        <ErrorState
+          title="Could not load notifications"
+          message={extractApiErrorMessage(error)}
+          onRetry={() => void refetch()}
         />
-      ) : loading ? (
+      ) : isLoading ? (
         <LoadingState label="Loading notifications" variant="list" />
       ) : (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <Tabs value={filter} onValueChange={(value) => setFilter(value as 'all' | 'unread')}>
+            <Tabs
+              value={filter}
+              onValueChange={(value) => {
+                setFilter(value as 'all' | 'unread');
+                setPage(0);
+              }}
+            >
               <TabsList>
-                <TabsTrigger value="all">All ({activeItems.length})</TabsTrigger>
+                <TabsTrigger value="all">
+                  All{filter === 'all' ? ` (${items.length})` : ''}
+                </TabsTrigger>
                 <TabsTrigger value="unread">Unread ({unreadCount})</TabsTrigger>
               </TabsList>
             </Tabs>
-            <p className="text-xs text-muted-foreground">Sample notifications for demo preview.</p>
+            {demoEnabled && (
+              <p className="text-xs text-muted-foreground">
+                Sample notifications for demo preview.
+              </p>
+            )}
           </div>
 
-          {visible.length === 0 ? (
+          {items.length === 0 ? (
             <EmptyState
-              compact
               icon={Bell}
               title={filter === 'unread' ? 'No unread notifications.' : 'No notifications yet.'}
+              description={
+                filter === 'unread'
+                  ? 'You have read all incoming updates.'
+                  : 'Mentions, assignments, comments, and workspace invitations appear here.'
+              }
             />
           ) : (
             <div className="space-y-4">
@@ -134,16 +161,30 @@ export function NotificationsPage() {
                               aria-label={item.isRead ? undefined : 'Unread'}
                             />
                             <div className="min-w-0 space-y-1.5">
-                              <p
-                                className={cn(
-                                  'text-sm break-words',
-                                  item.isRead
-                                    ? 'text-muted-foreground'
-                                    : 'font-medium text-foreground',
-                                )}
-                              >
-                                {item.message}
-                              </p>
+                              {!demoEnabled && item.taskId ? (
+                                <Link
+                                  to={`/tasks/${item.taskId}`}
+                                  className={cn(
+                                    'block text-sm break-words hover:text-action-link hover:underline',
+                                    item.isRead
+                                      ? 'text-muted-foreground'
+                                      : 'font-medium text-foreground',
+                                  )}
+                                >
+                                  {item.message}
+                                </Link>
+                              ) : (
+                                <p
+                                  className={cn(
+                                    'text-sm break-words',
+                                    item.isRead
+                                      ? 'text-muted-foreground'
+                                      : 'font-medium text-foreground',
+                                  )}
+                                >
+                                  {item.message}
+                                </p>
+                              )}
                               <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                                 <Badge tone={meta.tone}>
                                   <TypeIcon className="size-3" aria-hidden="true" />
@@ -160,6 +201,7 @@ export function NotificationsPage() {
                               type="button"
                               variant="outline"
                               size="sm"
+                              disabled={isMutating}
                               className="self-start shrink-0"
                               onClick={() => markRead(item.id)}
                               aria-label={`Mark "${item.message}" as read`}
@@ -174,6 +216,9 @@ export function NotificationsPage() {
                   </ul>
                 </section>
               ))}
+              {!demoEnabled && (page > 0 || hasNext) && (
+                <Pagination page={page} hasNext={hasNext} onPageChange={setPage} />
+              )}
             </div>
           )}
         </div>
