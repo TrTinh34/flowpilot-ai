@@ -6,7 +6,7 @@
 | Task Name | AI Planner |
 | Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 7h |
 | Dependencies | REDESIGN-04, REFINE-03, REFINE-04 |
 | Related Requirements | AI Planner · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,10 +48,12 @@ Keyboard edit, `aria-live` / `role="status"` khi generating/confirming, dialog t
 Contract chưa mount; demo chỉ bật khi `DEV && VITE_USE_MOCK_API === 'true'`, không giả lập confirm thành công ở production hay ghi task thật.
 
 ## Implementation Checklist
-- [ ] Map 4 steps (Brief → Generating → Preview/Edit → Confirmed)
-- [ ] Tách adapter + áp guard `VITE_USE_MOCK_API`
-- [ ] Thay hardcoded Tailwind palette bằng Design System V2 tokens & shared UI
-- [ ] Test fallback/error và production mode
+- [x] Map 4 steps (Brief → Generating → Preview/Edit → Confirmed)
+- [x] Tách adapter + áp guard `VITE_USE_MOCK_API`
+- [x] Thay hardcoded Tailwind palette bằng Design System V2 tokens & shared UI
+- [x] Test fallback/error và production mode
+
+[Báo cáo REDESIGN-13](../../../reports/frontend-redesign/REDESIGN-13-ai-planner.md).
 
 ## Expected Deliverables
 AI Planner đồng bộ Design System V2 và ranh giới mode rõ ràng.

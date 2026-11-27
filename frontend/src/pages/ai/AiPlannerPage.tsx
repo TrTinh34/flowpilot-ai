@@ -1,332 +1,218 @@
-import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Sparkles, Loader2, Trash2, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle2, Sparkles } from 'lucide-react';
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
+import { LoadingState } from '@/components/common/LoadingState';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { mockAiPlan, type AiPlan, type AiPlanTask } from '@/mocks/fixtures/ai.fixtures';
+import { isAiDemoEnabled, loadAiPlanDemo } from '@/features/ai/api/ai-demo';
+import { AiBriefForm } from '@/features/ai/components/AiBriefForm';
+import { AiPlanDraftEditor, type DraftTaskItem } from '@/features/ai/components/AiPlanDraftEditor';
+import type { AiPlan } from '@/mocks/fixtures/ai.fixtures';
 import { cn } from '@/utils/cn.util';
 
-const PRIORITY_COLORS: Record<AiPlanTask['priority'], string> = {
-  LOW: 'bg-slate-100 text-slate-600',
-  MEDIUM: 'bg-yellow-50 text-yellow-700',
-  HIGH: 'bg-orange-50 text-orange-700',
-  URGENT: 'bg-red-50 text-red-700',
-};
+type WorkflowState = 'brief' | 'generating' | 'preview' | 'confirming' | 'confirmed' | 'error';
 
-type State = 'empty' | 'generating' | 'preview' | 'confirming' | 'success' | 'error';
+const STEPS = [
+  { key: 'brief', label: '1. Brief' },
+  { key: 'generating', label: '2. Generate' },
+  { key: 'preview', label: '3. Review & Edit' },
+  { key: 'confirmed', label: '4. Confirmed' },
+] as const;
+
+function resolveStepIndex(state: WorkflowState) {
+  if (state === 'brief' || state === 'error') return 0;
+  if (state === 'generating') return 1;
+  if (state === 'preview' || state === 'confirming') return 2;
+  return 3;
+}
 
 export function AiPlannerPage() {
-  const navigate = useNavigate();
-  const [state, setState] = useState<State>('empty');
+  const demoEnabled = isAiDemoEnabled();
+  const [state, setState] = useState<WorkflowState>('brief');
   const [plan, setPlan] = useState<AiPlan | null>(null);
-  const [tasks, setTasks] = useState<{ phaseIdx: number; task: AiPlanTask }[]>([]);
-  const [description, setDescription] = useState('');
+  const [tasks, setTasks] = useState<DraftTaskItem[]>([]);
   const [projectName, setProjectName] = useState('');
-  const [errorMsg] = useState('');
-  const descChars = description.length;
-  const descRef = useRef<HTMLTextAreaElement>(null);
+  const [description, setDescription] = useState('');
+  const [validationError, setValidationError] = useState<string>();
+  const [errorMsg, setErrorMsg] = useState('');
 
-  function generate() {
-    if (!description.trim() || !projectName.trim()) return;
+  async function generate() {
+    if (!projectName.trim() || !description.trim()) {
+      setValidationError('Enter both a project name and a project description.');
+      return;
+    }
+    setValidationError(undefined);
+    setErrorMsg('');
     setState('generating');
-
-    // Simulate AI generation with 2.5s delay
-    setTimeout(() => {
-      const p = { ...mockAiPlan };
-      setPlan(p);
+    try {
+      const loaded = await loadAiPlanDemo(projectName, description);
+      setPlan(loaded);
       setTasks(
-        p.phases.flatMap((ph, phaseIdx) =>
-          ph.tasks.map((task) => ({ phaseIdx, task: { ...task } })),
+        loaded.phases.flatMap((phase, phaseIdx) =>
+          phase.tasks.map((task) => ({ phaseIdx, task: { ...task } })),
         ),
       );
       setState('preview');
-    }, 2500);
+    } catch (cause) {
+      setErrorMsg(cause instanceof Error ? cause.message : 'Could not generate a plan.');
+      setState('error');
+    }
+  }
+
+  function updateTaskTitle(id: string, title: string) {
+    setTasks((prev) =>
+      prev.map((item) => (item.task.id === id ? { ...item, task: { ...item.task, title } } : item)),
+    );
   }
 
   function removeTask(id: string) {
-    setTasks((prev) => prev.filter((t) => t.task.id !== id));
+    setTasks((prev) => prev.filter((item) => item.task.id !== id));
   }
 
   async function confirmPlan() {
     if (!plan) return;
     setState('confirming');
-    // Simulate confirm API call
-    await new Promise((r) => setTimeout(r, 1000));
-    // In production: POST /ai/plan/:id/confirm
-    setState('success');
-    setTimeout(() => navigate('/my-tasks'), 2000);
+    setState('confirmed');
   }
 
-  function regenerate() {
-    setState('empty');
+  function reset() {
+    setState('brief');
     setPlan(null);
     setTasks([]);
+    setValidationError(undefined);
+    setErrorMsg('');
   }
 
-  const phasesWithTasks =
-    plan?.phases.map((ph, phaseIdx) => ({
-      ...ph,
-      remaining: tasks.filter((t) => t.phaseIdx === phaseIdx),
-    })) ?? [];
+  if (!demoEnabled) {
+    return (
+      <div className="w-full min-w-0 space-y-6 px-page-gutter py-6">
+        <PageHeader
+          title="AI Planner"
+          description="Generate structured project phases and draft tasks from a brief."
+        />
+        <EmptyState
+          icon={Sparkles}
+          title="AI Planner API is not enabled"
+          description="Server-side AI plan generation is not active in this environment. Enable DEV demo mode to preview the 4-step workflow."
+        />
+      </div>
+    );
+  }
+
+  const activeStep = resolveStepIndex(state);
 
   return (
-    <div className="flex h-full flex-col lg:flex-row overflow-hidden">
-      {/* ── Input Panel ─────────────────────────────────────────────────── */}
-      <div className="w-full border-b border-[var(--border)] bg-[var(--surface)] p-6 lg:w-80 lg:border-b-0 lg:border-r lg:overflow-y-auto shrink-0">
-        <div className="flex items-center gap-2 mb-5">
-          <Sparkles className="size-5 text-[var(--color-accent-ai)]" aria-hidden="true" />
-          <h1 className="text-lg font-semibold text-[var(--foreground)]">AI Planner</h1>
-        </div>
+    <div className="w-full min-w-0 space-y-6 px-page-gutter py-6">
+      <PageHeader
+        title="AI Planner"
+        description="Draft project phases from a brief, refine tasks, and confirm in Demo mode."
+        badge={<Badge tone="ai">Demo</Badge>}
+      />
 
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label
-              htmlFor="ai-project-name"
-              className="block text-sm font-medium text-[var(--foreground)]"
-            >
-              Project name <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="ai-project-name"
-              type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder="e.g. E-commerce Platform"
-              disabled={state === 'generating' || state === 'confirming'}
-              className={cn(
-                'h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm',
-                'placeholder:text-slate-400 focus-visible:border-[var(--color-primary)]',
-                'focus-visible:ring-[3px] focus-visible:ring-[var(--color-primary)]/20 outline-none',
-                'disabled:opacity-60 disabled:bg-slate-50',
-              )}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="ai-description"
-                className="block text-sm font-medium text-[var(--foreground)]"
-              >
-                Project description <span className="text-red-500">*</span>
-              </label>
-              <span
+      <nav aria-label="AI workflow steps">
+        <ol className="grid gap-2 sm:grid-cols-4">
+          {STEPS.map((step, index) => {
+            const current = index === activeStep;
+            const completed = index < activeStep;
+            return (
+              <li
+                key={step.key}
+                aria-current={current ? 'step' : undefined}
                 className={cn(
-                  'text-xs',
-                  descChars > 7500 ? 'text-red-500' : 'text-[var(--foreground-muted)]',
+                  'rounded-[var(--radius)] border px-3 py-2 text-xs font-medium',
+                  current
+                    ? 'border-[var(--ai-border)] bg-[var(--ai-bg)] text-[var(--ai-text)]'
+                    : completed
+                      ? 'border-[var(--color-success-border)] bg-[var(--color-success-bg)] text-[var(--success-text)]'
+                      : 'border-border bg-card text-muted-foreground',
                 )}
               >
-                {descChars}/8000
-              </span>
-            </div>
-            <textarea
-              id="ai-description"
-              ref={descRef}
-              rows={8}
-              maxLength={8000}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe your project goals, tech stack, team size, and any specific requirements…"
-              disabled={state === 'generating' || state === 'confirming'}
-              className={cn(
-                'w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm resize-none',
-                'placeholder:text-slate-400 focus-visible:border-[var(--color-primary)]',
-                'focus-visible:ring-[3px] focus-visible:ring-[var(--color-primary)]/20 outline-none',
-                'disabled:opacity-60 disabled:bg-slate-50',
-              )}
+                {step.label}
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
+      <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[minmax(19rem,24rem)_minmax(0,1fr)]">
+        <section
+          aria-label="Brief input"
+          className="rounded-[var(--radius-md)] border border-border bg-card p-5"
+        >
+          <AiBriefForm
+            projectName={projectName}
+            description={description}
+            busy={state === 'generating' || state === 'confirming'}
+            canReset={state !== 'brief'}
+            validationError={validationError}
+            onProjectNameChange={setProjectName}
+            onDescriptionChange={setDescription}
+            onGenerate={() => void generate()}
+            onReset={reset}
+          />
+        </section>
+
+        <section aria-label="Plan workspace" className="min-w-0">
+          {state === 'brief' && (
+            <EmptyState
+              icon={Sparkles}
+              title="Describe your project to get started"
+              description="Enter a project name and description, or pick an example brief, then click Generate Plan."
             />
-          </div>
-
-          <Button
-            type="button"
-            className="w-full"
-            disabled={
-              !description.trim() ||
-              !projectName.trim() ||
-              state === 'generating' ||
-              state === 'confirming'
-            }
-            onClick={generate}
-            aria-busy={state === 'generating'}
-          >
-            {state === 'generating' ? (
-              <>
-                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                Generating…
-              </>
-            ) : (
-              <>
-                <Sparkles className="size-4" aria-hidden="true" />
-                Generate Plan
-              </>
-            )}
-          </Button>
-
-          {state !== 'empty' && state !== 'generating' && (
-            <Button type="button" variant="outline" className="w-full" onClick={regenerate}>
-              <RefreshCw className="size-4" aria-hidden="true" />
-              Start over
-            </Button>
           )}
-        </div>
 
-        <p className="mt-6 text-xs text-[var(--foreground-muted)]">
-          Mock AI response — real AI generation will use the backend AI module.
-        </p>
-      </div>
-
-      {/* ── Preview Panel ────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-6 bg-[var(--background)]">
-        {/* Empty */}
-        {state === 'empty' && (
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-center py-20">
-            <div className="rounded-full bg-[var(--color-accent-ai)]/10 p-4">
-              <Sparkles className="size-8 text-[var(--color-accent-ai)]" aria-hidden="true" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">
-              Describe your project to get started
-            </h2>
-            <p className="max-w-sm text-sm text-[var(--foreground-secondary)]">
-              Enter your project name and description, then click &ldquo;Generate Plan&rdquo; to get
-              an AI-powered task breakdown.
-            </p>
-          </div>
-        )}
-
-        {/* Generating skeleton */}
-        {state === 'generating' && (
-          <div className="space-y-6" aria-label="Generating plan" role="status">
-            <div className="flex items-center gap-2 text-[var(--color-accent-ai)]">
-              <Loader2 className="size-5 animate-spin" />
-              <span className="text-sm font-medium">AI is generating your plan…</span>
-            </div>
-            {[3, 2, 4].map((count, i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 space-y-2"
-              >
-                <div className="h-5 w-32 rounded bg-[var(--surface-secondary)] animate-pulse" />
-                {[...Array(count)].map((_, j) => (
-                  <div
-                    key={j}
-                    className="h-10 rounded-lg bg-[var(--surface-secondary)] animate-pulse"
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Preview / editing */}
-        {(state === 'preview' || state === 'confirming') && plan && (
-          <div className="space-y-6">
-            {/* Summary */}
-            <div className="rounded-xl border border-[var(--color-accent-ai)]/30 bg-[var(--color-accent-ai)]/5 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="size-4 text-[var(--color-accent-ai)]" aria-hidden="true" />
-                <span className="text-sm font-semibold text-[var(--foreground)]">
-                  {projectName}
-                </span>
-              </div>
-              <p className="text-sm text-[var(--foreground-secondary)]">{plan.summary}</p>
-              <p className="mt-2 text-xs text-[var(--foreground-muted)]">
-                {tasks.length} tasks across {plan.phases.length} phases
+          {state === 'generating' && (
+            <div className="space-y-3" role="status" aria-live="polite">
+              <p className="text-sm font-medium text-[var(--ai-text)]">
+                AI is generating your draft plan…
               </p>
+              <LoadingState label="Generating AI project plan" variant="cards" />
             </div>
+          )}
 
-            {/* Phases */}
-            {phasesWithTasks.map((phase, phaseIdx) => (
-              <div
-                key={phaseIdx}
-                className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4"
-              >
-                <h3 className="text-sm font-semibold text-[var(--foreground)] mb-3">
-                  {phase.name}
-                </h3>
-                {phase.remaining.length === 0 && (
-                  <p className="text-xs text-[var(--foreground-muted)]">
-                    All tasks removed from this phase.
+          {(state === 'preview' || state === 'confirming') && plan && (
+            <AiPlanDraftEditor
+              plan={plan}
+              projectName={projectName}
+              tasks={tasks}
+              confirming={state === 'confirming'}
+              onUpdateTitle={updateTaskTitle}
+              onRemoveTask={removeTask}
+              onConfirm={confirmPlan}
+            />
+          )}
+
+          {state === 'confirmed' && (
+            <section
+              role="status"
+              className="space-y-4 rounded-[var(--radius-md)] border border-[var(--color-success-border)] bg-[var(--color-success-bg)] p-6"
+            >
+              <div className="flex items-start gap-3 text-[var(--success-text)]">
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+                <div className="space-y-1">
+                  <h2 className="text-section-title">Demo plan confirmed</h2>
+                  <p className="text-sm">
+                    Reviewed {tasks.length} draft tasks for &ldquo;{projectName}&rdquo;. Demo
+                    confirmation updates preview state only and does not create real tasks.
                   </p>
-                )}
-                <ul className="space-y-2">
-                  {phase.remaining.map(({ task }) => (
-                    <li
-                      key={task.id}
-                      className="flex items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)] px-3 py-2"
-                    >
-                      <span
-                        className={cn(
-                          'shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase',
-                          PRIORITY_COLORS[task.priority],
-                        )}
-                      >
-                        {task.priority}
-                      </span>
-                      <span className="flex-1 text-sm text-[var(--foreground)]">{task.title}</span>
-                      <span className="shrink-0 text-xs text-[var(--foreground-muted)]">
-                        ~{task.estimatedDays}d
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeTask(task.id)}
-                        aria-label={`Remove "${task.title}"`}
-                        disabled={state === 'confirming'}
-                        className="shrink-0 rounded p-1 text-[var(--foreground-muted)] hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-30"
-                      >
-                        <Trash2 className="size-3.5" aria-hidden="true" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                </div>
               </div>
-            ))}
-
-            {/* Actions */}
-            <div className="flex items-center gap-3 pt-2">
-              <Button
-                type="button"
-                className="flex-1"
-                disabled={tasks.length === 0 || state === 'confirming'}
-                onClick={() => void confirmPlan()}
-                aria-busy={state === 'confirming'}
-              >
-                {state === 'confirming' ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Confirming…
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="size-4" />
-                    Confirm Plan ({tasks.length} tasks)
-                  </>
-                )}
+              <Button type="button" variant="outline" size="sm" onClick={reset}>
+                Create another draft
               </Button>
-            </div>
-          </div>
-        )}
+            </section>
+          )}
 
-        {/* Success */}
-        {state === 'success' && (
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-center py-20">
-            <div className="rounded-full bg-green-50 p-4">
-              <CheckCircle className="size-10 text-green-500" aria-hidden="true" />
-            </div>
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">Plan confirmed!</h2>
-            <p className="text-sm text-[var(--foreground-secondary)]">Redirecting to My Tasks…</p>
-          </div>
-        )}
-
-        {/* Error */}
-        {state === 'error' && (
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-center py-20">
-            <AlertCircle className="size-10 text-red-400" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-[var(--foreground)]">Generation failed</h2>
-            <p className="text-sm text-[var(--foreground-secondary)]">{errorMsg}</p>
-            <Button variant="outline" onClick={regenerate}>
-              Try again
-            </Button>
-          </div>
-        )}
+          {state === 'error' && (
+            <ErrorState
+              title="Could not generate plan"
+              message={errorMsg}
+              onRetry={() => void generate()}
+            />
+          )}
+        </section>
       </div>
     </div>
   );
