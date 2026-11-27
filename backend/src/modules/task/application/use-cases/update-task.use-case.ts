@@ -12,7 +12,7 @@ export class UpdateTaskUseCase {
   constructor(private readonly unitOfWork: TaskUnitOfWork) {}
 
   execute(input: UpdateTaskInput): Promise<TaskDto> {
-    return this.unitOfWork.execute(async ({ tasks }) => {
+    return this.unitOfWork.execute(async ({ tasks, audit }) => {
       const found = await tasks.findTaskAccess(input.taskId, input.actorId);
       if (!found) {
         throw new TaskNotFoundError();
@@ -44,6 +44,20 @@ export class UpdateTaskUseCase {
       if (!updated) {
         throw new TaskVersionConflictError();
       }
+
+      await audit?.record({
+        workspaceId: found.access.workspaceId,
+        projectId: found.access.projectId,
+        actorId: input.actorId,
+        action: 'TASK_UPDATED',
+        targetType: 'TASK',
+        targetId: updated.id,
+        metadata: {
+          title: updated.title,
+          priority: updated.priority,
+          assigneeId: updated.assigneeId,
+        },
+      });
 
       return updated;
     });

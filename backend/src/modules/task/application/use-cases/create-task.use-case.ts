@@ -13,7 +13,7 @@ export class CreateTaskUseCase {
   constructor(private readonly unitOfWork: TaskUnitOfWork) {}
 
   execute(input: CreateTaskInput): Promise<TaskDto> {
-    return this.unitOfWork.execute(async ({ tasks }) => {
+    return this.unitOfWork.execute(async ({ tasks, audit }) => {
       const initial = await tasks.findProjectAccess(input.projectId, input.actorId);
       if (!initial) throw new TaskProjectNotFoundError();
       if (!initial.canWrite) throw new TaskForbiddenError();
@@ -50,7 +50,7 @@ export class CreateTaskUseCase {
       }
 
       const position = await tasks.getNextTodoPosition(input.projectId);
-      return tasks.create({
+      const created = await tasks.create({
         projectId: input.projectId,
         parentId,
         assigneeId,
@@ -60,6 +60,16 @@ export class CreateTaskUseCase {
         dueDate: input.dueDate ?? null,
         position,
       });
+      await audit?.record({
+        workspaceId: access.workspaceId,
+        projectId: access.projectId,
+        actorId: input.actorId,
+        action: 'TASK_CREATED',
+        targetType: 'TASK',
+        targetId: created.id,
+        metadata: { title: created.title, priority: created.priority, parentId: created.parentId },
+      });
+      return created;
     });
   }
 }

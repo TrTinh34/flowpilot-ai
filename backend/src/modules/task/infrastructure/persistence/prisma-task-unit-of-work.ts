@@ -1,4 +1,5 @@
 import type { PrismaClient } from '../../../../generated/prisma/client.js';
+import { createAuditLogger } from '../../../audit/index.js';
 import type {
   TaskTransactionRepositories,
   TaskUnitOfWork,
@@ -9,8 +10,9 @@ export class PrismaTaskUnitOfWork implements TaskUnitOfWork {
   constructor(private readonly prisma: PrismaClient) {}
 
   execute<T>(work: (repos: TaskTransactionRepositories) => Promise<T>): Promise<T> {
-    return this.prisma.$transaction((tx) => work({ tasks: new PrismaTaskRepository(tx) }), {
-      isolationLevel: 'ReadCommitted',
-    });
+    return this.prisma.$transaction(
+      (tx) => work({ tasks: new PrismaTaskRepository(tx), audit: createAuditLogger(tx) }),
+      { isolationLevel: 'ReadCommitted' },
+    );
   }
 }

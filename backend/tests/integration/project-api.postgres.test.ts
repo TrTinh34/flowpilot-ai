@@ -20,6 +20,7 @@ describe.skipIf(!process.env['TEST_DATABASE_URL'])('workspace project API on Pos
     if (!db) return;
     try {
       await db.prisma.$transaction([
+        db.prisma.auditLog.deleteMany({ where: { workspaceId: { in: workspaceIds } } }),
         db.prisma.task.deleteMany({ where: { project: { workspaceId: { in: workspaceIds } } } }),
         db.prisma.projectMember.deleteMany({
           where: { project: { workspaceId: { in: workspaceIds } } },

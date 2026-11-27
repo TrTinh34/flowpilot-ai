@@ -21,6 +21,7 @@ model User {
   comments             Comment[]
   attachments          Attachment[]
   notifications        Notification[]
+  auditLogs            AuditLog[]
 
   @@map("users")
 }
@@ -51,6 +52,7 @@ model Workspace {
   members     WorkspaceMember[]
   invitations Invitation[]
   projects    Project[]
+  auditLogs   AuditLog[]
 
   @@map("workspaces")
 }
@@ -112,6 +114,7 @@ model Project {
   members       ProjectMember[]
   tasks         Task[]
   notifications Notification[]
+  auditLogs     AuditLog[]
 
   @@index([workspaceId, status])
   @@map("projects")
@@ -276,4 +279,25 @@ model RefreshToken {
   @@index([familyId])
   @@index([expiresAt])
   @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  projectId   String?   @map("project_id") @db.Uuid
+  actorId     String    @map("actor_id") @db.Uuid
+  /// Non-blank action and targetType enforced in PostgreSQL.
+  action      String
+  targetType  String    @map("target_type")
+  targetId    String    @map("target_id") @db.Uuid
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  actor       User      @relation(fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([projectId, createdAt(sort: Desc)])
+  @@index([workspaceId, createdAt(sort: Desc)])
+  @@index([actorId])
+  @@map("audit_logs")
 }

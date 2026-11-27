@@ -13,7 +13,7 @@ export class MoveTaskUseCase {
   constructor(private readonly unitOfWork: TaskUnitOfWork) {}
 
   execute(input: MoveTaskInput): Promise<TaskEntity> {
-    return this.unitOfWork.execute(async ({ tasks }) => {
+    return this.unitOfWork.execute(async ({ tasks, audit }) => {
       const initial = await tasks.findTaskAccess(input.taskId, input.actorId);
       if (!initial) throw new TaskNotFoundError();
       if (!initial.access.canRead) throw new TaskForbiddenError();
@@ -47,6 +47,15 @@ export class MoveTaskUseCase {
       const moved = await tasks.moveWithVersion(input);
       if (!moved) throw new TaskVersionConflictError();
       await tasks.updateBoardPositions(changes);
+      await audit?.record({
+        workspaceId: access.workspaceId,
+        projectId: access.projectId,
+        actorId: input.actorId,
+        action: 'TASK_MOVED',
+        targetType: 'TASK',
+        targetId: moved.id,
+        metadata: { fromStatus: task.status, toStatus: moved.status, position: moved.position },
+      });
       return moved;
     });
   }

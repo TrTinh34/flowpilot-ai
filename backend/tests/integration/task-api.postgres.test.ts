@@ -87,6 +87,7 @@ describe.skipIf(!testDatabaseUrl)('task and My Tasks API on PostgreSQL', () => {
   afterAll(async () => {
     try {
       await db.prisma.$transaction([
+        db.prisma.auditLog.deleteMany({ where: { workspaceId: { in: workspaceIds } } }),
         db.prisma.task.deleteMany({ where: { project: { workspaceId: { in: workspaceIds } } } }),
         db.prisma.projectMember.deleteMany({
           where: { project: { workspaceId: { in: workspaceIds } } },

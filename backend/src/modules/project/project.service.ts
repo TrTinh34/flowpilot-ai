@@ -2,6 +2,7 @@ import { prisma } from '../../config/prisma.js';
 import { AppError } from '../../errors/app-error.js';
 import { ERROR_CODES } from '../../errors/error-codes.js';
 import type { Prisma } from '../../generated/prisma/client.js';
+import { createAuditLogger } from '../audit/index.js';
 import { findMembership } from '../workspace/workspace.repository.js';
 import { withWorkspaceLock } from '../workspace/workspace.service.js';
 import * as repository from './project.repository.js';
@@ -46,7 +47,17 @@ export function createProject(
   return withWorkspaceLock(workspaceId, actorId, async (tx, role) => {
     if (role === 'MEMBER') throw forbidden();
     await requireWorkspaceMember(tx, workspaceId, input.managerId);
-    return repository.createProject(tx, workspaceId, input.name, input.managerId);
+    const created = await repository.createProject(tx, workspaceId, input.name, input.managerId);
+    await createAuditLogger(tx).record({
+      workspaceId,
+      projectId: created.id,
+      actorId,
+      action: 'PROJECT_CREATED',
+      targetType: 'PROJECT',
+      targetId: created.id,
+      metadata: { name: created.name, managerId: input.managerId },
+    });
+    return created;
   });
 }
 
@@ -85,9 +96,19 @@ export function updateProject(
   actorId: string,
   input: { name: string; status: 'ACTIVE' | 'ARCHIVED' },
 ) {
-  return withProject(projectId, actorId, true, ({ tx }) =>
-    repository.updateProject(tx, projectId, input),
-  );
+  return withProject(projectId, actorId, true, async ({ tx, project }) => {
+    const updated = await repository.updateProject(tx, projectId, input);
+    await createAuditLogger(tx).record({
+      workspaceId: project.workspaceId,
+      projectId,
+      actorId,
+      action: updated.status === 'ARCHIVED' ? 'PROJECT_ARCHIVED' : 'PROJECT_UPDATED',
+      targetType: 'PROJECT',
+      targetId: projectId,
+      metadata: { name: updated.name, status: updated.status },
+    });
+    return updated;
+  });
 }
 
 export function getProjectMembers(projectId: string, actorId: string) {
@@ -116,6 +137,16 @@ export function addProjectMember(
         'The user is already a project member.',
       );
     }
-    return repository.addProjectMember(tx, projectId, input.userId, input.role);
+    const member = await repository.addProjectMember(tx, projectId, input.userId, input.role);
+    await createAuditLogger(tx).record({
+      workspaceId: project.workspaceId,
+      projectId,
+      actorId,
+      action: 'PROJECT_MEMBER_ADDED',
+      targetType: 'PROJECT_MEMBER',
+      targetId: input.userId,
+      metadata: { role: member.role },
+    });
+    return member;
   });
 }

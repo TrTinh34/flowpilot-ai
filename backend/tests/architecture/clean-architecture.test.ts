@@ -8,6 +8,7 @@ const AUTH_ROOT = path.join(SRC_ROOT, 'modules/auth');
 const TASK_ROOT = path.join(SRC_ROOT, 'modules/task');
 const COLLABORATION_ROOT = path.join(SRC_ROOT, 'modules/collaboration');
 const NOTIFICATION_ROOT = path.join(SRC_ROOT, 'modules/notification');
+const AUDIT_ROOT = path.join(SRC_ROOT, 'modules/audit');
 const SHARED_ROOT = path.join(SRC_ROOT, 'shared');
 
 function collectTsFiles(dir: string): string[] {
@@ -63,6 +64,7 @@ describe('Clean Architecture Fitness Tests', () => {
     ...taskFiles,
     ...collectTsFiles(COLLABORATION_ROOT),
     ...collectTsFiles(NOTIFICATION_ROOT),
+    ...collectTsFiles(AUDIT_ROOT),
   ];
   const sharedFiles = collectTsFiles(SHARED_ROOT);
   const allSrcFiles = collectTsFiles(SRC_ROOT).filter(
@@ -214,6 +216,31 @@ describe('Clean Architecture Fitness Tests', () => {
           expect(
             target,
             `${toRelPosix(file)} must import notification via modules/notification/index`,
+          ).not.toContain(forbidden);
+        }
+      }
+    }
+
+    const externalAuditFiles = allSrcFiles.filter(
+      (file) => !toRelPosix(file).startsWith('modules/audit/'),
+    );
+    const forbiddenAuditInternals = [
+      'modules/audit/domain/',
+      'modules/audit/application/',
+      'modules/audit/infrastructure/',
+      'modules/audit/presentation/',
+      'modules/audit/audit.module',
+    ];
+
+    for (const file of externalAuditFiles) {
+      for (const spec of extractImports(file)) {
+        const resolved = resolveRelativeTsPath(file, spec);
+        if (!resolved) continue;
+        const target = toRelPosix(resolved);
+        for (const forbidden of forbiddenAuditInternals) {
+          expect(
+            target,
+            `${toRelPosix(file)} must import audit via modules/audit/index`,
           ).not.toContain(forbidden);
         }
       }

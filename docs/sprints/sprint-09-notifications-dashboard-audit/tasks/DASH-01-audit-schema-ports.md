@@ -4,7 +4,7 @@
 
 - **Task ID**: `DASH-01`
 - **Tên Task**: Audit Log Schema và Emission Ports
-- **Sprint**: [Sprint 09 — Notifications, Dashboard & Audit Log](../README.md) (`PENDING`)
+- **Sprint**: [Sprint 09 — Notifications, Dashboard & Audit Log](../README.md) (`COMPLETED`)
 - **Ưu tiên**: P0 · **Ước lượng**: 5h
 - **Nguồn**: [US-DASH-01](../../../07-Backlog-Roadmap.md#us-dash-01--dashboard-tiến-độ-my-tasks-audit-log)
 
@@ -52,4 +52,4 @@ Tạo Prisma model & migration cho bảng `audit_logs`, xây dựng module `back
 
 ## Development Report Reference
 
-Chưa có.
+[Báo cáo DASH-01](../../../reports/06-notifications-dashboard/DASH-01-audit-schema-ports.md)
