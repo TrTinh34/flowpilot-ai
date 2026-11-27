@@ -54,7 +54,8 @@ UUID PK mặc định (`uuid` / `@db.Uuid`); timestamps `timestamptz` UTC; FK NO
   3. `projects` (Sprint 02): `projects`, `project_members`
   4. `tasks` (Sprint 03): `tasks`
   5. `collaboration` (COL-01): `comments`, `attachments`
-  6. Migration tiếp theo cho `outbox_events`, `notifications`, `audit_logs` và `ai_plans` theo từng task.
+  6. `outbox_events` (COL-02): sự kiện `COMMENT_MENTIONED` ở trạng thái `PENDING`, ghi trong cùng transaction với comment.
+  7. Migration tiếp theo cho `notifications`, `audit_logs` và `ai_plans` theo từng task.
 - **Custom SQL Migrations:** Với các constraint/index PostgreSQL mà `schema.prisma` chưa hỗ trợ biểu diễn trực tiếp, tạo migration bằng `prisma migrate dev --create-only` và bổ sung SQL thuần vào `migration.sql`:
   - Functional unique index: `CREATE UNIQUE INDEX users_email_lower_uidx ON users (LOWER(email));`
   - Partial unique index cho lời mời đang chờ: `CREATE UNIQUE INDEX invitations_pending_uidx ON invitations (workspace_id, LOWER(email)) WHERE status = 'PENDING';`

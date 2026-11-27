@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { checkDatabaseConnection } from '../config/prisma.js';
-import { authRouter } from '../modules/auth/index.js';
+import { checkDatabaseConnection, prisma } from '../config/prisma.js';
+import { authenticate, authRouter } from '../modules/auth/index.js';
+import { createCollaborationModule } from '../modules/collaboration/index.js';
 import { projectRouter } from '../modules/project/project.routes.js';
 import { myTasksRouter, projectTasksRouter, taskRouter } from '../modules/task/index.js';
 import { invitationRouter, workspaceRouter } from '../modules/workspace/workspace.routes.js';
@@ -10,6 +11,7 @@ router.use('/api/v1/auth', authRouter);
 router.use('/api/v1/workspaces', workspaceRouter);
 router.use('/api/v1/projects/:projectId/tasks', projectTasksRouter);
 router.use('/api/v1/projects', projectRouter);
+router.use('/api/v1/tasks/:taskId/comments', createCollaborationModule(prisma, authenticate));
 router.use('/api/v1/tasks', taskRouter);
 router.use('/api/v1/me/tasks', myTasksRouter);
 router.use('/api/v1/invitations', invitationRouter);

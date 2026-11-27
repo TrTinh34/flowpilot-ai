@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 const SRC_ROOT = path.resolve(import.meta.dirname, '../../src');
 const AUTH_ROOT = path.join(SRC_ROOT, 'modules/auth');
 const TASK_ROOT = path.join(SRC_ROOT, 'modules/task');
+const COLLABORATION_ROOT = path.join(SRC_ROOT, 'modules/collaboration');
 const SHARED_ROOT = path.join(SRC_ROOT, 'shared');
 
 function collectTsFiles(dir: string): string[] {
@@ -56,7 +57,7 @@ function toRelPosix(filePath: string): string {
 describe('Clean Architecture Fitness Tests', () => {
   const authFiles = collectTsFiles(AUTH_ROOT);
   const taskFiles = collectTsFiles(TASK_ROOT);
-  const cleanModuleFiles = [...authFiles, ...taskFiles];
+  const cleanModuleFiles = [...authFiles, ...taskFiles, ...collectTsFiles(COLLABORATION_ROOT)];
   const sharedFiles = collectTsFiles(SHARED_ROOT);
   const allSrcFiles = collectTsFiles(SRC_ROOT).filter(
     (file) => !toRelPosix(file).startsWith('generated/'),

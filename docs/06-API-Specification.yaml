@@ -1588,7 +1588,16 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: true
+                required: [data, page, size]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskComment'
+                  page:
+                    type: integer
+                  size:
+                    type: integer
         '400':
           description: Invalid request
           content:
@@ -1647,6 +1656,7 @@ paths:
         schema:
           type: integer
           minimum: 1
+          maximum: 100
           default: 20
     post:
       tags:
@@ -1660,7 +1670,10 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: true
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskComment'
         '400':
           description: Invalid request
           content:
@@ -1712,8 +1725,11 @@ paths:
               properties:
                 body:
                   type: string
+                  minLength: 1
+                  description: Nội dung sau khi bỏ khoảng trắng hai đầu phải có ít nhất một ký tự.
                 mentionIds:
                   type: array
+                  maxItems: 100
                   items: *id001
               required:
               - body
@@ -2444,6 +2460,23 @@ components:
       in: cookie
       name: refresh_token
   schemas:
+    TaskComment:
+      type: object
+      required: [id, taskId, authorId, authorName, body, createdAt, updatedAt]
+      properties:
+        id: *id001
+        taskId: *id001
+        authorId: *id001
+        authorName:
+          type: string
+        body:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     Error:
       type: object
       required:

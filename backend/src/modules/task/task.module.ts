@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
 import { prisma } from '../../config/prisma.js';
-import type { PrismaClient } from '../../generated/prisma/client.js';
+import type { Prisma, PrismaClient } from '../../generated/prisma/client.js';
 import { authenticate } from '../auth/index.js';
 import { CreateTaskUseCase } from './application/use-cases/create-task.use-case.js';
 import { GetTaskDetailUseCase } from './application/use-cases/get-task-detail.use-case.js';
@@ -20,6 +20,12 @@ import {
 export interface TaskModuleDependencies {
   prisma: PrismaClient;
   authenticate: RequestHandler;
+}
+
+export function createTaskAccessRepository(
+  client: Prisma.TransactionClient,
+): Pick<PrismaTaskRepository, 'findTaskAccess' | 'lockProject'> {
+  return new PrismaTaskRepository(client);
 }
 
 export function createTaskModule(deps: TaskModuleDependencies) {

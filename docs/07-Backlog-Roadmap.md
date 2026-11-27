@@ -61,6 +61,7 @@
 ### US-COL-01 — Bình luận, mention, đính kèm
 - Triển khai theo [Sprint 05 — Collaboration](sprints/sprint-05-collaboration/README.md) trong Sprint Index. Bảng roadmap phía trên giữ các mốc dự kiến ban đầu.
 - COL-01 đã kiểm chứng schema bình luận và tệp đính kèm trên PostgreSQL test. [Báo cáo COL-01](reports/05-collaboration/COL-01-collaboration-schema.md)
+- COL-02 đã kiểm chứng Comment API và ghi sự kiện mention trong cùng transaction. [Báo cáo COL-02](reports/05-collaboration/COL-02-comment-api.md)
 - Epic: COL; priority: Must; FR-COL-01 / UC-COL-01.
 - Story: Là Manager / Member, tôi muốn bình luận, mention, đính kèm để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Bình luận hiển thị và người được mention nhận thông báo; Mention chỉ thành viên project; file tối đa 10 MB.

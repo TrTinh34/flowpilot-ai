@@ -210,6 +210,20 @@ model Attachment {
   @@map("attachments")
 }
 
+model OutboxEvent {
+  id            String   @id @default(uuid()) @db.Uuid
+  eventType     String   @map("event_type")
+  payload       Json
+  status        String   @default("PENDING")
+  attempts      Int      @default(0)
+  nextAttemptAt DateTime @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status, nextAttemptAt])
+  @@map("outbox_events")
+}
+
 model RefreshToken {
   id        String    @id @default(uuid()) @db.Uuid
   userId    String    @map("user_id") @db.Uuid
