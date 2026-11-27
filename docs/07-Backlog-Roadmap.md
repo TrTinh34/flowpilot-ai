@@ -59,6 +59,8 @@
 - Tasks: Express board move API dùng `prisma.$transaction` + `SELECT ... FOR UPDATE` trên project row, kiểm tra `version` trả 409 khi conflict; UI Kanban bằng `dnd-kit` + nút đổi trạng thái thay thế; integration test concurrency (Vitest + Supertest) & RTL test, review.
 
 ### US-COL-01 — Bình luận, mention, đính kèm
+- Triển khai theo [Sprint 05 — Collaboration](sprints/sprint-05-collaboration/README.md) trong Sprint Index. Bảng roadmap phía trên giữ các mốc dự kiến ban đầu.
+- COL-01 đã kiểm chứng schema bình luận và tệp đính kèm trên PostgreSQL test. [Báo cáo COL-01](reports/05-collaboration/COL-01-collaboration-schema.md)
 - Epic: COL; priority: Must; FR-COL-01 / UC-COL-01.
 - Story: Là Manager / Member, tôi muốn bình luận, mention, đính kèm để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Bình luận hiển thị và người được mention nhận thông báo; Mention chỉ thành viên project; file tối đa 10 MB.

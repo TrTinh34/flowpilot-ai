@@ -18,6 +18,8 @@ model User {
   refreshTokens        RefreshToken[]
   workspaceMemberships WorkspaceMember[]
   projectMemberships   ProjectMember[]
+  comments             Comment[]
+  attachments          Attachment[]
 
   @@map("users")
 }
@@ -165,6 +167,8 @@ model Task {
   project        Project        @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   parent         Task?          @relation("TaskTree", fields: [projectId, parentId], references: [projectId, id], onDelete: Restrict, onUpdate: Restrict)
   subtasks       Task[]         @relation("TaskTree")
+  comments       Comment[]
+  attachments    Attachment[]
   assignee       ProjectMember? @relation(fields: [projectId, assigneeId], references: [projectId, userId], onDelete: Restrict, onUpdate: Restrict)
 
   @@unique([projectId, id])
@@ -172,6 +176,38 @@ model Task {
   @@index([assigneeId, status])
   @@index([projectId, parentId])
   @@map("tasks")
+}
+
+model Comment {
+  id        String   @id @default(uuid()) @db.Uuid
+  taskId    String   @map("task_id") @db.Uuid
+  authorId  String   @map("author_id") @db.Uuid
+  /// PostgreSQL rejects whitespace-only bodies.
+  body      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([taskId, createdAt])
+  @@map("comments")
+}
+
+model Attachment {
+  id         String   @id @default(uuid()) @db.Uuid
+  taskId     String   @map("task_id") @db.Uuid
+  uploaderId String   @map("uploader_id") @db.Uuid
+  objectKey  String   @unique @map("object_key")
+  filename   String
+  mimeType   String   @map("mime_type")
+  /// PostgreSQL limits attachments to 1–10,485,760 bytes.
+  sizeBytes  Int      @map("size_bytes")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  uploader   User     @relation(fields: [uploaderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([taskId])
+  @@map("attachments")
 }
 
 model RefreshToken {

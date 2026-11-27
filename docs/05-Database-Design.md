@@ -27,8 +27,8 @@ UUID PK mặc định (`uuid` / `@db.Uuid`); timestamps `timestamptz` UTC; FK NO
 | projects | workspace_id, name, status | index(workspace_id,status) |
 | project_members | project_id, user_id, role | unique(project_id,user_id) |
 | tasks | project_id, parent_id nullable, assignee_id nullable, title, description, status, priority, due_date nullable, estimated_hours nullable, position, version | index(project_id,status,position); index(assignee_id,status); version >=0 |
-| comments | task_id, author_id, body | index(task_id,created_at) |
-| attachments | task_id, uploader_id, object_key, filename, mime_type, size_bytes | unique object_key |
+| comments | task_id, author_id, body | FK tới task và user, body có ký tự ngoài khoảng trắng, index(task_id,created_at) |
+| attachments | task_id, uploader_id, object_key, filename, mime_type, size_bytes | FK tới task và user, unique object_key, index(task_id), size_bytes từ 1 đến 10.485.760 |
 | notifications | user_id, event_id, type, payload jsonb, read_at nullable | unique(user_id,event_id,type); index(user_id,read_at) |
 | audit_logs | workspace_id, project_id nullable, actor_id, action, resource_id, metadata jsonb | index(workspace_id,created_at) |
 | ai_plans | project_id, requested_by, brief, status, draft jsonb nullable, result_ids jsonb nullable, error_code nullable, lease_until nullable, attempts | index(status,lease_until) |
@@ -53,8 +53,8 @@ UUID PK mặc định (`uuid` / `@db.Uuid`); timestamps `timestamptz` UTC; FK NO
   2. `workspace_invitations`: `workspaces`, `workspace_members`, `invitations`
   3. `projects` (Sprint 02): `projects`, `project_members`
   4. `tasks` (Sprint 03): `tasks`
-  5. `collaboration_notification_audit_outbox`: `comments`, `attachments`, `notifications`, `audit_logs`, `outbox_events`
-  6. `ai_plans`: `ai_plans`
+  5. `collaboration` (COL-01): `comments`, `attachments`
+  6. Migration tiếp theo cho `outbox_events`, `notifications`, `audit_logs` và `ai_plans` theo từng task.
 - **Custom SQL Migrations:** Với các constraint/index PostgreSQL mà `schema.prisma` chưa hỗ trợ biểu diễn trực tiếp, tạo migration bằng `prisma migrate dev --create-only` và bổ sung SQL thuần vào `migration.sql`:
   - Functional unique index: `CREATE UNIQUE INDEX users_email_lower_uidx ON users (LOWER(email));`
   - Partial unique index cho lời mời đang chờ: `CREATE UNIQUE INDEX invitations_pending_uidx ON invitations (workspace_id, LOWER(email)) WHERE status = 'PENDING';`

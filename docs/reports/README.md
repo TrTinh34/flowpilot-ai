@@ -56,6 +56,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | UI-08 | Design System Consistency Pass | COMPLETED | [Báo cáo](frontend/UI-08-design-system-pass.md) |
 | UI-09 | Frontend Foundation Testing & Review | COMPLETED | [Báo cáo](frontend/UI-09-testing-review.md) |
 | TASK-BOARD-INT-01 | Task & Board integration và review | COMPLETED | [Báo cáo](03-task-board/TASK-BOARD-INT-01-integration-review.md) |
+| COL-01 | Schema và migration Collaboration | COMPLETED | [Báo cáo](05-collaboration/COL-01-collaboration-schema.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -71,3 +72,4 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Sprint 3 — Task & Board | Hoàn thành 7/7 Task. Regression PostgreSQL, smoke test Edge và GitHub Actions đều đạt. |
 | Sprint 4 — Frontend Foundation Planning | Sprint planning hoàn thành. 9 Task specs tạo, Screen Inventory, API Readiness Matrix và Navigation Map. |
 | Sprint 4 — Frontend Foundation Implementation | 9/9 Tasks COMPLETED. AppShell, Dashboard, Notifications, Collaboration, AI Planner, Settings, 69 tests pass. |
+| Sprint 5 — Collaboration | Hoàn thành 1/5 task. Schema và migration đã qua kiểm thử PostgreSQL. |

@@ -8,6 +8,7 @@
 | Sprint 02 | Workspace & Project | Tạo workspace, mời thành viên và quản lý project theo quyền | COMPLETED | 8/8 Task hoàn thành. GitHub Actions đạt. | Hoàn tất | [Sprint 02](sprint-02-workspace-project/README.md) |
 | Sprint 03 | Task & Board | Quản lý task, My Tasks và Kanban có kiểm soát concurrency | COMPLETED | 7/7 Task hoàn thành. GitHub Actions đạt. | Hoàn tất | [Sprint 03](sprint-03-task-board/README.md) |
 | Sprint 04 | Frontend Foundation & MVP Interactive Prototype | Application Shell, Dashboard, Notifications, Collaboration, AI Planner và Settings UI | COMPLETED | 9/9 Task | Sprint 03 DoD | [Sprint 04](sprint-04-frontend-foundation/README.md) |
+| Sprint 05 | Collaboration | Bình luận, mention và tệp đính kèm trên Task Detail | IN_PROGRESS | 1/5 task | Task API và Collaboration UI | [Sprint 05](sprint-05-collaboration/README.md) |
 
 ## Nguồn quản lý
 
