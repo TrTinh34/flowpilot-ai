@@ -6,6 +6,8 @@ description: FlowPilot AI design system: tokens, typography, spacing, component 
 
 # UI Design System — FlowPilot AI
 
+Với Sprint 06, dùng [spec index](../specs/frontend-redesign/requirements.md) để mở Design System, wireframes và approval gate của redesign. Các đề xuất token chỉ có hiệu lực sau khi được duyệt.
+
 ## Visual Identity
 
 **Style:** Modern SaaS — Minimalist, Professional, Productivity-focused.  

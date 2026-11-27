@@ -10,6 +10,13 @@
 | 5 | AI | AI Provider Abstraction SDK, Zod structured output, async worker (`ai_plans`), preview/edit/confirm; fake provider tests |
 | 6 | Release | Regression, security tests, Playwright E2E, Express `/health` & Pino logging check, staging, production, demo |
 
+## Frontend Redesign & UI/UX Enhancement
+
+[Sprint 06 trong Sprint Index](sprints/sprint-06-frontend-redesign/README.md) dự kiến mở đợt Foundation sau developer review. Bảng đầu tài liệu giữ các mốc dự kiến ban đầu, bao gồm Release. Thứ tự thực tế theo [Sprint Index](sprints/README.md).
+
+- Ưu tiên design tokens, shared UI và shell, sau đó nâng cấp core screens và QA qua các timebox tiếp theo. [Sprint Backlog](sprints/sprint-06-frontend-redesign/README.md#sprint-backlog)
+- My Tasks local có corrective task riêng cho schema đã thiếu. Notification, Dashboard/audit và AI backend giữ nguyên backlog feature. [Frontend Audit](design/frontend/frontend-audit.md)
+
 ## Backlog
 
 ### US-AUTH-01 — Đăng ký, đăng nhập, refresh, logout

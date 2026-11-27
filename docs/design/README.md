@@ -4,6 +4,8 @@ Thư mục này chứa toàn bộ tài liệu thiết kế UI/UX của FlowPilot
 
 ## Nội dung
 
+Planning Sprint 06 nằm trong [Frontend Audit](frontend/frontend-audit.md), [Visual Direction](frontend/visual-direction.md) và [Screen Specs](frontend/screen-specifications.md). Tài liệu trong thư mục `frontend/` ghi baseline và đề xuất redesign chờ duyệt. Các tài liệu Sprint 04 giữ làm lịch sử.
+
 | File | Mô tả |
 |---|---|
 | [01-Design-Direction.md](01-Design-Direction.md) | Product visual identity, brand, design principles |

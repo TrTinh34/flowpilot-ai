@@ -77,3 +77,4 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Sprint 4 — Frontend Foundation Planning | Sprint planning hoàn thành. 9 Task specs tạo, Screen Inventory, API Readiness Matrix và Navigation Map. |
 | Sprint 4 — Frontend Foundation Implementation | 9/9 Tasks COMPLETED. AppShell, Dashboard, Notifications, Collaboration, AI Planner, Settings, 69 tests pass. |
 | Sprint 5 — Collaboration | Hoàn thành 5/5 task. PostgreSQL, fake storage, Edge và GitHub Actions đều đạt. |
+| Sprint 6 — Frontend Redesign Planning | Audit, direction và task specs chờ developer review. [Báo cáo planning](frontend-redesign/sprint-planning-report.md) |
