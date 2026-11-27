@@ -6,7 +6,7 @@
 | Task Name | Project Management |
 | Sprint ID | Sprint 07 · Timebox B |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 7h |
 | Dependencies | REDESIGN-07 |
 | Related Requirements | Projects · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Dialog focus, manager label, role/status text.
 Project API thật; trường thiếu chỉ hiện khi có dữ liệu.
 
 ## Implementation Checklist
-- [ ] Giữ field
-- [ ] đổi dialog
-- [ ] role/state test
+- [x] Giữ field
+- [x] đổi dialog
+- [x] role/state test
 
 ## Expected Deliverables
 Projects/settings UI.
@@ -66,6 +66,8 @@ RTL success/error và browse owner/member.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo triển khai](../../../reports/frontend-redesign/REDESIGN-08-projects.md).
 
 ## Next Task
 REDESIGN-09.

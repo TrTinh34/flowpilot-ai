@@ -121,7 +121,8 @@ it('shows project status in text and hides Create project for members', async ()
     size: 20,
   });
   show('/workspaces/workspace/projects', <ProjectsPage />);
-  expect(await screen.findByText('Archived')).toBeInTheDocument();
+  const card = (await screen.findByRole('link', { name: 'Launch' })).closest('li')!;
+  expect(within(card).getByText('Archived')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Projects · Studio' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Create project' })).not.toBeInTheDocument();
 });
