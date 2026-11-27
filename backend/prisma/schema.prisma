@@ -20,6 +20,7 @@ model User {
   projectMemberships   ProjectMember[]
   comments             Comment[]
   attachments          Attachment[]
+  notifications        Notification[]
 
   @@map("users")
 }
@@ -107,9 +108,10 @@ model Project {
   status      ProjectStatus   @default(ACTIVE)
   createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
-  workspace   Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  members     ProjectMember[]
-  tasks       Task[]
+  workspace     Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  members       ProjectMember[]
+  tasks         Task[]
+  notifications Notification[]
 
   @@index([workspaceId, status])
   @@map("projects")
@@ -169,6 +171,7 @@ model Task {
   subtasks       Task[]         @relation("TaskTree")
   comments       Comment[]
   attachments    Attachment[]
+  notifications  Notification[]
   assignee       ProjectMember? @relation(fields: [projectId, assigneeId], references: [projectId, userId], onDelete: Restrict, onUpdate: Restrict)
 
   @@unique([projectId, id])
@@ -211,17 +214,51 @@ model Attachment {
 }
 
 model OutboxEvent {
-  id            String   @id @default(uuid()) @db.Uuid
-  eventType     String   @map("event_type")
+  id            String         @id @default(uuid()) @db.Uuid
+  eventType     String         @map("event_type")
   payload       Json
-  status        String   @default("PENDING")
-  attempts      Int      @default(0)
-  nextAttemptAt DateTime @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  status        String         @default("PENDING")
+  attempts      Int            @default(0)
+  nextAttemptAt DateTime       @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  notifications Notification[]
 
   @@index([status, nextAttemptAt])
   @@map("outbox_events")
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_COMMENT
+  TASK_MENTION
+  INVITATION
+
+  @@map("notification_type")
+}
+
+model Notification {
+  id            String           @id @default(uuid()) @db.Uuid
+  userId        String           @map("user_id") @db.Uuid
+  projectId     String?          @map("project_id") @db.Uuid
+  taskId        String?          @map("task_id") @db.Uuid
+  outboxEventId String?          @map("outbox_event_id") @db.Uuid
+  type          NotificationType
+  /// PostgreSQL rejects blank messages via notifications_message_not_blank; unread lookups use notifications_user_id_unread_idx.
+  message       String
+  readAt        DateTime?        @map("read_at") @db.Timestamptz(6)
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  user          User             @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  project       Project?         @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  task          Task?            @relation(fields: [taskId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  outboxEvent   OutboxEvent?     @relation(fields: [outboxEventId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([outboxEventId, userId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, readAt])
+  @@index([projectId])
+  @@index([taskId])
+  @@map("notifications")
 }
 
 model RefreshToken {
