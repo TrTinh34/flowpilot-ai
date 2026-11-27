@@ -42,4 +42,4 @@ Kiểm chứng tiêu chí nghiệm thu và cập nhật báo cáo triển khai.
 
 ## Development Report Reference
 
-Chờ báo cáo triển khai.
+[Báo cáo COL-INT-01](../../../reports/05-collaboration/COL-INT-01-integration-review.md).

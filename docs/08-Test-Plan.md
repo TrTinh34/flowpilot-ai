@@ -15,7 +15,7 @@
 | TC-PROJ-01 | FR-PROJ-01 / UC-PROJ-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo, cập nhật, lưu trữ project và quản lý thành viên | Manager tạo task trong project được cấp quyền | PASSED · bước Manager tạo task qua API PostgreSQL Sprint 03 |
 | TC-TASK-01 | FR-TASK-01 / UC-TASK-01 | Seed actor đúng quyền; thực hiện luồng chính Tạo task, subtask, giao việc, deadline, priority | Task được giao xuất hiện trong My Tasks | PASSED · PostgreSQL integration và test giao diện |
 | TC-BOARD-01 | FR-BOARD-01 / UC-BOARD-01 | Seed actor đúng quyền; thực hiện luồng chính Kanban, kéo thả và sắp xếp task | Hai cập nhật đồng thời không ghi đè âm thầm | PASSED · PostgreSQL integration và test giao diện |
-| TC-COL-01 | FR-COL-01 / UC-COL-01 | Seed actor đúng quyền; thực hiện luồng chính Bình luận, mention, đính kèm | Bình luận hiển thị và người được mention nhận thông báo | Not run |
+| TC-COL-01 | FR-COL-01 / UC-COL-01 | Seed actor đúng quyền; thực hiện luồng chính Bình luận, mention, đính kèm | Bình luận hiển thị và người được mention nhận thông báo | PARTIAL · Edge xác nhận bình luận, upload/download và PostgreSQL outbox. Gửi thông báo tới người nhận thuộc Notification. |
 | TC-NOTI-01 | FR-NOTI-01 / UC-NOTI-01 | Seed actor đúng quyền; thực hiện luồng chính Thông báo trong app và real-time | Reconnect tải lại thông báo chưa đọc | Not run |
 | TC-DASH-01 | FR-DASH-01 / UC-DASH-01 | Seed actor đúng quyền; thực hiện luồng chính Dashboard tiến độ, My Tasks, audit log | Số task hoàn thành khớp dữ liệu | Not run |
 | TC-AI-01 | FR-AI-01 / UC-AI-01 | Seed actor đúng quyền; thực hiện luồng chính Sinh kế hoạch AI, chỉnh sửa và xác nhận | JSON sai không tạo task; xác nhận hai lần không nhân đôi | Not run |
@@ -29,7 +29,7 @@
 | TC-AI-04 | FR-AI-01 | Confirm hai lần đồng thời | Cùng IDs, không duplicate | Not run |
 | TC-AI-05 | NFR-03 | Thu hồi quyền trước confirm | 403/404; không task | Not run |
 | TC-AI-06 | NFR-04 | Brief yêu cầu đọc tenant khác | Không truy xuất dữ liệu ngoài scope | Not run |
-| TC-COL-02 | FR-COL-01 | Upload >10MB hoặc MIME giả | 413 hoặc 422 | Not run |
+| TC-COL-02 | FR-COL-01 | Upload lớn hơn 10 MiB hoặc MIME giả | 413 hoặc 422 | PASSED · HTTP integration xác nhận 413, 422 và chấp nhận đúng 10 MiB. |
 | TC-AUTH-02 | NFR-02 | Reuse refresh token đã rotate | 401, revoke family | Not run |
 | TC-PERF-01 | NFR-01 | 20 concurrent users, 1000 task/project | p95 <500ms cho API không AI | Not run |
 | TC-E2E-01 | BR-01/02/03 | Owner invite → project → AI plan → confirm → member move | Task và dashboard đúng, notification nhận được | Not run |

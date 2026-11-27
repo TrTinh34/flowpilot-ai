@@ -64,6 +64,7 @@
 - COL-02 đã kiểm chứng Comment API và ghi sự kiện mention trong cùng transaction. [Báo cáo COL-02](reports/05-collaboration/COL-02-comment-api.md)
 - COL-03 đã kiểm chứng Attachment API, giới hạn tệp và cleanup với fake storage. [Báo cáo COL-03](reports/05-collaboration/COL-03-attachment-api.md)
 - COL-04 đã nối Collaboration UI với backend thật và kiểm thử trên Edge. [Báo cáo COL-04](reports/05-collaboration/COL-04-collaboration-frontend.md)
+- Sprint 05 đã nghiệm thu 5/5 task. Việc gửi thông báo mention tới người nhận thuộc US-NOTI-01. [Báo cáo nghiệm thu](reports/05-collaboration/COL-INT-01-integration-review.md)
 - Epic: COL; priority: Must; FR-COL-01 / UC-COL-01.
 - Story: Là Manager / Member, tôi muốn bình luận, mention, đính kèm để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Bình luận hiển thị và người được mention nhận thông báo; Mention chỉ thành viên project; file tối đa 10 MB.

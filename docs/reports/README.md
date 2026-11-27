@@ -60,6 +60,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | COL-02 | Comment API và mention | COMPLETED | [Báo cáo](05-collaboration/COL-02-comment-api.md) |
 | COL-03 | Attachment API và lưu trữ | COMPLETED | [Báo cáo](05-collaboration/COL-03-attachment-api.md) |
 | COL-04 | Tích hợp giao diện Collaboration | COMPLETED | [Báo cáo](05-collaboration/COL-04-collaboration-frontend.md) |
+| COL-INT-01 | Kiểm thử tích hợp và Sprint Review | COMPLETED | [Báo cáo](05-collaboration/COL-INT-01-integration-review.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -75,4 +76,4 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Sprint 3 — Task & Board | Hoàn thành 7/7 Task. Regression PostgreSQL, smoke test Edge và GitHub Actions đều đạt. |
 | Sprint 4 — Frontend Foundation Planning | Sprint planning hoàn thành. 9 Task specs tạo, Screen Inventory, API Readiness Matrix và Navigation Map. |
 | Sprint 4 — Frontend Foundation Implementation | 9/9 Tasks COMPLETED. AppShell, Dashboard, Notifications, Collaboration, AI Planner, Settings, 69 tests pass. |
-| Sprint 5 — Collaboration | Hoàn thành 4/5 task. Task Detail dùng Comment và Attachment API. Còn kiểm tra CI để nghiệm thu. |
+| Sprint 5 — Collaboration | Hoàn thành 5/5 task. PostgreSQL, fake storage, Edge và GitHub Actions đều đạt. |
