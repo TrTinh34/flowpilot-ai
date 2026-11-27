@@ -6,7 +6,7 @@
 - Trạng thái — IN_PROGRESS
 - Mục tiêu — giao diện FlowPilot có hierarchy rõ, full workspace khi phù hợp, interaction nhất quán, responsive và có thể kiểm chứng.
 - Timebox A — 2 tuần, 31 giờ ước tính gồm 6 giờ audit. B — Core flows, 39 giờ. C — Collaboration, AI, settings và QA, 38 giờ. Tổng 108 giờ. B và C dự kiến 2–3 tuần mỗi đợt theo sức chứa solo developer 15–20 giờ/tuần và được mở khi có yêu cầu.
-- Tiến độ Timebox A — 3/5 task hoàn thành, gồm audit, Design System và shared UI.
+- Tiến độ Timebox A — 4/5 task hoàn thành, gồm audit, Design System, shared UI và schema local.
 
 ## Scope
 
@@ -19,8 +19,8 @@ Timebox A gồm foundation, shared UI, shell và corrective task My Tasks local.
 | REDESIGN-01 | [Frontend Audit & UI/UX Direction](tasks/REDESIGN-01-frontend-audit.md) | P0 | 6 | Sprint 04–05 | COMPLETED | A |
 | REDESIGN-02 | [Design System & Theme Enhancement](tasks/REDESIGN-02-design-system.md) | P0 | 6 | REDESIGN-01 | COMPLETED | A |
 | REDESIGN-03 | [Shared UI Components](tasks/REDESIGN-03-shared-components.md) | P0 | 8 | REDESIGN-02 | COMPLETED | A |
-| REDESIGN-04 | [Application Shell & Navigation](tasks/REDESIGN-04-application-shell.md) | P0 | 9 | REDESIGN-03 | PENDING | A |
-| ENV-01 | [Khôi phục schema local cho My Tasks](tasks/ENV-01-my-tasks-local-schema.md) | P0 | 2 | TASK-01, COL-01 | PENDING | A |
+| REDESIGN-04 | [Application Shell & Navigation](tasks/REDESIGN-04-application-shell.md) | P0 | 9 | REDESIGN-03 | IN_PROGRESS | A |
+| ENV-01 | [Khôi phục schema local cho My Tasks](tasks/ENV-01-my-tasks-local-schema.md) | P0 | 2 | TASK-01, COL-01 | COMPLETED | A |
 | REDESIGN-05 | [Authentication Pages](tasks/REDESIGN-05-authentication.md) | P1 | 5 | REDESIGN-04 | PENDING | B |
 | REDESIGN-06 | [Dashboard](tasks/REDESIGN-06-dashboard.md) | P1 | 6 | REDESIGN-04 | PENDING | B |
 | REDESIGN-07 | [Workspace & Member Management](tasks/REDESIGN-07-workspace.md) | P1 | 6 | REDESIGN-04 | PENDING | B |
@@ -48,7 +48,7 @@ Developer review phê duyệt direction trước implementation. Với từng đ
 
 ## Risks and Blockers
 
-My Tasks dev thiếu schema. Demo mode hiện còn fixture trực tiếp. S3 thật cần cấu hình. Không có API live Notifications/Dashboard/AI trong baseline. B/C cần dự trù lịch và quy mô sau khi review A.
+My Tasks dev đã có schema. Demo mode hiện còn fixture trực tiếp. S3 thật cần cấu hình. Không có API live Notifications/Dashboard/AI trong baseline. B/C cần dự trù lịch và quy mô sau khi review A.
 
 ## Sprint Review
 

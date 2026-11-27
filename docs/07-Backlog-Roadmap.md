@@ -18,6 +18,7 @@
 - REDESIGN-02 đã áp dụng Design System và kiểm tra trên Edge. [Báo cáo REDESIGN-02](reports/frontend-redesign/REDESIGN-02-design-system.md)
 - REDESIGN-03 đã áp dụng shared UI cho Projects và task lists. [Báo cáo REDESIGN-03](reports/frontend-redesign/REDESIGN-03-shared-components.md)
 - My Tasks local có corrective task riêng cho schema đã thiếu. Notification, Dashboard/audit và AI backend giữ nguyên backlog feature. [Frontend Audit](design/frontend/frontend-audit.md)
+- ENV-01 đã khôi phục schema development local và xác minh My Tasks API trả 200. [Báo cáo ENV-01](reports/frontend-redesign/ENV-01-my-tasks-local-schema.md)
 
 ## Backlog
 

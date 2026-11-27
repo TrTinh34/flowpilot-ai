@@ -6,7 +6,7 @@
 | Task Name | Khôi phục schema local cho My Tasks |
 | Sprint ID | Sprint 06 · Timebox A |
 | Priority | P0 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 2h |
 | Dependencies | TASK-01, COL-01 |
 | Related Requirements | My Tasks · môi trường dev · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -50,11 +50,11 @@ Không thay đổi auth hoặc xử lý token.
 Tái kiểm tra request thật với phiên test hợp lệ.
 
 ## Implementation Checklist
-- [ ] Kiểm tra đích
-- [ ] phê duyệt migration
-- [ ] deploy
-- [ ] status
-- [ ] GET 200
+- [x] Kiểm tra đích local
+- [x] Phê duyệt migration theo yêu cầu hoàn thành Sprint 06
+- [x] Deploy ba migration đã có
+- [x] Xác nhận migration status
+- [x] GET 200 với phiên kiểm thử và 401 khi thiếu token
 
 ## Expected Deliverables
 Bằng chứng status, 200 và kết quả fixture an toàn.
@@ -70,6 +70,8 @@ test:db:migrate trên test, migrate status trên dev và HTTP smoke.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo ENV-01](../../../reports/frontend-redesign/ENV-01-my-tasks-local-schema.md).
 
 ## Next Task
 REDESIGN-09.
