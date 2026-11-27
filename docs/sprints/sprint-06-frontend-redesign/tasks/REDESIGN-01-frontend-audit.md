@@ -6,7 +6,7 @@
 | Task Name | Frontend Audit & UI/UX Direction |
 | Sprint ID | Sprint 06 · Timebox A |
 | Priority | P0 |
-| Status | IN_REVIEW |
+| Status | COMPLETED |
 | Estimated Effort | 6h |
 | Dependencies | Sprint 04–05 |
 | Related Requirements | Toàn app · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |

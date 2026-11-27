@@ -6,4 +6,4 @@ Giao diện desktop đặt ngữ cảnh ở trái trên và thao tác ưu tiên 
 
 [Wireframes và tiêu chí theo màn hình](screen-specifications.md) · [Tokens](design-system.md) · [Shell](application-shell.md).
 
-Cổng phê duyệt gồm palette, shell desktop/mobile, bố cục Projects/My Tasks và cách phân biệt Demo. Developer duyệt tài liệu và wireframe trước khi mở REDESIGN-02. Ảnh before/after sẽ được chụp trong task triển khai.
+Cổng phê duyệt gồm palette, shell desktop/mobile, bố cục Projects/My Tasks và cách phân biệt Demo. REDESIGN-02 áp dụng palette và tokens theo yêu cầu triển khai. Các task shell và từng màn tiếp tục dùng wireframe tương ứng để review trước khi thực hiện.

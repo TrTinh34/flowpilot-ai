@@ -9,7 +9,7 @@
 | Sprint 03 | Task & Board | Quản lý task, My Tasks và Kanban có kiểm soát concurrency | COMPLETED | 7/7 Task hoàn thành. GitHub Actions đạt. | Hoàn tất | [Sprint 03](sprint-03-task-board/README.md) |
 | Sprint 04 | Frontend Foundation & MVP Interactive Prototype | Application Shell, Dashboard, Notifications, Collaboration, AI Planner và Settings UI | COMPLETED | 9/9 Task | Sprint 03 DoD | [Sprint 04](sprint-04-frontend-foundation/README.md) |
 | Sprint 05 | Collaboration | Bình luận, mention và tệp đính kèm trên Task Detail | COMPLETED | 5/5 task. GitHub Actions đạt. | Hoàn tất | [Sprint 05](sprint-05-collaboration/README.md) |
-| Sprint 06 | Frontend Redesign & UI/UX Enhancement | Design System, shared UI, shell và baseline cho redesign MVP | IN_REVIEW | Planning sẵn sàng review. 0 task implementation hoàn thành. | Sprint 04–05, developer approval | [Sprint 06](sprint-06-frontend-redesign/README.md) |
+| Sprint 06 | Frontend Redesign & UI/UX Enhancement | Design System, shared UI, shell và baseline cho redesign MVP | IN_PROGRESS | Timebox A đạt 2/5 task | Sprint 04–05 | [Sprint 06](sprint-06-frontend-redesign/README.md) |
 
 ## Nguồn quản lý
 

@@ -300,7 +300,7 @@ export function RegisterForm({ onSubmit, onSuccess }: RegisterFormProps) {
         Already have an account?{' '}
         <Link
           to="/login"
-          className="font-medium text-[var(--color-primary)] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] rounded-sm"
+          className="font-medium text-action-link underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
         >
           Sign in
         </Link>

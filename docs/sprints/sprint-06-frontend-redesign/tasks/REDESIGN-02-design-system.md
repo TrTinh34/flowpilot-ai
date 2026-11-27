@@ -6,7 +6,7 @@
 | Task Name | Design System & Theme Enhancement |
 | Sprint ID | Sprint 06 · Timebox A |
 | Priority | P0 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 6h |
 | Dependencies | REDESIGN-01 |
 | Related Requirements | Theme · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Gutter 16/24/32.
 Không gọi API.
 
 ## Implementation Checklist
-- [ ] Kiểm kê alias
-- [ ] thêm tokens
-- [ ] so sánh before/after
+- [x] Kiểm kê alias
+- [x] Thêm tokens
+- [x] So sánh trước và sau trên Edge
 
 ## Expected Deliverables
 CSS và bảng mapping.
@@ -66,6 +66,8 @@ typecheck, lint, format, test, build; ghi contrast.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo REDESIGN-02](../../../reports/frontend-redesign/REDESIGN-02-design-system.md).
 
 ## Next Task
 REDESIGN-03.

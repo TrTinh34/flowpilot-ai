@@ -9,19 +9,42 @@
    Tailwind v4 theme: brand + semantic color extensions
    Usage: bg-primary, text-primary, text-accent-ai, etc.
    ------------------------------------------------------------ */
-@theme {
+@theme static {
   --color-primary: #6366f1;
   --color-primary-hover: #4f46e5;
   --color-secondary: #8b5cf6;
-  --color-accent-ai: #a78bfa;
+  --color-accent-ai: #8b5cf6;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
-  --color-error-text: #dc2626;
+  --color-error-text: #b91c1c;
   --color-info: #3b82f6;
 
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-ring: var(--focus-ring);
+  --color-action: var(--action-primary);
+  --color-action-hover: var(--action-primary-hover);
+  --color-action-active: var(--action-primary-active);
+  --color-action-foreground: var(--action-foreground);
+  --color-action-link: var(--action-link);
+  --color-danger-action: var(--destructive);
+  --color-danger-hover: var(--destructive-hover);
+  --color-danger-active: var(--destructive-active);
+  --color-danger-foreground: var(--destructive-foreground);
+  --spacing-page-gutter: var(--page-gutter);
+  --ease-ui: ease-out;
 }
 
 /* ------------------------------------------------------------
@@ -33,41 +56,48 @@
   --surface: #ffffff;
   --surface-secondary: #f1f5f9;
   --border: #e2e8f0;
+  --control-border: #64748b;
 
   /* Text */
   --foreground: #0f172a;
-  --foreground-secondary: #64748b;
+  --foreground-secondary: #475569;
   --foreground-muted: #94a3b8;
 
   /* Brand */
-  --color-primary: #6366f1;
-  --color-primary-hover: #4f46e5;
-  --color-secondary: #8b5cf6;
-  --color-accent-ai: #a78bfa;
+  --action-primary: #4f46e5;
+  --action-primary-hover: #4338ca;
+  --action-primary-active: #3730a3;
+  --action-foreground: #ffffff;
+  --action-link: var(--action-primary);
+  --ai-text: #6d28d9;
 
   /* Semantic */
-  --color-success: #22c55e;
-  --color-success-bg: #f0fdf4;
+  --success-text: #166534;
+  --color-success-bg: #dcfce7;
   --color-success-border: #bbf7d0;
-  --color-warning: #f59e0b;
-  --color-warning-bg: #fffbeb;
+  --warning-text: #92400e;
+  --color-warning-bg: #fef3c7;
   --color-warning-border: #fde68a;
-  --color-error: #ef4444;
-  --color-error-text: #dc2626;
-  --color-error-bg: #fef2f2;
+  --color-error-bg: #fee2e2;
   --color-error-border: #fecaca;
-  --color-info: #3b82f6;
-  --color-info-bg: #eff6ff;
+  --info-text: #1d4ed8;
+  --color-info-bg: #dbeafe;
   --color-info-border: #bfdbfe;
 
   /* Layout */
-  --sidebar-bg: #ffffff;
-  --sidebar-border: #e2e8f0;
+  --sidebar-bg: var(--surface);
+  --sidebar-border: var(--border);
   --sidebar-width: 240px;
   --topbar-height: 56px;
+  --page-gutter: 1rem;
+  --space-section: 1.5rem;
+  --space-page-section: 2rem;
+  --duration-ui: 150ms;
+  --shadow-popover: 0 4px 12px rgb(15 23 42 / 0.08);
+  --shadow-dialog: 0 12px 28px rgb(15 23 42 / 0.16);
 
   /* Interactive */
-  --focus-ring: rgba(99, 102, 241, 0.4);
+  --focus-ring: var(--action-primary);
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
 
@@ -88,24 +118,36 @@
      shadcn components reference these tokens directly.
      Values are mapped to the FlowPilot brand palette.
      --------------------------------------------------------- */
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #6366f1;
-  --radius: 0.375rem;
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --primary: var(--action-primary);
+  --primary-foreground: var(--action-foreground);
+  --secondary: var(--surface-secondary);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-secondary);
+  --muted-foreground: var(--foreground-secondary);
+  --accent: var(--surface-secondary);
+  --accent-foreground: var(--foreground);
+  --destructive: var(--color-error-text);
+  --destructive-hover: #991b1b;
+  --destructive-active: #7f1d1d;
+  --destructive-foreground: var(--action-foreground);
+  --input: var(--control-border);
+  --ring: var(--focus-ring);
+}
+
+@media (width >= 48rem) {
+  :root {
+    --page-gutter: 1.5rem;
+  }
+}
+
+@media (width >= 80rem) {
+  :root {
+    --page-gutter: 2rem;
+  }
 }
 
 /* ------------------------------------------------------------
@@ -117,6 +159,14 @@
   --surface: #18181b;
   --surface-secondary: #111113;
   --border: #27272a;
+  --control-border: #a1a1aa;
+  --action-link: #a5b4fc;
+  --focus-ring: #a5b4fc;
+  --success-text: #86efac;
+  --warning-text: #fcd34d;
+  --color-error-text: #fca5a5;
+  --info-text: #93c5fd;
+  --ai-text: #c4b5fd;
 
   /* Text */
   --foreground: #fafafa;
@@ -151,10 +201,11 @@
   --accent: #27272a;
   --accent-foreground: #fafafa;
   --destructive: #f87171;
+  --destructive-hover: #fca5a5;
+  --destructive-active: #fecaca;
   --destructive-foreground: #450a0a;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #818cf8;
+  --input: var(--control-border);
+  --ring: var(--focus-ring);
 }
 
 /* ------------------------------------------------------------
@@ -193,22 +244,16 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family:
-    'Inter',
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 /* ------------------------------------------------------------
    Focus styles — visible for keyboard navigation (WCAG 2.2)
    ------------------------------------------------------------ */
 :focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-primary);
+  outline: var(--focus-ring-width) solid var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
   border-radius: var(--radius-sm);
 }
@@ -244,14 +289,14 @@ body {
 
 .text-page-title {
   font-size: 1.75rem; /* 28px */
-  line-height: 1.2;
+  line-height: 2.25rem;
   font-weight: 600;
   letter-spacing: -0.015em;
 }
 
 .text-section-title {
-  font-size: 1.125rem; /* 18px */
-  line-height: 1.4;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -263,23 +308,23 @@ body {
 }
 
 .text-body {
-  font-size: 0.875rem; /* 14px */
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.5rem;
   font-weight: 400;
 }
 
 .text-secondary {
-  font-size: 0.8125rem; /* 13px */
-  line-height: 1.5;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   font-weight: 400;
   color: var(--foreground-secondary);
 }
 
 .text-caption {
   font-size: 0.75rem; /* 12px */
-  line-height: 1.4;
+  line-height: 1rem;
   font-weight: 400;
-  color: var(--foreground-muted);
+  color: var(--foreground-secondary);
 }
 
 /* ------------------------------------------------------------

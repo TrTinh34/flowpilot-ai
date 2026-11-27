@@ -3,10 +3,10 @@
 ## Sprint Information
 
 - Ngày planning — 2026-11-27
-- Trạng thái — IN_REVIEW, chờ developer duyệt direction và task đầu tiên
+- Trạng thái — IN_PROGRESS
 - Mục tiêu — giao diện FlowPilot có hierarchy rõ, full workspace khi phù hợp, interaction nhất quán, responsive và có thể kiểm chứng.
 - Timebox A — 2 tuần, 31 giờ ước tính gồm 6 giờ audit. B — Core flows, 39 giờ. C — Collaboration, AI, settings và QA, 38 giờ. Tổng 108 giờ. B và C dự kiến 2–3 tuần mỗi đợt theo sức chứa solo developer 15–20 giờ/tuần và được mở khi có yêu cầu.
-- Tiến độ — audit đã lập, 0 task implementation hoàn thành.
+- Tiến độ Timebox A — 2/5 task hoàn thành, gồm audit và Design System.
 
 ## Scope
 
@@ -16,8 +16,8 @@ Timebox A gồm foundation, shared UI, shell và corrective task My Tasks local.
 
 | ID | Task | Ưu tiên | Giờ | Dependencies | Trạng thái | Đợt |
 |---|---|---|---:|---|---|---|
-| REDESIGN-01 | [Frontend Audit & UI/UX Direction](tasks/REDESIGN-01-frontend-audit.md) | P0 | 6 | Sprint 04–05 | IN_REVIEW | A |
-| REDESIGN-02 | [Design System & Theme Enhancement](tasks/REDESIGN-02-design-system.md) | P0 | 6 | REDESIGN-01 | PENDING | A |
+| REDESIGN-01 | [Frontend Audit & UI/UX Direction](tasks/REDESIGN-01-frontend-audit.md) | P0 | 6 | Sprint 04–05 | COMPLETED | A |
+| REDESIGN-02 | [Design System & Theme Enhancement](tasks/REDESIGN-02-design-system.md) | P0 | 6 | REDESIGN-01 | COMPLETED | A |
 | REDESIGN-03 | [Shared UI Components](tasks/REDESIGN-03-shared-components.md) | P0 | 8 | REDESIGN-02 | PENDING | A |
 | REDESIGN-04 | [Application Shell & Navigation](tasks/REDESIGN-04-application-shell.md) | P0 | 9 | REDESIGN-03 | PENDING | A |
 | ENV-01 | [Khôi phục schema local cho My Tasks](tasks/ENV-01-my-tasks-local-schema.md) | P0 | 2 | TASK-01, COL-01 | PENDING | A |
@@ -52,7 +52,7 @@ My Tasks dev thiếu schema. Demo mode hiện còn fixture trực tiếp. S3 th�
 
 ## Sprint Review
 
-Chờ review planning. [Báo cáo planning](../../reports/frontend-redesign/sprint-planning-report.md).
+Audit đã lập và token được áp dụng sau yêu cầu triển khai. REDESIGN-02 đã qua frontend regression và kiểm tra Edge. [Báo cáo planning](../../reports/frontend-redesign/sprint-planning-report.md) · [Báo cáo REDESIGN-02](../../reports/frontend-redesign/REDESIGN-02-design-system.md)
 
 ## Sprint Retrospective
 
