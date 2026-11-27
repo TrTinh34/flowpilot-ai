@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Check } from 'lucide-react';
-import { mockNotifications, type NotificationItem } from '@/mocks/fixtures/notification.fixtures';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  isNotificationDemoEnabled,
+  useNotificationDemoStore,
+} from '@/features/notification/store/notification-demo.store';
 import { cn } from '@/utils/cn.util';
 
 function timeAgo(iso: string) {
@@ -12,22 +17,23 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-/** Notification bell icon with unread badge and inline dropdown preview */
+/** Notification bell icon with unread badge and shared dropdown preview */
 export function NotificationBell() {
-  const [items, setItems] = useState<NotificationItem[]>(mockNotifications);
+  const demoEnabled = isNotificationDemoEnabled();
+  const items = useNotificationDemoStore((state) => state.items);
+  const loadDemo = useNotificationDemoStore((state) => state.loadDemo);
+  const markRead = useNotificationDemoStore((state) => state.markRead);
+  const markAllRead = useNotificationDemoStore((state) => state.markAllRead);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
 
-  const unread = items.filter((n) => !n.isRead).length;
+  useEffect(() => {
+    if (demoEnabled) void loadDemo();
+  }, [demoEnabled, loadDemo]);
 
-  function markRead(id: string) {
-    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
-  }
-
-  function markAllRead() {
-    setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
-  }
+  const unread = demoEnabled ? items.filter((n) => !n.isRead).length : 0;
+  const visibleItems = demoEnabled ? items.slice(0, 5) : [];
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -48,84 +54,89 @@ export function NotificationBell() {
         }
       }}
     >
-      <button
+      <Button
         ref={trigger}
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={() => setOpen((v) => !v)}
         aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ''}`}
         aria-expanded={open}
-        className="relative flex items-center justify-center rounded-md p-2 text-[var(--foreground-secondary)] hover:bg-[var(--surface-secondary)] transition-colors"
+        className="relative"
       >
-        <Bell className="size-4" aria-hidden="true" />
+        <Bell aria-hidden="true" />
         {unread > 0 && (
           <span
             aria-hidden="true"
-            className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-[var(--color-primary)] text-[9px] font-bold text-white"
+            className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-action text-[10px] font-semibold tabular-nums text-action-foreground"
           >
             {unread > 9 ? '9+' : unread}
           </span>
         )}
-      </button>
+      </Button>
 
       {open && (
-        <div className="absolute -right-12 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-border bg-card shadow-lg sm:right-0">
-          {/* Dropdown header */}
-          <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-            <span className="text-sm font-semibold text-[var(--foreground)]">Notifications</span>
+        <div className="absolute -right-12 z-[var(--z-popover)] mt-2 w-[min(21rem,calc(100vw-2rem))] rounded-[var(--radius-lg)] border border-border bg-card shadow-[var(--shadow-popover)] sm:right-0">
+          <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-foreground">Notifications</span>
+              {demoEnabled && <Badge tone="ai">Demo</Badge>}
+            </div>
             {unread > 0 && (
               <button
                 type="button"
                 onClick={markAllRead}
-                className="text-xs text-[var(--color-primary)] hover:underline"
+                className="cursor-pointer text-xs font-medium text-action-link hover:underline"
               >
                 Mark all read
               </button>
             )}
           </div>
 
-          {/* Notification list */}
-          <ul className="max-h-80 overflow-y-auto divide-y divide-[var(--border)]">
-            {items.slice(0, 5).map((n) => (
-              <li
-                key={n.id}
-                className={cn(
-                  'flex items-start gap-3 px-4 py-3',
-                  !n.isRead && 'bg-[var(--color-primary)]/5',
-                )}
-              >
-                <span
-                  className={cn(
-                    'mt-1.5 block size-2 shrink-0 rounded-full',
-                    n.isRead ? 'bg-transparent' : 'bg-[var(--color-primary)]',
+          {visibleItems.length === 0 ? (
+            <p className="px-4 py-6 text-center text-xs text-muted-foreground">
+              No notifications yet.
+            </p>
+          ) : (
+            <ul className="max-h-80 divide-y divide-border overflow-y-auto">
+              {visibleItems.map((n) => (
+                <li
+                  key={n.id}
+                  className={cn('flex items-start gap-3 px-4 py-3', !n.isRead && 'bg-action/5')}
+                >
+                  <span
+                    className={cn(
+                      'mt-1.5 block size-2 shrink-0 rounded-full',
+                      n.isRead ? 'bg-transparent' : 'bg-action',
+                    )}
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-foreground">{n.message}</p>
+                    <p className="mt-0.5 text-[11px] tabular-nums text-muted-foreground">
+                      {timeAgo(n.createdAt)}
+                    </p>
+                  </div>
+                  {!n.isRead && (
+                    <button
+                      type="button"
+                      onClick={() => markRead(n.id)}
+                      aria-label={`Mark "${n.message}" as read`}
+                      className="shrink-0 cursor-pointer rounded-[var(--radius-sm)] p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-action-link"
+                    >
+                      <Check className="size-3.5" aria-hidden="true" />
+                    </button>
                   )}
-                  aria-hidden="true"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-[var(--foreground)]">{n.message}</p>
-                  <p className="mt-0.5 text-[10px] text-[var(--foreground-muted)]">
-                    {timeAgo(n.createdAt)}
-                  </p>
-                </div>
-                {!n.isRead && (
-                  <button
-                    type="button"
-                    onClick={() => markRead(n.id)}
-                    aria-label="Mark as read"
-                    className="shrink-0 rounded p-0.5 text-[var(--foreground-muted)] hover:text-[var(--color-primary)] transition-colors"
-                  >
-                    <Check className="size-3" aria-hidden="true" />
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
 
-          {/* Footer */}
-          <div className="border-t border-[var(--border)] px-4 py-3">
+          <div className="border-t border-border px-4 py-2.5">
             <Link
               to="/notifications"
               onClick={() => setOpen(false)}
-              className="text-xs text-[var(--color-primary)] hover:underline"
+              className="text-xs font-medium text-action-link hover:underline"
             >
               View all notifications →
             </Link>

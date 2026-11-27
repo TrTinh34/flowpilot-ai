@@ -1,9 +1,24 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Bell, Check } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Bell, Check, Mail, MessageSquare, UserPlus } from 'lucide-react';
+import { EmptyState } from '@/components/common/EmptyState';
+import { LoadingState } from '@/components/common/LoadingState';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Badge, type BadgeTone } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { mockNotifications, type NotificationItem } from '@/mocks/fixtures/notification.fixtures';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  isNotificationDemoEnabled,
+  useNotificationDemoStore,
+} from '@/features/notification/store/notification-demo.store';
+import type { NotificationItem, NotificationType } from '@/mocks/fixtures/notification.fixtures';
 import { cn } from '@/utils/cn.util';
+
+const TYPE_META: Record<NotificationType, { label: string; tone: BadgeTone; icon: typeof Bell }> = {
+  TASK_ASSIGNED: { label: 'Assignment', tone: 'info', icon: Bell },
+  TASK_COMMENT: { label: 'Comment', tone: 'neutral', icon: MessageSquare },
+  TASK_MENTION: { label: 'Mention', tone: 'primary', icon: Mail },
+  INVITATION: { label: 'Invitation', tone: 'success', icon: UserPlus },
+};
 
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
@@ -13,145 +28,156 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
-const TYPE_LABEL: Record<NotificationItem['type'], string> = {
-  TASK_ASSIGNED: 'Assignment',
-  TASK_COMMENT: 'Comment',
-  TASK_MENTION: 'Mention',
-  INVITATION: 'Invitation',
-};
+function isRecentGroup(iso: string, latestDay: string) {
+  return iso.slice(0, 10) === latestDay;
+}
 
 export function NotificationsPage() {
-  const [items, setItems] = useState<NotificationItem[]>(mockNotifications);
+  const demoEnabled = isNotificationDemoEnabled();
+  const items = useNotificationDemoStore((state) => state.items);
+  const loading = useNotificationDemoStore((state) => state.loading);
+  const loadDemo = useNotificationDemoStore((state) => state.loadDemo);
+  const markRead = useNotificationDemoStore((state) => state.markRead);
+  const markAllRead = useNotificationDemoStore((state) => state.markAllRead);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
-  const unreadCount = items.filter((n) => !n.isRead).length;
+  useEffect(() => {
+    if (demoEnabled) void loadDemo();
+  }, [demoEnabled, loadDemo]);
 
-  function markRead(id: string) {
-    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
-  }
+  const activeItems = demoEnabled ? items : [];
+  const unreadCount = activeItems.filter((n) => !n.isRead).length;
+  const visible = filter === 'unread' ? activeItems.filter((n) => !n.isRead) : activeItems;
+  const latestDay = activeItems[0]?.createdAt.slice(0, 10) ?? '';
+  const todayItems = visible.filter((item) => isRecentGroup(item.createdAt, latestDay));
+  const earlierItems = visible.filter((item) => !isRecentGroup(item.createdAt, latestDay));
 
-  function markAllRead() {
-    setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
-  }
-
-  const visible = filter === 'unread' ? items.filter((n) => !n.isRead) : items;
+  const groups: Array<{ heading: string; entries: NotificationItem[] }> = [
+    ...(todayItems.length ? [{ heading: 'Latest', entries: todayItems }] : []),
+    ...(earlierItems.length ? [{ heading: 'Earlier', entries: earlierItems }] : []),
+  ];
 
   return (
-    <div className="mx-auto w-full max-w-[820px] px-page-gutter py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-[var(--foreground)]">Notifications</h1>
-          <p className="mt-1 text-sm text-[var(--foreground-secondary)]">
-            {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
-          </p>
+    <div className="mx-auto w-full max-w-[820px] space-y-6 px-page-gutter py-6">
+      <PageHeader
+        title="Notifications"
+        description={
+          demoEnabled
+            ? unreadCount > 0
+              ? `${unreadCount} unread`
+              : 'All caught up'
+            : 'Inbox updates for assignments, comments, mentions, and invitations.'
+        }
+        badge={demoEnabled && <Badge tone="ai">Demo</Badge>}
+        actions={
+          demoEnabled &&
+          unreadCount > 0 && (
+            <Button type="button" variant="outline" size="sm" onClick={markAllRead}>
+              <Check aria-hidden="true" />
+              Mark all read
+            </Button>
+          )
+        }
+      />
+
+      {!demoEnabled ? (
+        <EmptyState
+          icon={Bell}
+          title="No notifications yet."
+          description="Live notification delivery will appear here once the notification service is enabled."
+        />
+      ) : loading ? (
+        <LoadingState label="Loading notifications" variant="list" />
+      ) : (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Tabs value={filter} onValueChange={(value) => setFilter(value as 'all' | 'unread')}>
+              <TabsList>
+                <TabsTrigger value="all">All ({activeItems.length})</TabsTrigger>
+                <TabsTrigger value="unread">Unread ({unreadCount})</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <p className="text-xs text-muted-foreground">Sample notifications for demo preview.</p>
+          </div>
+
+          {visible.length === 0 ? (
+            <EmptyState
+              compact
+              icon={Bell}
+              title={filter === 'unread' ? 'No unread notifications.' : 'No notifications yet.'}
+            />
+          ) : (
+            <div className="space-y-4">
+              {groups.map(({ heading, entries }) => (
+                <section key={heading} aria-label={heading} className="space-y-2">
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {heading}
+                  </h2>
+                  <ul className="divide-y divide-border rounded-[var(--radius-md)] border border-border bg-card">
+                    {entries.map((item) => {
+                      const meta = TYPE_META[item.type];
+                      const TypeIcon = meta.icon;
+                      return (
+                        <li
+                          key={item.id}
+                          className={cn(
+                            'flex flex-col gap-3 px-4 py-3.5 sm:flex-row sm:items-start sm:justify-between',
+                            !item.isRead && 'bg-action/5',
+                          )}
+                        >
+                          <div className="flex min-w-0 items-start gap-3">
+                            <span
+                              className={cn(
+                                'mt-2 block size-2 shrink-0 rounded-full',
+                                item.isRead ? 'bg-transparent' : 'bg-action',
+                              )}
+                              aria-label={item.isRead ? undefined : 'Unread'}
+                            />
+                            <div className="min-w-0 space-y-1.5">
+                              <p
+                                className={cn(
+                                  'text-sm break-words',
+                                  item.isRead
+                                    ? 'text-muted-foreground'
+                                    : 'font-medium text-foreground',
+                                )}
+                              >
+                                {item.message}
+                              </p>
+                              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                                <Badge tone={meta.tone}>
+                                  <TypeIcon className="size-3" aria-hidden="true" />
+                                  {meta.label}
+                                </Badge>
+                                <time dateTime={item.createdAt} className="tabular-nums">
+                                  {timeAgo(item.createdAt)}
+                                </time>
+                              </div>
+                            </div>
+                          </div>
+                          {!item.isRead && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="self-start shrink-0"
+                              onClick={() => markRead(item.id)}
+                              aria-label={`Mark "${item.message}" as read`}
+                            >
+                              <Check aria-hidden="true" />
+                              Mark read
+                            </Button>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          )}
         </div>
-        {unreadCount > 0 && (
-          <Button variant="outline" size="sm" onClick={markAllRead}>
-            <Check className="size-4" aria-hidden="true" />
-            Mark all read
-          </Button>
-        )}
-      </div>
-
-      {/* Filter tabs */}
-      <div className="mt-6 flex gap-1 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)] p-1 w-fit">
-        {(['all', 'unread'] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setFilter(f)}
-            className={cn(
-              'rounded-md px-4 py-1.5 text-sm font-medium transition-colors capitalize',
-              filter === f
-                ? 'bg-[var(--surface)] text-[var(--foreground)] shadow-xs'
-                : 'text-[var(--foreground-secondary)] hover:text-[var(--foreground)]',
-            )}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-
-      {/* Mock data notice */}
-      <p className="mt-4 text-xs text-[var(--foreground-muted)]">
-        Mock data — real notifications will appear when backend Notification API is ready.
-      </p>
-
-      {/* List */}
-      <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] divide-y divide-[var(--border)]">
-        {visible.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-16 text-center">
-            <Bell className="size-10 text-[var(--foreground-muted)]" aria-hidden="true" />
-            <p className="text-sm text-[var(--foreground-secondary)]">
-              {filter === 'unread' ? 'No unread notifications.' : 'No notifications yet.'}
-            </p>
-          </div>
-        )}
-
-        {visible.map((n) => (
-          <div
-            key={n.id}
-            className={cn(
-              'flex items-start gap-3 px-4 py-3.5',
-              !n.isRead && 'bg-[var(--color-primary)]/5',
-            )}
-          >
-            {/* Unread dot */}
-            <div className="mt-1.5 shrink-0">
-              {!n.isRead ? (
-                <span
-                  className="block size-2 rounded-full bg-[var(--color-primary)]"
-                  aria-label="Unread"
-                />
-              ) : (
-                <span className="block size-2" />
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <p
-                className={cn(
-                  'text-sm',
-                  n.isRead ? 'text-[var(--foreground-secondary)]' : 'text-[var(--foreground)]',
-                )}
-              >
-                {n.message}
-              </p>
-              <div className="mt-1 flex items-center gap-2">
-                <span className="text-[11px] text-[var(--foreground-muted)]">
-                  {TYPE_LABEL[n.type]}
-                </span>
-                <span className="text-[var(--foreground-muted)]">·</span>
-                <span className="text-[11px] text-[var(--foreground-muted)]">
-                  {timeAgo(n.createdAt)}
-                </span>
-              </div>
-              {n.taskId && (
-                <Link
-                  to={`/tasks/${n.taskId}`}
-                  className="mt-1 inline-block text-xs text-[var(--color-primary)] hover:underline"
-                >
-                  View task →
-                </Link>
-              )}
-            </div>
-
-            {/* Mark read */}
-            {!n.isRead && (
-              <button
-                type="button"
-                onClick={() => markRead(n.id)}
-                aria-label="Mark as read"
-                className="shrink-0 rounded p-1 text-[var(--foreground-muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--foreground-secondary)] transition-colors"
-              >
-                <Check className="size-3.5" aria-hidden="true" />
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@
 | Task Name | Notification Center |
 | Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 6h |
 | Dependencies | REDESIGN-04, REFINE-03, REFINE-04 |
 | Related Requirements | Bell và Inbox · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,10 +48,12 @@ Unread có label (`role="status"` cập nhật số lượng có ngữ cảnh), 
 Demo chỉ bật khi `import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true'`; production hiển thị EmptyState thật; routes OpenAPI chưa mount.
 
 ## Implementation Checklist
-- [ ] Tách fixtures và áp guard `VITE_USE_MOCK_API`
-- [ ] Đồng bộ state giữa Bell và Inbox
-- [ ] Áp Design System V2 tokens, Tabs, Badge, EmptyState và xóa hardcoded hex
-- [ ] Test mode on/off và production bundle
+- [x] Tách fixtures và áp guard `VITE_USE_MOCK_API`
+- [x] Đồng bộ state giữa Bell và Inbox
+- [x] Áp Design System V2 tokens, Tabs, Badge, EmptyState và xóa hardcoded hex
+- [x] Test mode on/off và production bundle
+
+[Báo cáo REDESIGN-12](../../../reports/frontend-redesign/REDESIGN-12-notifications.md).
 
 ## Expected Deliverables
 Inbox/Bell dùng cùng state theo Design System V2.
