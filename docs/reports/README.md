@@ -55,7 +55,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | UI-07 | Settings & Profile UI | COMPLETED | [Báo cáo](frontend/UI-07-settings-profile-ui.md) |
 | UI-08 | Design System Consistency Pass | COMPLETED | [Báo cáo](frontend/UI-08-design-system-pass.md) |
 | UI-09 | Frontend Foundation Testing & Review | COMPLETED | [Báo cáo](frontend/UI-09-testing-review.md) |
-| TASK-BOARD-INT-01 | Task & Board integration và review | PARTIAL | [Báo cáo](03-task-board/TASK-BOARD-INT-01-integration-review.md) |
+| TASK-BOARD-INT-01 | Task & Board integration và review | COMPLETED | [Báo cáo](03-task-board/TASK-BOARD-INT-01-integration-review.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -68,6 +68,6 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
 | Sprint 1 — Foundation + AUTH | Hoàn thành 13/13 Task. Regression, PostgreSQL integration, browser smoke và GitHub Actions đều đạt. |
 | Sprint 2 — Workspace & Project | Hoàn thành 8/8 Task. PostgreSQL regression, browser smoke và GitHub Actions đều đạt. |
-| Sprint 3 — Task & Board | Hoàn thành 6/7 Task. Regression PostgreSQL, smoke test Edge và format local đã đạt. Còn GitHub Actions để nghiệm thu. |
+| Sprint 3 — Task & Board | Hoàn thành 7/7 Task. Regression PostgreSQL, smoke test Edge và GitHub Actions đều đạt. |
 | Sprint 4 — Frontend Foundation Planning | Sprint planning hoàn thành. 9 Task specs tạo, Screen Inventory, API Readiness Matrix và Navigation Map. |
 | Sprint 4 — Frontend Foundation Implementation | 9/9 Tasks COMPLETED. AppShell, Dashboard, Notifications, Collaboration, AI Planner, Settings, 69 tests pass. |

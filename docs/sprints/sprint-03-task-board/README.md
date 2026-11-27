@@ -4,8 +4,8 @@
 
 - Sprint ID — Sprint 03
 - Ngày mở — 2026-11-26
-- Trạng thái — IN_PROGRESS
-- Tiến độ — 6/7 Task hoàn thành (5 Feature Task + 1 Architecture Refactoring Task)
+- Trạng thái — COMPLETED
+- Tiến độ — 7/7 Task hoàn thành (5 Feature Task, 1 Architecture Refactoring Task và 1 Integration Task)
 - Nguồn — [Product Backlog & Roadmap](../../07-Backlog-Roadmap.md)
 
 ## Sprint Goal
@@ -26,7 +26,7 @@ US-TASK-01 và US-BOARD-01. Bao gồm schema, migration, API, quyền theo proje
 | BOARD-01 | [Board move API](tasks/BOARD-01-board-move-api.md) | COMPLETED | TASK-01, TASK-02 |
 | TASK-03 | [Task detail, subtask và My Tasks UI](tasks/TASK-03-task-frontend.md) | COMPLETED | TASK-02, PROJ-03 |
 | BOARD-02 | [Kanban và điều khiển di chuyển](tasks/BOARD-02-board-frontend.md) | COMPLETED | BOARD-01, TASK-03 |
-| TASK-BOARD-INT-01 | [Task & Board integration và review](tasks/TASK-BOARD-INT-01-integration-review.md) | IN_PROGRESS | TASK-01–03, BOARD-01–02 |
+| TASK-BOARD-INT-01 | [Task & Board integration và review](tasks/TASK-BOARD-INT-01-integration-review.md) | COMPLETED | TASK-01–03, BOARD-01–02 |
 
 ## Dependencies
 
@@ -48,8 +48,8 @@ Bước Manager tạo task của TC-PROJ-01 đã qua kiểm thử PostgreSQL. De
 
 ## Sprint Review
 
-Đã kiểm chứng migration, quyền theo project, tenant isolation, di chuyển đồng thời, regression API/UI và smoke test trên Edge với PostgreSQL test. Còn chờ CI trên revision nghiệm thu. [Báo cáo TASK-BOARD-INT-01](../../reports/03-task-board/TASK-BOARD-INT-01-integration-review.md)
+Đã kiểm chứng migration, quyền theo project, tenant isolation, di chuyển đồng thời, regression API/UI và smoke test trên Edge với PostgreSQL test. Backend Checks và Frontend Checks đều đạt trên commit `0cb84cb`. [Báo cáo TASK-BOARD-INT-01](../../reports/03-task-board/TASK-BOARD-INT-01-integration-review.md) · [GitHub Actions](https://github.com/TrTinh34/flowpilot-ai/actions/runs/46022914333)
 
 ## Sprint Retrospective
 
-Ca concurrency xác minh lỗi 409 trên PostgreSQL thật. Kiểm tra format theo từng gói giúp xác định điều kiện còn lại trước khi đóng Sprint.
+Ca concurrency xác minh lỗi 409 trên PostgreSQL thật. Kiểm tra format theo từng gói phát hiện 23 tệp cần chuẩn hóa trước khi chạy CI nghiệm thu.

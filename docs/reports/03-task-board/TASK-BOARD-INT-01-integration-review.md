@@ -2,13 +2,13 @@
 
 ## 1. Thông tin Task
 
-- Sprint 03 · 2026-11-27 · PARTIAL
+- Sprint 03 · 2026-11-27 · COMPLETED
 - FR-TASK-01, FR-BOARD-01, NFR-07
 - Bằng chứng lấy từ kiểm thử và self-review tại revision `1cc5ab5`.
 
 ## 2. Tóm tắt triển khai
 
-Đã kiểm chứng vòng đời task trên Edge với API và PostgreSQL test, cùng các ca phân quyền, tenant isolation và concurrency. Sprint còn chờ điều kiện CI.
+Đã kiểm chứng vòng đời task trên Edge với API và PostgreSQL test, cùng các ca phân quyền, tenant isolation và concurrency. Sprint 03 đã đạt điều kiện CI.
 
 ## 3. File thay đổi
 
@@ -30,7 +30,7 @@ Kiểm chứng revision làm việc hiện tại, gồm commit UI đã có trên
 | Backend và frontend `lint` và `build` | PASSED · TypeScript chạy trong build. Frontend có cảnh báo Fast Refresh và chunk lớn |
 | Backend và frontend `format` | PASSED · chạy lại sau khi chuẩn hóa 23 tệp |
 | Edge headless + API + PostgreSQL | PASSED · đăng nhập, tạo và giao task, tạo subtask, My Tasks, chuyển cột bằng phím, sự kiện kéo thả, phục hồi sau HTTP 409 |
-| GitHub Actions | NOT VERIFIED · revision kiểm thử chỉ có trên nhánh local |
+| GitHub Actions | PASSED · Backend Checks và Frontend Checks trên commit `0cb84cb`. [Run #46022914333](https://github.com/TrTinh34/flowpilot-ai/actions/runs/46022914333) |
 
 ## 6. Acceptance Criteria
 
@@ -40,11 +40,11 @@ Kiểm chứng revision làm việc hiện tại, gồm commit UI đã có trên
 | Concurrency | PASSED · hai yêu cầu move dùng cùng version trả một 200 và một 409 |
 | Thao tác không dùng chuột | PASSED · chuyển cột bằng phím mũi tên trên Edge |
 | Regression | PASSED · PostgreSQL, unit, architecture và frontend |
-| CI xanh | NOT VERIFIED · chờ GitHub Actions trên revision nghiệm thu |
+| CI xanh | PASSED · cả hai job hoàn tất thành công trên `main` |
 
 ## 7. Vấn đề và blocker
 
-Các lệnh kiểm tra local dùng Node 24, dependencies đã cài và PostgreSQL test hiện có. Nhánh remote chưa có revision cần nghiệm thu.
+Các lệnh kiểm tra local dùng Node 24, dependencies đã cài và PostgreSQL test hiện có. GitHub Actions xác nhận lại các bước CI trên Ubuntu.
 
 Ca kéo thả phát sự kiện DOM trên Edge. Động tác kéo bằng con trỏ vật lý chưa được kiểm chứng.
 
@@ -54,4 +54,4 @@ Self-review đối chiếu ca kiểm thử Task API với hợp đồng Board Mo
 
 ## 9. Task tiếp theo
 
-Hoàn tất điều kiện CI và cập nhật Sprint Review sau khi có kết quả trên revision nghiệm thu.
+Sprint 03 đã nghiệm thu 7/7 task.
