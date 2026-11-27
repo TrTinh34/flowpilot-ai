@@ -6,7 +6,7 @@
 | Task Name | Profile & Settings |
 | Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 4h |
 | Dependencies | REDESIGN-04, REDESIGN-07, REFINE-03, REFINE-04 |
 | Related Requirements | Profile · [SRS](../../../02-SRS.md), [Design System V2](../../../design/frontend/design-system.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,11 @@ Heading một cấp `<h1>`, links có accessible name, no tab stops giả.
 GET /auth/me hỗ trợ read.
 
 ## Implementation Checklist
-- [ ] Bỏ thông tin lặp và bỏ text hứa hẹn tính năng chưa có
-- [ ] Áp Design System V2 (`PageHeader`, `Avatar`, `Card`)
-- [ ] Thêm link điều hướng Workspace Settings thật và test màn hẹp 360px
+- [x] Bỏ thông tin lặp và bỏ text hứa hẹn tính năng chưa có
+- [x] Áp Design System V2 (`PageHeader`, `Avatar`, `Card`)
+- [x] Thêm link điều hướng Workspace Settings thật và test màn hẹp 360px
+
+[Báo cáo REDESIGN-14](../../../reports/frontend-redesign/REDESIGN-14-settings.md).
 
 ## Expected Deliverables
 Profile/Settings UI theo Design System V2.

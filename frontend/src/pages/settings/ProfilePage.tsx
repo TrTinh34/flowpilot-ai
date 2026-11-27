@@ -1,43 +1,75 @@
+import { Building2, CheckSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/app/store/auth.store';
+import { Avatar } from '@/components/common/Avatar';
+import { PageHeader } from '@/components/common/PageHeader';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 export function ProfilePage() {
   const user = useAuthStore((s) => s.user);
 
   return (
-    <div className="mx-auto w-full max-w-[760px] px-page-gutter py-8">
-      <h1 className="text-2xl font-semibold text-[var(--foreground)]">Profile</h1>
-      <p className="mt-1 text-sm text-[var(--foreground-secondary)]">Your account information.</p>
+    <div className="mx-auto w-full max-w-[760px] space-y-6 px-page-gutter py-6">
+      <PageHeader
+        title="Profile"
+        description="Your signed-in account details and settings links."
+      />
 
-      <div className="mt-8 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 space-y-6">
-        {/* Avatar + name */}
-        <div className="flex items-center gap-4">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-xl font-bold">
-            {user?.displayName?.[0]?.toUpperCase() ?? 'U'}
+      <section
+        aria-label="Account details"
+        className="space-y-5 rounded-[var(--radius-md)] border border-border bg-card p-5"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <Avatar name={user?.displayName} size="lg" tone="brand" />
+            <div className="min-w-0 space-y-0.5">
+              <h2 className="text-section-title text-foreground">Signed-in account</h2>
+              <p className="text-xs text-muted-foreground">FlowPilot AI member profile</p>
+            </div>
           </div>
-          <div>
-            <p className="text-base font-semibold text-[var(--foreground)]">
-              {user?.displayName ?? '—'}
-            </p>
-            <p className="text-sm text-[var(--foreground-secondary)]">{user?.email ?? '—'}</p>
-          </div>
+          <Badge tone="neutral">Read-only</Badge>
         </div>
 
-        {/* Fields */}
-        <dl className="space-y-4 text-sm">
-          <div className="flex flex-col gap-1">
-            <dt className="font-medium text-[var(--foreground-secondary)]">Display name</dt>
-            <dd className="text-[var(--foreground)]">{user?.displayName ?? '—'}</dd>
+        <dl className="grid gap-4 text-sm sm:grid-cols-2">
+          <div className="min-w-0 space-y-1">
+            <dt className="text-xs font-medium text-muted-foreground">Display name</dt>
+            <dd className="break-words font-medium text-foreground">{user?.displayName ?? '—'}</dd>
           </div>
-          <div className="flex flex-col gap-1">
-            <dt className="font-medium text-[var(--foreground-secondary)]">Email</dt>
-            <dd className="text-[var(--foreground)]">{user?.email ?? '—'}</dd>
+          <div className="min-w-0 space-y-1">
+            <dt className="text-xs font-medium text-muted-foreground">Email address</dt>
+            <dd className="font-medium text-foreground [overflow-wrap:anywhere]">
+              {user?.email ?? '—'}
+            </dd>
           </div>
         </dl>
+      </section>
 
-        <p className="text-xs text-[var(--foreground-muted)]">
-          Profile editing will be available in a future release.
-        </p>
-      </div>
+      <section
+        aria-label="Workspace navigation"
+        className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="space-y-0.5">
+          <h2 className="text-card-title font-semibold text-foreground">Workspace settings</h2>
+          <p className="text-secondary">
+            Manage workspaces, team memberships, and pending invitations.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/my-tasks">
+              <CheckSquare aria-hidden="true" />
+              My Tasks
+            </Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link to="/workspaces">
+              <Building2 aria-hidden="true" />
+              Workspace settings
+            </Link>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
