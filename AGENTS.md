@@ -39,7 +39,23 @@ Postman CLI is installed on this device, and can be used for API Engineering wor
 - Chỉ đánh dấu `PASSED` khi đã kiểm chứng. Dùng `NOT VERIFIED` hoặc `UNKNOWN` cho thông tin lịch sử thiếu bằng chứng.
 - Viết tiếng Việt, giữ nguyên thuật ngữ kỹ thuật tiếng Anh. Ưu tiên nội dung ngắn gọn và chính xác.
 
-## Kiến trúc Backend (Feature-based Clean Architecture)
+## Kiến trúc Frontend (Feature-based Architecture)
+
+- Tổ chức code theo feature trong `frontend/src/features/<feature>/` (api, components, schemas, types, hooks).
+- Shared components genuinely reusable đặt trong `components/ui/` (shadcn primitives) và `components/common/`.
+- Pages (`pages/`) chỉ compose layouts và feature components — không chứa business logic hay API calls.
+- Routing: React Router v7, `app/router/AppRouter.tsx`. Protected routes dùng `ProtectedRoute`, public-only dùng `PublicOnlyRoute`.
+- Server state: TanStack Query. Client state: Zustand (auth.store, ui.store). Form state: React Hook Form + Zod.
+- API calls: qua `services/api-client.ts` (axios, `withCredentials: true`). Feature API functions trong `features/<name>/api/`.
+- Access token: lưu in-memory trong Zustand. Không bao giờ lưu vào localStorage. Refresh token là HttpOnly cookie — không đọc từ JS.
+- Design system: CSS custom properties trong `styles/index.css`. Tailwind v4 `@theme` extension. Không hardcode hex color trong components.
+- Mock API: check `import.meta.env.VITE_USE_MOCK_API`. Mock fixtures trong `mocks/fixtures/`. Không bao giờ enable mock trong production.
+- Trước khi implement màn hình mới: đọc Task Spec trong `docs/sprints/sprint-04-frontend-foundation/tasks/`, kiểm tra `docs/design/api-readiness-matrix.md` và `docs/design/screen-inventory.md`.
+- Viết ít nhất render + interaction + error state tests cho mỗi component mới (Vitest + RTL).
+- Chạy `npm --prefix frontend run typecheck`, `lint`, `test`, `build` trước khi đóng Task.
+- Reports frontend: `docs/reports/frontend/`.
+
+
 
 - Tổ chức code backend theo business feature bên trong **Modular Monolith** (`backend/src/modules/<feature>/`).
 - Tuân thủ **Clean Architecture Dependency Rule** với 4 tầng: `domain/`, `application/`, `infrastructure/`, `presentation/`.

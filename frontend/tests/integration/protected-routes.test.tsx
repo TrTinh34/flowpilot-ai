@@ -53,21 +53,32 @@ function renderPublicOnly(initialPath = '/login') {
   );
 }
 
-// ─── ProtectedRoute ───────────────────────────────────────────────────────────
+// ─── AppRouter integration ───────────────────────────────────────────────────
 
-it('routes an unknown path through the protected fallback for guests', () => {
-  resetStore();
+it('redirects unauthenticated user from protected route to /login', () => {
+  resetStore({ status: 'unauthenticated' });
   render(
     <QueryClientProvider client={makeQueryClient()}>
-      <MemoryRouter initialEntries={['/unknown-auth-path']}>
+      <MemoryRouter initialEntries={['/dashboard']}>
         <AppRouter />
       </MemoryRouter>
     </QueryClientProvider>,
   );
-  expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
-  expect(
-    screen.queryByText('Development Environment Initialization Check'),
-  ).not.toBeInTheDocument();
+  // Unauthenticated → ProtectedRoute redirects to /login → LoginPage renders
+  expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
+});
+
+it('shows NotFoundPage for truly unknown routes', () => {
+  resetStore({ status: 'unauthenticated' });
+  render(
+    <QueryClientProvider client={makeQueryClient()}>
+      <MemoryRouter initialEntries={['/this-route-does-not-exist-anywhere']}>
+        <AppRouter />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+  // * route → NotFoundPage
+  expect(screen.getByText('404')).toBeInTheDocument();
 });
 
 describe('ProtectedRoute', () => {

@@ -59,3 +59,5 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Sprint 1 — Foundation + AUTH | Hoàn thành 13/13 Task. Regression, PostgreSQL integration, browser smoke và GitHub Actions đều đạt. |
 | Sprint 2 — Workspace & Project | Hoàn thành 8/8 Task. PostgreSQL regression, browser smoke và GitHub Actions đều đạt. |
 | Sprint 3 — Task & Board | Hoàn thành 6/7 Task. Kanban đã tích hợp Board Move API. Còn đợt kiểm thử tổng hợp và Sprint Review. |
+| Sprint 4 — Frontend Foundation Planning | Sprint planning hoàn thành. 9 Task specs tạo, Screen Inventory, API Readiness Matrix và Navigation Map. |
+| Sprint 4 — Frontend Foundation Implementation | 9/9 Tasks COMPLETED. AppShell, Dashboard, Notifications, Collaboration, AI Planner, Settings, 69 tests pass. |

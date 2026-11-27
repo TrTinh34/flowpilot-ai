@@ -1,8 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute, PublicOnlyRoute } from '@/app/router/ProtectedRoute';
+import { AppShellRoute } from '@/app/router/AppShellRoute';
+
+// ── Auth pages ────────────────────────────────────────────────────────────────
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
-import { InitStatusPage } from '@/pages/InitStatusPage';
+
+// ── Protected pages ───────────────────────────────────────────────────────────
+import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 import { WorkspaceSettingsPage } from '@/pages/workspace/WorkspaceSettingsPage';
 import { AcceptInvitePage } from '@/pages/workspace/AcceptInvitePage';
 import { ProjectsPage } from '@/pages/project/ProjectsPage';
@@ -11,44 +16,52 @@ import { ProjectTasksPage } from '@/pages/task/ProjectTasksPage';
 import { ProjectBoardPage } from '@/pages/task/ProjectBoardPage';
 import { MyTasksPage } from '@/pages/task/MyTasksPage';
 import { TaskDetailPage } from '@/features/task/components/TaskDetailDrawer';
+import { NotificationsPage } from '@/pages/notification/NotificationsPage';
+import { AiPlannerPage } from '@/pages/ai/AiPlannerPage';
+import { ProfilePage } from '@/pages/settings/ProfilePage';
+import { NotFoundPage } from '@/pages/errors/NotFoundPage';
 
 /**
- * Application router — AUTH-10.
+ * Application router — Sprint 04 (UI-01).
  *
- * Public-only routes (redirect authenticated users away):
- *   /login      → LoginPage
- *   /register   → RegisterPage
- *
- * Protected routes (redirect unauthenticated users to /login):
- *   /           → InitStatusPage (temporary; Sprint 2 will replace with AppShell)
- *
- * Fallback:
- *   *           → Redirect to / for now (NotFoundPage arrives in Sprint 2)
+ * Structure:
+ *   Public-only  → /login, /register
+ *   Protected    → ProtectedRoute > AppShellRoute > page components
+ *   Default      → / → /dashboard
+ *   Fallback     → * → 404
  */
 export function AppRouter() {
   return (
     <Routes>
-      {/* ── Public-only: redirect if already authenticated ─────────────── */}
-      <Route element={<PublicOnlyRoute redirectTo="/" />}>
+      {/* ── Public-only ───────────────────────────────────────────────── */}
+      <Route element={<PublicOnlyRoute redirectTo="/dashboard" />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Route>
 
-      {/* ── Protected: require authentication ──────────────────────────── */}
+      {/* ── Protected + App Shell ─────────────────────────────────────── */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<InitStatusPage />} />
-        <Route path="/workspaces" element={<WorkspaceSettingsPage />} />
-        <Route path="/invitations/accept" element={<AcceptInvitePage />} />
-        <Route path="/workspaces/:workspaceId/projects" element={<ProjectsPage />} />
-        <Route path="/projects/:projectId" element={<ProjectSettingsPage />} />
-        <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage />} />
-        <Route path="/projects/:projectId/board" element={<ProjectBoardPage />} />
-        <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
-        <Route path="/my-tasks" element={<MyTasksPage />} />
+        <Route element={<AppShellRoute />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/my-tasks" element={<MyTasksPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/workspaces" element={<WorkspaceSettingsPage />} />
+          <Route path="/workspaces/:workspaceId/projects" element={<ProjectsPage />} />
+          <Route path="/invitations/accept" element={<AcceptInvitePage />} />
+          <Route path="/projects/:projectId" element={<ProjectSettingsPage />} />
+          <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage />} />
+          <Route path="/projects/:projectId/board" element={<ProjectBoardPage />} />
+          <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
+          <Route path="/ai/planner" element={<AiPlannerPage />} />
+          <Route path="/settings/profile" element={<ProfilePage />} />
+        </Route>
       </Route>
 
-      {/* ── Fallback ───────────────────────────────────────────────────── */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* ── Default redirect ──────────────────────────────────────────── */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+      {/* ── 404 ──────────────────────────────────────────────────────── */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

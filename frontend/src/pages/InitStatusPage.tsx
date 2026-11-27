@@ -7,7 +7,7 @@ import { useLogout } from '@/features/auth/hooks/useLogout';
 export function InitStatusPage() {
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const user = useAuthStore((state) => state.user);
-  const { logout, isLoggingOut, logoutError } = useLogout();
+  const { logout, isLoggingOut } = useLogout();
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['backend-health'],
     queryFn: fetchBackendHealth,
@@ -91,11 +91,6 @@ export function InitStatusPage() {
             </button>
           )}
         </div>
-        {logoutError && (
-          <p role="alert" className="mt-3 text-sm text-red-600">
-            {logoutError}
-          </p>
-        )}
       </section>
     </main>
   );
