@@ -28,6 +28,8 @@
 
 - REDESIGN-06 hoàn thành Dashboard với My Tasks dùng API thật và Demo chỉ bật trong dev. Timebox B đạt 6/6 task, chờ Developer Review. [Báo cáo REDESIGN-06](reports/frontend-redesign/REDESIGN-06-dashboard.md)
 
+- [Sprint 08 — Timebox C](sprints/sprint-08-frontend-collaboration-quality/README.md) đã mở với REDESIGN-11. [Báo cáo REDESIGN-11](reports/frontend-redesign/REDESIGN-11-collaboration.md)
+
 ## Backlog
 
 ### US-AUTH-01 — Đăng ký, đăng nhập, refresh, logout

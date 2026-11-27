@@ -10,7 +10,7 @@
 
 ## Scope
 
-Timebox A gồm foundation, shared UI, shell và corrective task My Tasks local. Timebox B được mở tại [Sprint 07](../sprint-07-frontend-core-flows/README.md). Timebox C theo kế hoạch ở bảng dưới. Auth, Workspace, Projects, Task/Board và Collaboration giữ API thật. Notification delivery, Dashboard aggregation, AI backend và thay đổi contract theo backlog riêng. Các task UI-01–09 và COL-04 là baseline đã làm.
+Timebox A gồm foundation, shared UI, shell và corrective task My Tasks local. Timebox B được mở tại [Sprint 07](../sprint-07-frontend-core-flows/README.md). Timebox C được mở tại [Sprint 08](../sprint-08-frontend-collaboration-quality/README.md). Auth, Workspace, Projects, Task/Board và Collaboration giữ API thật. Notification delivery, Dashboard aggregation, AI backend và thay đổi contract theo backlog riêng. Các task UI-01–09 và COL-04 là baseline đã làm.
 
 ## Sprint Backlog
 
@@ -21,7 +21,7 @@ Timebox A gồm foundation, shared UI, shell và corrective task My Tasks local.
 | REDESIGN-03 | [Shared UI Components](tasks/REDESIGN-03-shared-components.md) | P0 | 8 | REDESIGN-02 | COMPLETED | A |
 | REDESIGN-04 | [Application Shell & Navigation](tasks/REDESIGN-04-application-shell.md) | P0 | 9 | REDESIGN-03 | COMPLETED | A |
 | ENV-01 | [Khôi phục schema local cho My Tasks](tasks/ENV-01-my-tasks-local-schema.md) | P0 | 2 | TASK-01, COL-01 | COMPLETED | A |
-| REDESIGN-11 | [Collaboration & Activity](tasks/REDESIGN-11-collaboration.md) | P1 | 6 | REDESIGN-10, COL-04 | PENDING | C |
+| REDESIGN-11 | [Collaboration & Activity](tasks/REDESIGN-11-collaboration.md) | P1 | 6 | REDESIGN-10, COL-04 | COMPLETED | C |
 | REDESIGN-12 | [Notification Center](tasks/REDESIGN-12-notifications.md) | P1 | 6 | REDESIGN-04 | PENDING | C |
 | REDESIGN-13 | [AI Planner](tasks/REDESIGN-13-ai-planner.md) | P1 | 7 | REDESIGN-04 | PENDING | C |
 | REDESIGN-14 | [Profile & Settings](tasks/REDESIGN-14-settings.md) | P1 | 4 | REDESIGN-04, REDESIGN-07 | PENDING | C |

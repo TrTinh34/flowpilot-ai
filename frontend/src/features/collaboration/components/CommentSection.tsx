@@ -1,6 +1,8 @@
-﻿import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/app/store/auth.store';
+import { ErrorState } from '@/components/common/ErrorState';
+import { LoadingState } from '@/components/common/LoadingState';
 import { Button } from '@/components/ui/button';
 import type { ProjectMember } from '@/features/project/api/project.api';
 import { extractApiErrorMessage } from '@/services/api-client';
@@ -17,6 +19,7 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
   const client = useQueryClient();
   const [body, setBody] = useState('');
   const [mentionIds, setMentionIds] = useState<string[]>([]);
+  const posting = useRef(false);
   const key = ['task-comments', revision, taskId];
   const comments = useInfiniteQuery({
     queryKey: key,
@@ -31,11 +34,15 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
       setMentionIds([]);
       await client.invalidateQueries({ queryKey: key });
     },
+    onSettled: () => {
+      posting.current = false;
+    },
   });
 
   function submit(event: FormEvent) {
     event.preventDefault();
-    if (canWrite && body.trim() && mentionIds.length <= 100 && !post.isPending) {
+    if (canWrite && body.trim() && mentionIds.length <= 100 && !posting.current) {
+      posting.current = true;
       post.mutate({ body: body.trim(), mentionIds });
     }
   }
@@ -46,20 +53,40 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
     latest && !thread.some(({ id }) => id === latest.id) ? [...thread, latest] : thread;
   return (
     <section aria-label="Comments" className="space-y-4">
-      {comments.isPending && <p role="status">Loading comments…</p>}
-      {comments.isError && <p role="alert">{extractApiErrorMessage(comments.error)}</p>}
-      {comments.isSuccess && visible.length === 0 && <p>No comments yet.</p>}
+      {comments.isPending && <LoadingState label="Loading comments" />}
+      {comments.isError && (
+        <ErrorState
+          title="Could not load comments"
+          message={extractApiErrorMessage(comments.error)}
+          onRetry={() =>
+            void (comments.isFetchNextPageError ? comments.fetchNextPage() : comments.refetch())
+          }
+        />
+      )}
+      {comments.isSuccess && visible.length === 0 && (
+        <p className="text-secondary">No comments yet.</p>
+      )}
       {visible.length > 0 && (
-        <ul className="space-y-3">
+        <ul className="divide-y divide-border rounded-xl border border-border bg-card px-4">
           {visible.map((comment) => (
-            <li key={comment.id} className="space-y-1 rounded-xl bg-[var(--surface-secondary)] p-3">
-              <div className="flex items-center gap-2 text-xs">
-                <strong>{comment.authorName}</strong>
-                <time className="text-[var(--foreground-muted)]" dateTime={comment.createdAt}>
-                  {new Date(comment.createdAt).toLocaleString()}
-                </time>
+            <li key={comment.id} className="flex min-w-0 items-start gap-3 py-4">
+              <span
+                aria-hidden="true"
+                className="grid size-8 shrink-0 place-items-center rounded-full bg-muted font-semibold text-action-link"
+              >
+                {Array.from(comment.authorName)[0]?.toLocaleUpperCase()}
+              </span>
+              <div className="min-w-0 flex-1 space-y-1">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <strong className="min-w-0 [overflow-wrap:anywhere]">{comment.authorName}</strong>
+                  <time className="text-secondary text-xs" dateTime={comment.createdAt}>
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </time>
+                </div>
+                <p className="whitespace-pre-wrap text-sm [overflow-wrap:anywhere]">
+                  {comment.body}
+                </p>
               </div>
-              <p className="whitespace-pre-wrap break-words text-sm">{comment.body}</p>
             </li>
           ))}
         </ul>
@@ -75,11 +102,11 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
         </Button>
       )}
       {canWrite && (
-        <form onSubmit={submit} className="space-y-3">
+        <form onSubmit={submit} className="space-y-3 rounded-xl border border-border bg-card p-4">
           <label className="grid gap-1">
             Add a comment
             <textarea
-              className="rounded-lg border bg-[var(--surface)] p-2"
+              className="w-full min-w-0 rounded-lg border border-input bg-background p-3"
               rows={3}
               value={body}
               disabled={post.isPending}
@@ -87,28 +114,35 @@ export function CommentSection({ taskId, canWrite, members }: Props) {
             />
           </label>
           {members.length > 0 && (
-            <details>
-              <summary className="cursor-pointer text-sm">Mention project members</summary>
-              <label className="grid gap-1 text-sm">
-                Recipients
-                <select
-                  multiple
-                  className="max-h-32 rounded-lg border p-2"
-                  value={mentionIds}
-                  disabled={post.isPending}
-                  onChange={(event) =>
-                    setMentionIds(
-                      Array.from(event.currentTarget.selectedOptions, ({ value }) => value),
-                    )
-                  }
-                >
-                  {members.map(({ userId, user }) => (
-                    <option key={userId} value={userId}>
-                      {user.displayName}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <details className="rounded-lg border border-border p-2">
+              <summary className="cursor-pointer p-1 text-sm font-medium">
+                Mention project members{mentionIds.length > 0 && ` (${mentionIds.length})`}
+              </summary>
+              <fieldset
+                disabled={post.isPending}
+                className="mt-2 max-h-44 space-y-1 overflow-y-auto p-1"
+              >
+                <legend className="sr-only">Mention recipients</legend>
+                {members.map(({ userId, user }) => (
+                  <label
+                    key={userId}
+                    className="flex min-w-0 items-start gap-2 rounded-md px-2 py-2 hover:bg-muted"
+                  >
+                    <input
+                      type="checkbox"
+                      className="mt-0.5 shrink-0"
+                      checked={mentionIds.includes(userId)}
+                      onChange={(event) => {
+                        const checked = event.currentTarget.checked;
+                        setMentionIds((selected) =>
+                          checked ? [...selected, userId] : selected.filter((id) => id !== userId),
+                        );
+                      }}
+                    />
+                    <span className="min-w-0 [overflow-wrap:anywhere]">{user.displayName}</span>
+                  </label>
+                ))}
+              </fieldset>
               {mentionIds.length > 100 && <p role="alert">Select up to 100 members.</p>}
             </details>
           )}

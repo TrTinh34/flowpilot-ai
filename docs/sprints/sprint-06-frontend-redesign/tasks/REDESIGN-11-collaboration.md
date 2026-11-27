@@ -4,9 +4,9 @@
 |---|---|
 | Task ID | REDESIGN-11 |
 | Task Name | Collaboration & Activity |
-| Sprint ID | Frontend Redesign · Timebox tiếp theo, Sprint ID chờ mở |
+| Sprint ID | [Sprint 08 · Timebox C](../../sprint-08-frontend-collaboration-quality/README.md) |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 6h |
 | Dependencies | REDESIGN-10, COL-04 |
 | Related Requirements | Comments/Attachments · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Mention keyboard, live status, file picker label.
 Real COL; activity ẩn đến khi có contract; S3 cấu hình môi trường.
 
 ## Implementation Checklist
-- [ ] Áp tokens
-- [ ] review states
-- [ ] test upload/download
+- [x] Áp tokens
+- [x] Review states
+- [x] Test upload/download
 
 ## Expected Deliverables
 Collaboration group và screenshots.
@@ -68,4 +68,4 @@ RTL errors và Edge fake storage.
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
 
 ## Next Task
-REDESIGN-16.
+REDESIGN-12 theo Sprint 08. REDESIGN-16 tổng hợp kiểm chứng Visual QA. [Báo cáo triển khai](../../../reports/frontend-redesign/REDESIGN-11-collaboration.md)

@@ -44,8 +44,13 @@ it('posts a comment with selected project members and refreshes the thread', asy
   await screen.findByText('No comments yet.');
   vi.mocked(api.listComments).mockResolvedValue({ ...empty, data: [comment] });
   await user.type(screen.getByLabelText('Add a comment'), 'Ready for review');
-  await user.click(screen.getByText('Mention project members'));
-  await user.selectOptions(screen.getByLabelText('Recipients'), 'reviewer');
+  await user.tab();
+  expect(screen.getByText('Mention project members')).toHaveFocus();
+  await user.keyboard('{Enter}');
+  await user.tab();
+  expect(screen.getByRole('checkbox', { name: 'Pat' })).toHaveFocus();
+  await user.keyboard(' ');
+  expect(screen.getByRole('checkbox', { name: 'Pat' })).toBeChecked();
   await user.click(screen.getByRole('button', { name: 'Post comment' }));
   expect(await screen.findByText('Comment posted.')).toBeInTheDocument();
   expect(screen.getByText('Ready for review')).toBeInTheDocument();
@@ -109,4 +114,20 @@ it('shows existing collaboration data in read-only mode', async () => {
     within(screen.getByRole('region', { name: 'Comments' })).queryByRole('textbox'),
   ).toBeNull();
   expect(screen.queryByRole('button', { name: 'Upload file' })).toBeNull();
+});
+
+it.each([
+  [413, 'File exceeds 10 MiB.'],
+  [422, 'File contents do not match the selected type.'],
+])('shows the server upload error %s', async (status, message) => {
+  vi.mocked(api.uploadAttachment).mockRejectedValue({
+    isAxiosError: true,
+    response: { status, data: { message } },
+  });
+  show(<AttachmentUploader taskId="task" canWrite />);
+  const file = new File(['sample'], 'sample.pdf', { type: 'application/pdf' });
+  await userEvent.upload(screen.getByLabelText('Choose attachment'), file);
+  expect(await screen.findByRole('alert')).toHaveTextContent(message);
+  expect(screen.queryByText('File uploaded.')).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Upload file' })).toBeEnabled();
 });

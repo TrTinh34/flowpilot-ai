@@ -1,7 +1,9 @@
 ﻿import { useRef, useState } from 'react';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Download, Upload } from 'lucide-react';
+import { Download, FileText, Upload } from 'lucide-react';
 import { useAuthStore } from '@/app/store/auth.store';
+import { ErrorState } from '@/components/common/ErrorState';
+import { LoadingState } from '@/components/common/LoadingState';
 import { Button } from '@/components/ui/button';
 import { extractApiErrorMessage } from '@/services/api-client';
 import { getAttachmentDownload, listAttachments, uploadAttachment } from '../api/collaboration.api';
@@ -18,6 +20,7 @@ function formatBytes(bytes: number) {
 export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWrite: boolean }) {
   const revision = useAuthStore((state) => state.sessionRevision);
   const inputRef = useRef<HTMLInputElement>(null);
+  const uploadLock = useRef(false);
   const [validationError, setValidationError] = useState<string>();
   const client = useQueryClient();
   const key = ['task-attachments', revision, taskId];
@@ -30,6 +33,9 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
   const upload = useMutation({
     mutationFn: (file: File) => uploadAttachment(taskId, file),
     onSuccess: () => client.invalidateQueries({ queryKey: key }),
+    onSettled: () => {
+      uploadLock.current = false;
+    },
   });
   const download = useMutation({
     mutationFn: (attachmentId: string) => getAttachmentDownload(attachmentId),
@@ -37,7 +43,7 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
   });
 
   function handleFiles(files: FileList | null) {
-    if (!files?.length || !canWrite || upload.isPending) return;
+    if (!files?.length || !canWrite || uploadLock.current) return;
     upload.reset();
     setValidationError(undefined);
     const file = files[0];
@@ -50,6 +56,7 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
       setValidationError('Choose one PDF, PNG, or JPEG file up to 10 MiB.');
       return;
     }
+    uploadLock.current = true;
     upload.mutate(file);
   }
 
@@ -61,8 +68,11 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
     <section aria-label="Attachments" className="space-y-4">
       {canWrite && (
         <div
-          className="flex flex-col items-center gap-2 rounded-xl border-2 border-dashed p-6 text-center"
-          onDragOver={(event) => event.preventDefault()}
+          className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-input bg-card p-5 text-center"
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = uploadLock.current ? 'none' : 'copy';
+          }}
           onDrop={(event) => {
             event.preventDefault();
             handleFiles(event.dataTransfer.files);
@@ -76,9 +86,7 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
           >
             <Upload aria-hidden="true" /> Upload file
           </Button>
-          <p className="text-xs text-[var(--foreground-muted)]">
-            Drag a PDF, PNG, or JPEG here. Max 10 MiB.
-          </p>
+          <p className="text-secondary text-sm">Drag a PDF, PNG, or JPEG here. Max 10 MiB.</p>
           <input
             ref={inputRef}
             type="file"
@@ -92,23 +100,54 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
           />
         </div>
       )}
-      {upload.isPending && <p role="status">Uploading {upload.variables?.name}…</p>}
+      {upload.isPending && (
+        <p role="status" className="text-secondary [overflow-wrap:anywhere]">
+          Uploading {upload.variables?.name}…
+        </p>
+      )}
       {upload.isSuccess && <p role="status">File uploaded.</p>}
-      {validationError && <p role="alert">{validationError}</p>}
-      {upload.isError && <p role="alert">{extractApiErrorMessage(upload.error)}</p>}
-      {attachments.isPending && <p role="status">Loading attachments…</p>}
-      {attachments.isError && <p role="alert">{extractApiErrorMessage(attachments.error)}</p>}
-      {download.isError && <p role="alert">{extractApiErrorMessage(download.error)}</p>}
+      {(validationError || upload.isError) && (
+        <ErrorState
+          title="Could not upload the file"
+          message={validationError ?? extractApiErrorMessage(upload.error)}
+        />
+      )}
+      {attachments.isPending && <LoadingState label="Loading attachments" />}
+      {attachments.isError && (
+        <ErrorState
+          title="Could not load attachments"
+          message={extractApiErrorMessage(attachments.error)}
+          onRetry={() =>
+            void (attachments.isFetchNextPageError
+              ? attachments.fetchNextPage()
+              : attachments.refetch())
+          }
+        />
+      )}
+      {download.isError && (
+        <ErrorState
+          title="Could not prepare the download"
+          message={extractApiErrorMessage(download.error)}
+        />
+      )}
       {download.isPending && <p role="status">Preparing download…</p>}
-      {attachments.isSuccess && visible.length === 0 && <p>No attachments yet.</p>}
+      {attachments.isSuccess && visible.length === 0 && (
+        <p className="text-secondary">No attachments yet.</p>
+      )}
       {visible.length > 0 && (
-        <ul className="space-y-2">
+        <ul className="divide-y divide-border rounded-xl border border-border bg-card px-4">
           {visible.map((file) => (
-            <li key={file.id} className="flex items-center gap-3 rounded-lg border p-3">
+            <li key={file.id} className="flex min-w-0 items-start gap-3 py-3">
+              <span className="grid size-8 shrink-0 place-items-center rounded-md bg-muted text-action-link">
+                <FileText className="size-4" aria-hidden="true" />
+              </span>
               <div className="min-w-0 flex-1">
-                <p className="break-words text-sm">{file.filename}</p>
-                <p className="text-xs text-[var(--foreground-muted)]">
+                <p className="font-medium [overflow-wrap:anywhere]">{file.filename}</p>
+                <p className="text-secondary flex flex-wrap gap-x-2 text-xs">
                   {formatBytes(file.sizeBytes)}
+                  <time dateTime={file.createdAt}>
+                    {new Date(file.createdAt).toLocaleDateString()}
+                  </time>
                 </p>
               </div>
               <Button
@@ -116,6 +155,7 @@ export function AttachmentUploader({ taskId, canWrite }: { taskId: string; canWr
                 variant="outline"
                 size="sm"
                 disabled={download.isPending}
+                className="shrink-0"
                 onClick={() => download.mutate(file.id)}
                 aria-label={`Download ${file.filename}`}
               >
