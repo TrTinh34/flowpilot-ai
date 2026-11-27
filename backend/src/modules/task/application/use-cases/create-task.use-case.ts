@@ -1,0 +1,60 @@
+import {
+  InvalidSubtaskParentError,
+  InvalidTaskAssigneeError,
+  ParentTaskNotFoundError,
+  TaskForbiddenError,
+  TaskProjectArchivedError,
+  TaskProjectNotFoundError,
+} from '../../domain/errors/task.errors.js';
+import type { CreateTaskInput, TaskDto } from '../dtos/task.dtos.js';
+import type { TaskUnitOfWork } from '../ports/task-unit-of-work.port.js';
+
+export class CreateTaskUseCase {
+  constructor(private readonly unitOfWork: TaskUnitOfWork) {}
+
+  execute(input: CreateTaskInput): Promise<TaskDto> {
+    return this.unitOfWork.execute(async ({ tasks }) => {
+      const access = await tasks.findProjectAccess(input.projectId, input.actorId);
+      if (!access) {
+        throw new TaskProjectNotFoundError();
+      }
+      if (!access.canWrite) {
+        throw new TaskForbiddenError();
+      }
+      if (access.projectStatus === 'ARCHIVED') {
+        throw new TaskProjectArchivedError();
+      }
+
+      const parentId = input.parentId ?? null;
+      if (parentId !== null) {
+        const parent = await tasks.findParentInProject(input.projectId, parentId);
+        if (!parent) {
+          throw new ParentTaskNotFoundError();
+        }
+        if (parent.parentId !== null) {
+          throw new InvalidSubtaskParentError();
+        }
+      }
+
+      const assigneeId = input.assigneeId ?? null;
+      if (assigneeId !== null) {
+        const isMember = await tasks.isProjectMember(input.projectId, assigneeId);
+        if (!isMember) {
+          throw new InvalidTaskAssigneeError();
+        }
+      }
+
+      const position = await tasks.getNextTodoPosition(input.projectId);
+      return tasks.create({
+        projectId: input.projectId,
+        parentId,
+        assigneeId,
+        title: input.title,
+        description: input.description,
+        priority: input.priority,
+        dueDate: input.dueDate ?? null,
+        position,
+      });
+    });
+  }
+}

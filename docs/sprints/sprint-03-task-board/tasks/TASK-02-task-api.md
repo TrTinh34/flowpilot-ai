@@ -42,4 +42,4 @@ Kiểm chứng các tiêu chí và cập nhật báo cáo triển khai.
 
 ## Development Report Reference
 
-Chưa triển khai.
+[Báo cáo triển khai TASK-02](../../../reports/03-task-board/TASK-02-task-api.md)

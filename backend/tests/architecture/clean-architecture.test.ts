@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 const SRC_ROOT = path.resolve(import.meta.dirname, '../../src');
 const AUTH_ROOT = path.join(SRC_ROOT, 'modules/auth');
+const TASK_ROOT = path.join(SRC_ROOT, 'modules/task');
 const SHARED_ROOT = path.join(SRC_ROOT, 'shared');
 
 function collectTsFiles(dir: string): string[] {
@@ -54,18 +55,22 @@ function toRelPosix(filePath: string): string {
 
 describe('Clean Architecture Fitness Tests', () => {
   const authFiles = collectTsFiles(AUTH_ROOT);
+  const taskFiles = collectTsFiles(TASK_ROOT);
+  const cleanModuleFiles = [...authFiles, ...taskFiles];
   const sharedFiles = collectTsFiles(SHARED_ROOT);
   const allSrcFiles = collectTsFiles(SRC_ROOT).filter(
     (file) => !toRelPosix(file).startsWith('generated/'),
   );
 
-  const domainFiles = [...authFiles, ...sharedFiles].filter((file) =>
+  const domainFiles = [...cleanModuleFiles, ...sharedFiles].filter((file) =>
     toRelPosix(file).includes('/domain/'),
   );
-  const applicationFiles = [...authFiles, ...sharedFiles].filter((file) =>
+  const applicationFiles = [...cleanModuleFiles, ...sharedFiles].filter((file) =>
     toRelPosix(file).includes('/application/'),
   );
-  const presentationFiles = authFiles.filter((file) => toRelPosix(file).includes('/presentation/'));
+  const presentationFiles = cleanModuleFiles.filter((file) =>
+    toRelPosix(file).includes('/presentation/'),
+  );
 
   it('Domain layer does not import outer layers, frameworks, or process.env', () => {
     const forbiddenPackages = ['express', 'bcryptjs', 'jose', 'pino', '@prisma/client'];

@@ -42,6 +42,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | WS-PROJ-INT-01 | Workspace & Project integration và review | COMPLETED | [Báo cáo](02-workspace-project/WS-PROJ-INT-01-integration-review.md) |
 | TASK-01 | Task schema và migration | COMPLETED | [Báo cáo](03-task-board/TASK-01-task-database.md) |
 | ARCH-01 | Migrate Backend Auth to Feature-based Clean Architecture | COMPLETED | [Báo cáo](architecture/clean-architecture-refactoring.md) |
+| TASK-02 | Task và My Tasks API | COMPLETED | [Báo cáo](03-task-board/TASK-02-task-api.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
