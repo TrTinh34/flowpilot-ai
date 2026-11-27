@@ -179,7 +179,7 @@ export class PrismaTaskRepository implements TaskRepository {
     return this.client.task.findMany({
       where: { projectId },
       select: taskSelect,
-      orderBy: [{ status: 'asc' }, { position: 'asc' }, { createdAt: 'asc' }],
+      orderBy: [{ status: 'asc' }, { position: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }],
       skip,
       take,
     });

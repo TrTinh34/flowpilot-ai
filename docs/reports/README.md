@@ -45,6 +45,7 @@ Thư mục này lưu kết quả triển khai, quyết định kỹ thuật và 
 | TASK-02 | Task và My Tasks API | COMPLETED | [Báo cáo](03-task-board/TASK-02-task-api.md) |
 | BOARD-01 | Board move API | COMPLETED | [Báo cáo](03-task-board/BOARD-01-board-move-api.md) |
 | TASK-03 | Task detail, subtask và My Tasks UI | COMPLETED | [Báo cáo](03-task-board/TASK-03-task-frontend.md) |
+| BOARD-02 | Kanban và điều khiển di chuyển | COMPLETED | [Báo cáo](03-task-board/BOARD-02-board-frontend.md) |
 
 `AUTH-01` là Task ID của hạng mục database thuộc story `US-AUTH-01`.
 
@@ -57,4 +58,4 @@ Xem [biên bản mở Sprint 02](02-workspace-project/sprint-02-kickoff.md) cho 
 | Nền tảng | Scaffolding và Initialization đã hoàn thành theo README và hiện trạng repo |
 | Sprint 1 — Foundation + AUTH | Hoàn thành 13/13 Task. Regression, PostgreSQL integration, browser smoke và GitHub Actions đều đạt. |
 | Sprint 2 — Workspace & Project | Hoàn thành 8/8 Task. PostgreSQL regression, browser smoke và GitHub Actions đều đạt. |
-| Sprint 3 — Task & Board | Board Move API và Task UI đã triển khai. Task UI đã qua test tạo task/subtask, My Tasks, lỗi quyền và phục hồi sau version conflict. |
+| Sprint 3 — Task & Board | Hoàn thành 6/7 Task. Kanban đã tích hợp Board Move API. Còn đợt kiểm thử tổng hợp và Sprint Review. |

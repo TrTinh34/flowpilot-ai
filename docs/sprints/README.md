@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|---|
 | Sprint 01 | Foundation + AUTH | Hoàn thành nền tảng monorepo, CI và luồng Authentication | COMPLETED | 13/13 Task hoàn thành. GitHub Actions đạt. | Hoàn tất | [Sprint 01](sprint-01-authentication/README.md) |
 | Sprint 02 | Workspace & Project | Tạo workspace, mời thành viên và quản lý project theo quyền | COMPLETED | 8/8 Task hoàn thành. GitHub Actions đạt. | Hoàn tất | [Sprint 02](sprint-02-workspace-project/README.md) |
-| Sprint 03 | Task & Board | Quản lý task, My Tasks và Kanban có kiểm soát concurrency | IN_PROGRESS | 5/7 Task hoàn thành | Project, Project Membership và PostgreSQL test | [Sprint 03](sprint-03-task-board/README.md) |
+| Sprint 03 | Task & Board | Quản lý task, My Tasks và Kanban có kiểm soát concurrency | IN_PROGRESS | 6/7 Task hoàn thành | Project, Project Membership và PostgreSQL test | [Sprint 03](sprint-03-task-board/README.md) |
 
 ## Nguồn quản lý
 

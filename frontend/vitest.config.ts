@@ -18,10 +18,6 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}'],
     // Exclude future sprint placeholder test files until their features are implemented
-    exclude: [
-      'tests/unit/date.util.test.ts',
-      'tests/integration/kanban-board.test.tsx',
-      'tests/integration/ai-planner.test.tsx',
-    ],
+    exclude: ['tests/unit/date.util.test.ts', 'tests/integration/ai-planner.test.tsx'],
   },
 });

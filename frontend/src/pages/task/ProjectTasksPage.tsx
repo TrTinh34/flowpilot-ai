@@ -39,6 +39,9 @@ function ProjectTasks({ projectId }: { projectId: string }) {
 
   return (
     <main className="mx-auto max-w-4xl space-y-5 px-5 py-10">
+      <Link to={`/projects/${projectId}/board`} className="mr-4 underline">
+        Kanban board
+      </Link>
       <Link to={`/projects/${projectId}`} className="underline">
         Project settings
       </Link>

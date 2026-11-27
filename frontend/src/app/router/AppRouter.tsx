@@ -8,6 +8,7 @@ import { AcceptInvitePage } from '@/pages/workspace/AcceptInvitePage';
 import { ProjectsPage } from '@/pages/project/ProjectsPage';
 import { ProjectSettingsPage } from '@/pages/project/ProjectSettingsPage';
 import { ProjectTasksPage } from '@/pages/task/ProjectTasksPage';
+import { ProjectBoardPage } from '@/pages/task/ProjectBoardPage';
 import { MyTasksPage } from '@/pages/task/MyTasksPage';
 import { TaskDetailPage } from '@/features/task/components/TaskDetailDrawer';
 
@@ -41,6 +42,7 @@ export function AppRouter() {
         <Route path="/workspaces/:workspaceId/projects" element={<ProjectsPage />} />
         <Route path="/projects/:projectId" element={<ProjectSettingsPage />} />
         <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage />} />
+        <Route path="/projects/:projectId/board" element={<ProjectBoardPage />} />
         <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
         <Route path="/my-tasks" element={<MyTasksPage />} />
       </Route>

@@ -1,9 +1,9 @@
 import { apiClient } from '@/services/api-client';
 import type { Task, TaskDetail, TaskFields, TaskPage } from '../types/task.types';
 
-export async function listProjectTasks(projectId: string, page: number) {
+export async function listProjectTasks(projectId: string, page: number, size?: number) {
   const { data } = await apiClient.get<TaskPage>(`/projects/${projectId}/tasks`, {
-    params: { page },
+    params: { page, size },
   });
   return data;
 }
