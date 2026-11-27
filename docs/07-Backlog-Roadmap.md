@@ -28,8 +28,8 @@
 
 - REDESIGN-06 hoàn thành Dashboard với My Tasks dùng API thật và Demo chỉ bật trong dev. Timebox B đạt 6/6 task, chờ Developer Review. [Báo cáo REDESIGN-06](reports/frontend-redesign/REDESIGN-06-dashboard.md)
 
-- [Sprint 08 — Timebox C](sprints/sprint-08-frontend-collaboration-quality/README.md) đã hoàn thành `6/6` task (`REDESIGN-11..16`), chờ Developer Review. [REDESIGN-11](reports/frontend-redesign/REDESIGN-11-collaboration.md) · [REDESIGN-12](reports/frontend-redesign/REDESIGN-12-notifications.md) · [REDESIGN-13](reports/frontend-redesign/REDESIGN-13-ai-planner.md) · [REDESIGN-14](reports/frontend-redesign/REDESIGN-14-settings.md) · [REDESIGN-15](reports/frontend-redesign/REDESIGN-15-responsive-accessibility.md) · [REDESIGN-16](reports/frontend-redesign/REDESIGN-16-visual-qa.md)
-- Re-audit & Refinement (`ui-ux-pro-max`): Hoàn thành `REFINE-03..07` (Design System V2, Shared UI & Shell, toàn bộ màn core, Chrome E2E QA & Lighthouse Accessibility `100`); `typecheck`, `lint` (0 warnings), `format`, `97/97` tests (`16/16` files) và `build` (`498.48 kB`, `0` fixture leaks) đều `PASSED`. [Implementation Report](reports/frontend-redesign/REFINE-03-to-06-implementation.md) · [REFINE-07](reports/frontend-redesign/REFINE-07-regression-visual-qa.md) · [Re-audit](reports/frontend-redesign/frontend-reaudit-report.md) · [Refinement Planning](reports/frontend-redesign/refinement-planning-report.md)
+- [Sprint 07 — Core flows](sprints/sprint-07-frontend-core-flows/README.md) và [Sprint 08 — Timebox C & R](sprints/sprint-08-frontend-collaboration-quality/README.md) đã hoàn thành 100% và được Developer đóng nghiệm thu (2026-11-28): `REDESIGN-05..16` & `REFINE-01..07` đều `COMPLETED` (`97/97` tests, Lighthouse Accessibility `100`, bundle `498.48 kB`). [REFINE-03..06](reports/frontend-redesign/REFINE-03-to-06-implementation.md) · [REFINE-07](reports/frontend-redesign/REFINE-07-regression-visual-qa.md) · [REDESIGN-15](reports/frontend-redesign/REDESIGN-15-responsive-accessibility.md) · [REDESIGN-16](reports/frontend-redesign/REDESIGN-16-visual-qa.md)
+- [Sprint 09 — Notifications, Dashboard & Audit Log](sprints/sprint-09-notifications-dashboard-audit/README.md) đang mở (`IN_PROGRESS`, `0/7` task) để triển khai backend + nối live API cho `US-NOTI-01` và `US-DASH-01`.
 
 ## Backlog
 
@@ -92,12 +92,14 @@
 - Tasks: Prisma Migrate (`comments`, `attachments`); Express multipart upload & magic-byte/MIME validation, S3 integration & signed download URL, ghi `outbox_events` khi mention; UI comment/mention & upload; integration test (Vitest + Supertest với fake storage), review.
 
 ### US-NOTI-01 — Thông báo trong app và real-time
+- Tiến độ theo [Sprint 09 Backlog](sprints/sprint-09-notifications-dashboard-audit/README.md#sprint-backlog) (`NOTI-01..03`).
 - Epic: NOTI; priority: Must; FR-NOTI-01 / UC-NOTI-01.
 - Story: Là User, tôi muốn thông báo trong app và real-time để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Reconnect tải lại thông báo chưa đọc; Chỉ người nhận đọc hoặc đánh dấu đã đọc.
 - Tasks: Prisma Migrate (`notifications`, `outbox_events`); Socket.IO server với JWT handshake auth & server-managed rooms (`user:{userId}`, `project:{projectId}`), outbox worker trong `src/jobs/`, REST inbox endpoints; UI Socket.IO Client & notification inbox; integration test Socket.IO auth/room isolation (Vitest + Supertest + Socket.IO client), review.
 
 ### US-DASH-01 — Dashboard tiến độ, My Tasks, audit log
+- Tiến độ theo [Sprint 09 Backlog](sprints/sprint-09-notifications-dashboard-audit/README.md#sprint-backlog) (`DASH-01..03`).
 - Epic: DASH; priority: Must; FR-DASH-01 / UC-DASH-01.
 - Story: Là Manager / Member, tôi muốn dashboard tiến độ, my tasks, audit log để hoàn thành công việc trong phạm vi quyền.
 - Acceptance: Số task hoàn thành khớp dữ liệu; Thống kê theo quyền; audit chỉ Owner/Admin/Manager trong phạm vi.

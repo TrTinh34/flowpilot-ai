@@ -3,9 +3,9 @@
 ## Sprint Information
 
 - Ngày mở — 2026-11-28
-- Trạng thái — IN_PROGRESS
+- Trạng thái — COMPLETED
 - Timebox B · 39 giờ dự kiến trong 2–3 tuần
-- Tiến độ — 6/6 task, chờ Developer Review
+- Tiến độ — 6/6 task hoàn thành, đã đóng theo quyết định nghiệm thu của Developer (2026-11-28)
 
 ## Sprint Goal
 
@@ -58,4 +58,4 @@ REDESIGN-06 đã xác minh Dashboard ở cả hai chế độ trên Edge với P
 
 ## Sprint Retrospective
 
-Ghi sau khi kết thúc Timebox B.
+Timebox B hoàn tất toàn bộ 6 luồng giao diện cốt lõi với API thật và PostgreSQL test; sau đó được tinh chỉnh thêm qua nhánh Refinement (`REFINE-03..07`) bằng `ui-ux-pro-max` để đạt đồng bộ Design System V2 và kiểm chứng trực tiếp trên Chrome (`Lighthouse Accessibility 100`). Ranh giới tách bạch giữa API thật và `DashboardDemo` (`DEV && VITE_USE_MOCK_API === 'true'`) giúp đảm bảo production bundle sạch fixture mock.

@@ -6,7 +6,7 @@
 | Task Name | Dashboard, Workspace & Projects Refinement |
 | Sprint ID | Sprint 08R · Frontend Design Refinement |
 | Priority | P1 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 5h |
 | Dependencies | REFINE-04 |
 | Related Requirements | [Screen Specs §2–§4](../../../design/frontend/screen-specifications.md) |

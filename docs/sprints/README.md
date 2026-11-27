@@ -10,8 +10,9 @@
 | Sprint 04 | Frontend Foundation & MVP Interactive Prototype | Application Shell, Dashboard, Notifications, Collaboration, AI Planner và Settings UI | COMPLETED | 9/9 Task | Sprint 03 DoD | [Sprint 04](sprint-04-frontend-foundation/README.md) |
 | Sprint 05 | Collaboration | Bình luận, mention và tệp đính kèm trên Task Detail | COMPLETED | 5/5 task. GitHub Actions đạt. | Hoàn tất | [Sprint 05](sprint-05-collaboration/README.md) |
 | Sprint 06 | Frontend Redesign & UI/UX Enhancement | Design System, shared UI, shell và baseline cho redesign MVP | COMPLETED | Timebox A đạt 5/5 task | Hoàn tất | [Sprint 06](sprint-06-frontend-redesign/README.md) |
-| Sprint 07 | Frontend Redesign · Core flows | Redesign Auth, Dashboard, Workspace, Projects, Task Lists và Kanban | IN_PROGRESS | Timebox B · 6/6 task, chờ Developer Review | Sprint 06 | [Sprint 07](sprint-07-frontend-core-flows/README.md) |
-| Sprint 08 | Frontend Redesign · Collaboration & Quality | Collaboration, Notifications, AI, Settings, responsive accessibility và Visual QA (kèm Timebox R · Refinement) | IN_PROGRESS | Timebox C · 6/6 task (`REDESIGN-11..16` COMPLETED, chờ Developer Review) · Timebox R (`REFINE-03..07` COMPLETED) | Sprint 07 | [Sprint 08](sprint-08-frontend-collaboration-quality/README.md) |
+| Sprint 07 | Frontend Redesign · Core flows | Redesign Auth, Dashboard, Workspace, Projects, Task Lists và Kanban | COMPLETED | Timebox B · 6/6 task hoàn thành, đã nghiệm thu đóng Sprint | Sprint 06 | [Sprint 07](sprint-07-frontend-core-flows/README.md) |
+| Sprint 08 | Frontend Redesign · Collaboration & Quality | Collaboration, Notifications, AI, Settings, responsive accessibility và Visual QA (kèm Timebox R · Refinement) | COMPLETED | Timebox C · 6/6 task (`REDESIGN-11..16`) · Timebox R · 8/8 task (`REFINE-01..07`) hoàn thành, đã nghiệm thu đóng Sprint | Sprint 07 | [Sprint 08](sprint-08-frontend-collaboration-quality/README.md) |
+| Sprint 09 | Notifications, Dashboard & Audit Log | Thông báo real-time (Socket.IO + Outbox), Dashboard aggregation & Audit Log (`US-NOTI-01`, `US-DASH-01`) | IN_PROGRESS | 0/7 task (`NOTI-01..03`, `DASH-01..03`, `NOTI-DASH-INT-01`) | Sprint 08 | [Sprint 09](sprint-09-notifications-dashboard-audit/README.md) |
 
 ## Nguồn quản lý
 

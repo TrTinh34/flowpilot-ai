@@ -6,7 +6,7 @@
 | Task Name | Tasks, Kanban & Task Detail Refactoring |
 | Sprint ID | Sprint 08R · Frontend Design Refinement |
 | Priority | P0 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 6h |
 | Dependencies | REFINE-04 |
 | Related Requirements | [Screen Specs §5–§7](../../../design/frontend/screen-specifications.md) |

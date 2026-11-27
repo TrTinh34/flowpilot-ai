@@ -3,8 +3,8 @@
 ## Sprint Information
 
 - Ngày mở — 2026-11-28
-- Trạng thái — IN_PROGRESS
-- Timebox C · 38 giờ dự kiến · 6/6 task (chờ Developer Review) · Timebox R · 31 giờ triển khai (`REFINE-03..07` COMPLETED)
+- Trạng thái — COMPLETED
+- Timebox C · 38 giờ dự kiến · 6/6 task (`COMPLETED`) · Timebox R · 31 giờ triển khai (`REFINE-01..07` `COMPLETED`), đã đóng ngày 2026-11-28
 
 ## Scope
 
@@ -27,8 +27,8 @@ Collaboration, Notifications, AI Planner, Profile & Settings, responsive accessi
 
 | ID | Task | Ưu tiên | Giờ | Dependencies | Trạng thái |
 |---|---|---|---:|---|---|
-| REFINE-01 | [UI/UX Pro Max Skill Integration](../sprint-06-frontend-redesign/tasks/REFINE-01-ui-ux-pro-max-integration.md) | P0 | 2 | REDESIGN-11 | IN_REVIEW |
-| REFINE-02 | [Completed Frontend Re-audit](../sprint-06-frontend-redesign/tasks/REFINE-02-frontend-reaudit.md) | P0 | 4 | REFINE-01 | IN_REVIEW |
+| REFINE-01 | [UI/UX Pro Max Skill Integration](../sprint-06-frontend-redesign/tasks/REFINE-01-ui-ux-pro-max-integration.md) | P0 | 2 | REDESIGN-11 | COMPLETED |
+| REFINE-02 | [Completed Frontend Re-audit](../sprint-06-frontend-redesign/tasks/REFINE-02-frontend-reaudit.md) | P0 | 4 | REFINE-01 | COMPLETED |
 | REFINE-03 | [Design System V2 Enhancement](../sprint-06-frontend-redesign/tasks/REFINE-03-design-system-v2.md) | P0 | 4 | REFINE-02, Developer Approval | COMPLETED |
 | REFINE-04 | [Shared Components & Application Shell Refinement](../sprint-06-frontend-redesign/tasks/REFINE-04-shared-components-shell.md) | P0 | 7 | REFINE-03 | COMPLETED |
 | REFINE-05A | [Dashboard, Workspace & Projects Refinement](../sprint-06-frontend-redesign/tasks/REFINE-05A-dashboard-workspace-projects-refinement.md) | P1 | 5 | REFINE-04 | COMPLETED |
@@ -42,6 +42,10 @@ Collaboration, Notifications, AI Planner, Profile & Settings, responsive accessi
 
 ## Sprint Review
 
-Sprint 08 đã hoàn thành toàn bộ `REDESIGN-11..16` (`6/6`) và nhánh Refinement `REFINE-03..07` (chờ Developer Review):
+Sprint 08 đã hoàn thành toàn bộ `REDESIGN-11..16` (`6/6`) và nhánh Refinement `REFINE-01..07` (`8/8`), được Developer phê duyệt đóng Sprint ngày 2026-11-28:
 - [Báo cáo REDESIGN-11](../../reports/frontend-redesign/REDESIGN-11-collaboration.md) · [REDESIGN-12](../../reports/frontend-redesign/REDESIGN-12-notifications.md) · [REDESIGN-13](../../reports/frontend-redesign/REDESIGN-13-ai-planner.md) · [REDESIGN-14](../../reports/frontend-redesign/REDESIGN-14-settings.md)
 - [Báo cáo REFINE-03..06](../../reports/frontend-redesign/REFINE-03-to-06-implementation.md) · [REFINE-07](../../reports/frontend-redesign/REFINE-07-regression-visual-qa.md) · [REDESIGN-15](../../reports/frontend-redesign/REDESIGN-15-responsive-accessibility.md) · [REDESIGN-16](../../reports/frontend-redesign/REDESIGN-16-visual-qa.md)
+
+## Sprint Retrospective
+
+Kiểm chứng trực tiếp qua Chrome DevTools và Lighthouse đã phát hiện kịp thời các lỗi semantic mà unit/RTL tests bỏ sót (`<dl>` lồng sai tại `StatCard`, WCAG 2.5.3 `label-content-name-mismatch` tại `WorkspaceSwitcher`, thiếu `id`/`name` ở form phụ và `404 /favicon.ico`). Việc giữ ranh giới Demo tách biệt trong dev giúp giữ production chunk `498.48 kB` và 0 fixture leak trước khi mở Sprint 09 tích hợp backend thật cho Notifications và Dashboard.
