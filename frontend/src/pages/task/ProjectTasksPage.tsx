@@ -42,7 +42,7 @@ function ProjectTasks({ projectId }: { projectId: string }) {
   });
 
   return (
-    <main className="mx-auto max-w-4xl space-y-5 px-5 py-10">
+    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
       <Link to={`/projects/${projectId}/board`} className="mr-4 underline">
         Kanban board
       </Link>
@@ -85,6 +85,6 @@ function ProjectTasks({ projectId }: { projectId: string }) {
         hasNext={tasks.isSuccess && tasks.data.data.length >= tasks.data.size}
         onPageChange={setPage}
       />
-    </main>
+    </div>
   );
 }

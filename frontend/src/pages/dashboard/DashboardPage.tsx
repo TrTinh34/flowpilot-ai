@@ -32,7 +32,7 @@ export function DashboardPage() {
   const topTasks = myTasks?.data.slice(0, 5) ?? [];
 
   return (
-    <div className="px-6 py-8 space-y-8 max-w-6xl mx-auto">
+    <div className="w-full min-w-0 space-y-8 px-page-gutter py-8">
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-semibold text-[var(--foreground)]">Dashboard</h1>

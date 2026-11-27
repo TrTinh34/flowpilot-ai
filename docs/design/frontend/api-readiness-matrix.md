@@ -7,7 +7,7 @@ API paths tương đối với `/api/v1`. Hợp đồng [OpenAPI](../../06-API-S
 | Auth / Login, Register, Profile | POST /auth/register, /auth/login, /auth/refresh, /auth/logout; GET /auth/me | Mounted Auth, auth.api và session restore | Real; Profile chỉ đọc |
 | Workspace / Settings, Invitation | /workspaces, /workspaces/:id/members, /workspaces/:id/invitations, /invitations/accept | Mounted Workspace/Invitation; workspace.api | Real; role mutation theo backend |
 | Projects / List & Settings | /workspaces/:id/projects, /projects/:id, /projects/:id/members | Mounted Project; project.api | Real; không có progress aggregation ở list contract |
-| Task / List, My Tasks, Detail | /projects/:id/tasks, /me/tasks, /tasks/:id | Mounted Task; task.api | Real; local My Tasks 500 do thiếu schema, ENV-01 |
+| Task / List, My Tasks, Detail | /projects/:id/tasks, /me/tasks, /tasks/:id | Mounted Task; task.api | Real; ENV-01 đã khôi phục schema và xác minh My Tasks trả 200 trên dev local |
 | Board | PATCH /tasks/:id/move + project tasks list | Mounted Task; board.api | Real; 409 reconcile và keyboard fallback |
 | Collaboration | GET/POST /tasks/:id/comments; GET/POST /tasks/:id/attachments; GET /attachments/:id/download | Mounted Collaboration; collaboration.api | Real; upload/download cần S3, mention outbox đã có, delivery chưa có |
 | Dashboard / Activity | GET /projects/:projectId/dashboard và /projects/:projectId/audit | Có OpenAPI, chưa mount Dashboard/Audit; page đọc fixtures | Demo có chủ đích; audit timeline thật chờ endpoint |

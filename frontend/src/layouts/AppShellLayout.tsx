@@ -1,277 +1,348 @@
-import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+﻿import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Dialog, DropdownMenu } from 'radix-ui';
 import {
-  LayoutDashboard,
-  CheckSquare,
   Bell,
+  Building2,
+  CheckSquare,
+  ChevronRight,
   FolderKanban,
-  Sparkles,
-  Settings,
+  LayoutDashboard,
   LogOut,
   Menu,
-  X,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Settings,
+  Sparkles,
   User,
+  X,
 } from 'lucide-react';
-import { Logo } from '@/components/common/Logo';
-import { WorkspaceSwitcher } from '@/features/workspace/components/WorkspaceSwitcher';
-import { NotificationBell } from '@/features/notification/components/NotificationBell';
 import { useAuthStore } from '@/app/store/auth.store';
 import { useUiStore } from '@/app/store/ui.store';
+import { Logo } from '@/components/common/Logo';
+import { Button } from '@/components/ui/button';
 import { useLogout } from '@/features/auth/hooks/useLogout';
-import { useWorkspaceStore } from '@/app/store/workspace.store';
+import { NotificationBell } from '@/features/notification/components/NotificationBell';
+import { WorkspaceSwitcher } from '@/features/workspace/components/WorkspaceSwitcher';
 import { cn } from '@/utils/cn.util';
+import { useShellContext } from './useShellContext';
 
-// ─── Nav items ───────────────────────────────────────────────────────────────
+type ShellContext = ReturnType<typeof useShellContext>;
 
-interface NavItem {
-  label: string;
-  to: string;
-  icon: React.ElementType;
-}
-
-function useNavItems(): NavItem[] {
-  const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
-
-  return [
-    { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
-    { label: 'My Tasks', to: '/my-tasks', icon: CheckSquare },
-    { label: 'Notifications', to: '/notifications', icon: Bell },
-    {
-      label: 'Projects',
-      to: activeWorkspaceId ? `/workspaces/${activeWorkspaceId}/projects` : '/workspaces',
-      icon: FolderKanban,
-    },
-    { label: 'AI Planner', to: '/ai/planner', icon: Sparkles },
-    { label: 'Settings', to: '/settings/profile', icon: Settings },
-  ];
-}
-
-// ─── Sidebar content ─────────────────────────────────────────────────────────
-
-function SidebarContent({
+function ShellNavigation({
+  context,
   collapsed = false,
-  onNavigate,
 }: {
+  context: ShellContext;
   collapsed?: boolean;
-  onNavigate?: () => void;
 }) {
-  const user = useAuthStore((s) => s.user);
-  const { logout, isLoggingOut } = useLogout();
-  const navItems = useNavItems();
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
+  const { pathname } = useLocation();
+  const { workspaces, workspace, workspaceId, project, inProject } = context;
+  const projectsLink = workspaceId ? `/workspaces/${workspaceId}/projects` : '/workspaces';
+  const groups = [
+    {
+      name: 'Workspace',
+      items: [
+        { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
+        { label: 'My Tasks', to: '/my-tasks', icon: CheckSquare },
+        { label: 'Projects', to: projectsLink, icon: FolderKanban, contextActive: inProject },
+        { label: 'Notifications', to: '/notifications', icon: Bell },
+      ],
+    },
+    { name: 'Tools', items: [{ label: 'AI Planner', to: '/ai/planner', icon: Sparkles }] },
+    {
+      name: 'Settings',
+      items: [
+        { label: 'Workspace settings', to: '/workspaces', icon: Building2 },
+        { label: 'Profile', to: '/settings/profile', icon: Settings },
+      ],
+    },
+  ];
+  const user = useAuthStore((state) => state.user);
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      {/* Logo */}
-      <div className="flex h-14 items-center border-b border-[var(--sidebar-border)] px-3 shrink-0">
-        <Logo className="text-[var(--color-primary)]" showName={!collapsed} />
-      </div>
-
-      {/* Workspace switcher */}
-      {!collapsed && (
-        <div className="border-b border-[var(--sidebar-border)] px-2 py-2 shrink-0">
-          <WorkspaceSwitcher />
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-2 py-3" aria-label="Main navigation">
-        <ul className="space-y-0.5">
-          {navItems.map((item) => (
-            <li key={item.to}>
-              <NavLink
-                to={item.to}
-                onClick={onNavigate}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors',
-                    'hover:bg-[var(--surface-secondary)]',
-                    isActive
-                      ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
-                      : 'text-[var(--foreground-secondary)]',
-                    collapsed && 'justify-center px-2',
-                  )
-                }
-                aria-current={undefined}
-              >
-                <item.icon
-                  className={cn('shrink-0', collapsed ? 'size-5' : 'size-4')}
-                  aria-hidden="true"
-                />
-                {!collapsed && <span>{item.label}</span>}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* User account */}
-      <div
-        ref={userMenuRef}
-        className="relative border-t border-[var(--sidebar-border)] px-2 py-2 shrink-0"
+    <div className="flex h-full min-h-0 flex-col">
+      <Link
+        to="/dashboard"
+        aria-label="FlowPilot AI home"
+        className="flex h-16 shrink-0 items-center justify-center px-3"
       >
-        <button
-          type="button"
-          onClick={() => setUserMenuOpen((v) => !v)}
-          aria-label="User menu"
-          aria-expanded={userMenuOpen}
+        <Logo className={cn('text-action-link', !collapsed && 'mr-auto')} showName={!collapsed} />
+      </Link>
+      <div className="shrink-0 border-y border-border p-2">
+        <WorkspaceSwitcher workspaces={workspaces} active={workspace} collapsed={collapsed} />
+      </div>
+      <nav aria-label="Main navigation" className="flex-1 space-y-4 overflow-y-auto px-2 py-4">
+        {groups.map(({ name, items }) => (
+          <ul key={name} aria-label={name} className="space-y-1">
+            {!collapsed && (
+              <li
+                aria-hidden="true"
+                className="px-2 pb-1 text-caption font-semibold uppercase tracking-wide"
+              >
+                {name}
+              </li>
+            )}
+            {items.map(({ label, icon: Icon, to, contextActive }) => {
+              const current = pathname === to && (label !== 'Projects' || Boolean(workspaceId));
+              return (
+                <li key={label}>
+                  <Link
+                    to={to}
+                    aria-label={label}
+                    title={collapsed ? label : undefined}
+                    aria-current={current ? 'page' : contextActive ? 'location' : undefined}
+                    className={cn(
+                      'relative flex min-h-10 items-center gap-2.5 rounded-md px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted',
+                      (current || contextActive) &&
+                        'bg-muted text-action-link before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-action',
+                      collapsed && 'justify-center px-0',
+                    )}
+                  >
+                    <Icon className="size-4 shrink-0" aria-hidden="true" />
+                    {!collapsed && <span>{label}</span>}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ))}
+        {project && !collapsed && (
+          <section
+            aria-label="Current project shortcuts"
+            className="space-y-1 border-t border-border px-2 pt-3"
+          >
+            <p className="truncate text-caption font-semibold">{project.name}</p>
+            <div className="flex flex-wrap gap-3 text-sm">
+              <Link
+                to={`/projects/${project.id}/tasks`}
+                className="text-action-link hover:underline"
+              >
+                Tasks
+              </Link>
+              <Link
+                to={`/projects/${project.id}/board`}
+                className="text-action-link hover:underline"
+              >
+                Board
+              </Link>
+            </div>
+          </section>
+        )}
+      </nav>
+      {user && (
+        <div
           className={cn(
-            'flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-sm transition-colors',
-            'hover:bg-[var(--surface-secondary)]',
-            collapsed && 'justify-center px-1',
+            'flex shrink-0 items-center gap-2 border-t border-border p-3',
+            collapsed && 'justify-center p-2',
           )}
         >
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-white text-xs font-semibold">
-            {user?.displayName?.[0]?.toUpperCase() ?? 'U'}
-          </div>
+          <Avatar name={user.displayName} />
           {!collapsed && (
-            <>
-              <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-[13px] font-medium text-[var(--foreground)]">
-                  {user?.displayName ?? 'User'}
-                </p>
-                <p className="truncate text-[11px] text-[var(--foreground-muted)]">
-                  {user?.email ?? ''}
-                </p>
-              </div>
-              <ChevronRight className="size-3.5 shrink-0 text-[var(--foreground-muted)]" />
-            </>
+            <span className="min-w-0 truncate text-sm font-semibold" title={user.displayName}>
+              {user.displayName}
+            </span>
           )}
-        </button>
-
-        {userMenuOpen && (
-          <div className="absolute bottom-full left-2 right-2 mb-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] py-1 shadow-lg z-50">
-            <Link
-              to="/settings/profile"
-              onClick={() => {
-                setUserMenuOpen(false);
-                onNavigate?.();
-              }}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--surface-secondary)] transition-colors"
-            >
-              <User className="size-4" aria-hidden="true" />
-              Profile
-            </Link>
-            <div className="my-1 border-t border-[var(--border)]" />
-            <button
-              type="button"
-              disabled={isLoggingOut}
-              onClick={() => void logout()}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors disabled:opacity-50"
-            >
-              <LogOut className="size-4" aria-hidden="true" />
-              {isLoggingOut ? 'Signing out…' : 'Sign out'}
-            </button>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// ─── App Shell Layout ─────────────────────────────────────────────────────────
+function Avatar({ name }: { name: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="grid size-8 shrink-0 place-items-center rounded-full bg-action text-xs font-semibold text-action-foreground"
+    >
+      {name[0]?.toUpperCase() ?? 'U'}
+    </span>
+  );
+}
 
-/**
- * Authenticated application shell with Sidebar + Header + content.
- *
- * Desktop (≥ lg): persistent sidebar (240px collapsed to 56px).
- * Mobile (< lg): sidebar hidden, hamburger → full-screen overlay drawer.
- */
+function AccountMenu() {
+  const user = useAuthStore((state) => state.user);
+  const { logout, isLoggingOut } = useLogout();
+  const item =
+    'flex cursor-default items-center gap-2 rounded px-2 py-2 text-sm outline-offset-[-2px] data-[highlighted]:bg-muted';
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        aria-label="User menu"
+        className="grid size-10 shrink-0 place-items-center rounded-md hover:bg-muted"
+      >
+        <Avatar name={user?.displayName ?? 'User'} />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={6}
+          className="z-[60] w-52 max-w-[calc(100vw-2rem)] rounded-[var(--radius-md)] border border-border bg-card p-1 text-foreground shadow-[var(--shadow-popover)]"
+        >
+          <DropdownMenu.Label className="truncate px-2 py-1.5 text-sm font-semibold">
+            {user?.displayName ?? 'User'}
+          </DropdownMenu.Label>
+          <DropdownMenu.Item asChild className={item}>
+            <Link to="/settings/profile">
+              <User className="size-4" aria-hidden="true" />
+              Profile
+            </Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            disabled={isLoggingOut}
+            onSelect={(event) => {
+              event.preventDefault();
+              void logout();
+            }}
+            className={cn(item, 'text-[var(--color-error-text)]')}
+          >
+            <LogOut className="size-4" aria-hidden="true" />
+            {isLoggingOut ? 'Signing out…' : 'Sign out'}
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
+
+function Breadcrumbs({ context }: { context: ShellContext }) {
+  const { workspace, project, title } = context;
+  const { pathname } = useLocation();
+  const crumbs = [
+    ...(workspace && pathname !== '/workspaces'
+      ? [{ label: workspace.name, path: `/workspaces?workspace=${workspace.id}` }]
+      : []),
+    ...(project && pathname !== `/projects/${project.id}`
+      ? [{ label: project.name, path: `/projects/${project.id}` }]
+      : []),
+  ];
+  return (
+    <nav aria-label="Breadcrumb" className="min-w-0 flex-1">
+      <ol className="flex min-w-0 items-center gap-1.5 text-sm">
+        {crumbs.map(({ label, path }) => (
+          <li key={path} className="hidden min-w-0 max-w-44 items-center gap-1.5 sm:flex">
+            <Link
+              to={path}
+              className="min-w-0 truncate text-muted-foreground hover:underline"
+              title={label}
+            >
+              {label}
+            </Link>
+            <ChevronRight className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
+          </li>
+        ))}
+        <li className="min-w-0 truncate font-semibold" aria-current="page" title={title}>
+          {title}
+        </li>
+      </ol>
+    </nav>
+  );
+}
+
 export function AppShellLayout({ children }: PropsWithChildren) {
-  const isSidebarOpen = useUiStore((s) => s.isSidebarOpen);
-  const toggleSidebar = useUiStore((s) => s.toggleSidebar);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const context = useShellContext();
+  const { key: routeKey } = useLocation();
+  const sidebarOpen = useUiStore((state) => state.isSidebarOpen);
+  const toggleSidebar = useUiStore((state) => state.toggleSidebar);
+  const [drawer, setDrawer] = useState({ routeKey, open: false });
+  if (drawer.routeKey !== routeKey) setDrawer({ routeKey, open: false });
+  const drawerOpen = drawer.routeKey === routeKey && drawer.open;
+  const main = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 64rem)');
+    const closeOnDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setDrawer((current) => ({ ...current, open: false }));
+    };
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
+  }, []);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[var(--background)]">
-      {/* ── Desktop Sidebar ──────────────────────────────────────────────── */}
-      <aside
-        className={cn(
-          'hidden lg:flex flex-col shrink-0',
-          'bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)]',
-          'transition-all duration-200',
-          isSidebarOpen ? 'w-[220px]' : 'w-[52px]',
-        )}
-        aria-label="Sidebar"
+    <div className="flex h-dvh w-full overflow-hidden bg-background text-foreground">
+      <a
+        href="#main-content"
+        onClick={(event) => {
+          event.preventDefault();
+          main.current?.focus();
+        }}
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[70] focus:rounded-md focus:bg-card focus:p-3"
       >
-        <SidebarContent collapsed={!isSidebarOpen} />
+        Skip to content
+      </a>
+      <aside
+        id="desktop-sidebar"
+        aria-label="Sidebar"
+        className={cn(
+          'hidden shrink-0 border-r border-border bg-card lg:block',
+          sidebarOpen ? 'w-60' : 'w-16',
+        )}
+      >
+        <ShellNavigation context={context} collapsed={!sidebarOpen} />
       </aside>
-
-      {/* ── Mobile Drawer overlay ─────────────────────────────────────────── */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 lg:hidden"
-          aria-modal="true"
-          role="dialog"
-          aria-label="Navigation menu"
-        >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden="true"
-          />
-          {/* Drawer panel */}
-          <div className="absolute left-0 top-0 h-full w-72 bg-[var(--sidebar-bg)] shadow-xl z-50">
-            <SidebarContent onNavigate={() => setMobileOpen(false)} />
-          </div>
-        </div>
-      )}
-
-      {/* ── Main area ────────────────────────────────────────────────────── */}
-      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        {/* Header */}
-        <header
-          className={cn(
-            'flex h-14 shrink-0 items-center gap-3 border-b border-[var(--border)]',
-            'bg-[var(--surface)] px-4',
-          )}
-        >
-          {/* Mobile hamburger */}
-          <button
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-card px-page-gutter sm:gap-3">
+          <Dialog.Root open={drawerOpen} onOpenChange={(open) => setDrawer({ routeKey, open })}>
+            <Dialog.Trigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                aria-label="Open navigation menu"
+              >
+                <Menu aria-hidden="true" />
+              </Button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 lg:hidden" />
+              <Dialog.Content className="fixed inset-y-0 left-0 z-50 w-72 max-w-[calc(100vw-1rem)] bg-card shadow-[var(--shadow-dialog)] lg:hidden">
+                <Dialog.Title className="sr-only">Navigation menu</Dialog.Title>
+                <Dialog.Description className="sr-only">
+                  Switch workspaces or open an application section.
+                </Dialog.Description>
+                <Dialog.Close asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="absolute right-2 top-3 z-10"
+                    aria-label="Close navigation menu"
+                  >
+                    <X aria-hidden="true" />
+                  </Button>
+                </Dialog.Close>
+                <ShellNavigation context={context} />
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+          <Button
             type="button"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open navigation menu"
-            className="lg:hidden rounded-md p-1.5 text-[var(--foreground-secondary)] hover:bg-[var(--surface-secondary)] transition-colors"
-          >
-            <Menu className="size-5" aria-hidden="true" />
-          </button>
-
-          {/* Desktop sidebar toggle */}
-          <button
-            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="hidden lg:inline-flex"
             onClick={toggleSidebar}
-            aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-            className="hidden lg:flex rounded-md p-1.5 text-[var(--foreground-muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--foreground-secondary)] transition-colors"
+            aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-expanded={sidebarOpen}
+            aria-controls="desktop-sidebar"
           >
-            {isSidebarOpen ? (
-              <X className="size-4" aria-hidden="true" />
+            {sidebarOpen ? (
+              <PanelLeftClose aria-hidden="true" />
             ) : (
-              <Menu className="size-4" aria-hidden="true" />
+              <PanelLeftOpen aria-hidden="true" />
             )}
-          </button>
-
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Header right */}
+          </Button>
+          <Breadcrumbs context={context} />
           <NotificationBell />
+          <AccountMenu />
         </header>
-
-        {/* Scrollable page content */}
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main
+          id="main-content"
+          ref={main}
+          tabIndex={-1}
+          className="min-w-0 flex-1 overflow-y-auto focus:outline-none"
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

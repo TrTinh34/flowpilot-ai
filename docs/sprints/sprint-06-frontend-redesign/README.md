@@ -3,10 +3,10 @@
 ## Sprint Information
 
 - Ngày planning — 2026-11-27
-- Trạng thái — IN_PROGRESS
+- Trạng thái — COMPLETED cho Timebox A
 - Mục tiêu — giao diện FlowPilot có hierarchy rõ, full workspace khi phù hợp, interaction nhất quán, responsive và có thể kiểm chứng.
 - Timebox A — 2 tuần, 31 giờ ước tính gồm 6 giờ audit. B — Core flows, 39 giờ. C — Collaboration, AI, settings và QA, 38 giờ. Tổng 108 giờ. B và C dự kiến 2–3 tuần mỗi đợt theo sức chứa solo developer 15–20 giờ/tuần và được mở khi có yêu cầu.
-- Tiến độ Timebox A — 4/5 task hoàn thành, gồm audit, Design System, shared UI và schema local.
+- Tiến độ Timebox A — 5/5 task hoàn thành.
 
 ## Scope
 
@@ -19,7 +19,7 @@ Timebox A gồm foundation, shared UI, shell và corrective task My Tasks local.
 | REDESIGN-01 | [Frontend Audit & UI/UX Direction](tasks/REDESIGN-01-frontend-audit.md) | P0 | 6 | Sprint 04–05 | COMPLETED | A |
 | REDESIGN-02 | [Design System & Theme Enhancement](tasks/REDESIGN-02-design-system.md) | P0 | 6 | REDESIGN-01 | COMPLETED | A |
 | REDESIGN-03 | [Shared UI Components](tasks/REDESIGN-03-shared-components.md) | P0 | 8 | REDESIGN-02 | COMPLETED | A |
-| REDESIGN-04 | [Application Shell & Navigation](tasks/REDESIGN-04-application-shell.md) | P0 | 9 | REDESIGN-03 | IN_PROGRESS | A |
+| REDESIGN-04 | [Application Shell & Navigation](tasks/REDESIGN-04-application-shell.md) | P0 | 9 | REDESIGN-03 | COMPLETED | A |
 | ENV-01 | [Khôi phục schema local cho My Tasks](tasks/ENV-01-my-tasks-local-schema.md) | P0 | 2 | TASK-01, COL-01 | COMPLETED | A |
 | REDESIGN-05 | [Authentication Pages](tasks/REDESIGN-05-authentication.md) | P1 | 5 | REDESIGN-04 | PENDING | B |
 | REDESIGN-06 | [Dashboard](tasks/REDESIGN-06-dashboard.md) | P1 | 6 | REDESIGN-04 | PENDING | B |
@@ -56,6 +56,8 @@ Audit đã lập và token được áp dụng sau yêu cầu triển khai. REDE
 
 REDESIGN-03 áp dụng shared UI vào Projects và task lists. Dialog Create Project đã qua RTL và Edge 360 px. [Báo cáo REDESIGN-03](../../reports/frontend-redesign/REDESIGN-03-shared-components.md)
 
+ENV-01 đã khôi phục My Tasks trên development local. REDESIGN-04 đã qua 82 test frontend, build và Edge responsive. Timebox A hoàn thành tại local. Timebox B và C vẫn là kế hoạch mở riêng. [ENV-01](../../reports/frontend-redesign/ENV-01-my-tasks-local-schema.md) · [REDESIGN-04](../../reports/frontend-redesign/REDESIGN-04-application-shell.md)
+
 ## Sprint Retrospective
 
-Ghi sau khi có kết quả triển khai.
+Dùng query cache theo route giữ breadcrumb chính xác khi đổi workspace và giảm truy vấn trùng. Browser smoke kiểm tra riêng viewport, focus và kết quả HTTP để phân biệt lỗi giao diện với môi trường.

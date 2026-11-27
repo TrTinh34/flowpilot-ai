@@ -37,7 +37,7 @@ export function NotificationsPage() {
   const visible = filter === 'unread' ? items.filter((n) => !n.isRead) : items;
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-8">
+    <div className="mx-auto w-full max-w-[820px] px-page-gutter py-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

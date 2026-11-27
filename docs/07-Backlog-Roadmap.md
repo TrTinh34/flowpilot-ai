@@ -12,13 +12,14 @@
 
 ## Frontend Redesign & UI/UX Enhancement
 
-[Sprint 06 trong Sprint Index](sprints/sprint-06-frontend-redesign/README.md) đang triển khai đợt Foundation. Bảng đầu tài liệu giữ các mốc dự kiến ban đầu, bao gồm Release. Thứ tự thực tế theo [Sprint Index](sprints/README.md).
+[Sprint 06 trong Sprint Index](sprints/sprint-06-frontend-redesign/README.md) đã hoàn thành đợt Foundation với 5/5 task. Bảng đầu tài liệu giữ các mốc dự kiến ban đầu, bao gồm Release. Thứ tự thực tế theo [Sprint Index](sprints/README.md).
 
 - Ưu tiên design tokens, shared UI và shell, sau đó nâng cấp core screens và QA qua các timebox tiếp theo. [Sprint Backlog](sprints/sprint-06-frontend-redesign/README.md#sprint-backlog)
 - REDESIGN-02 đã áp dụng Design System và kiểm tra trên Edge. [Báo cáo REDESIGN-02](reports/frontend-redesign/REDESIGN-02-design-system.md)
 - REDESIGN-03 đã áp dụng shared UI cho Projects và task lists. [Báo cáo REDESIGN-03](reports/frontend-redesign/REDESIGN-03-shared-components.md)
 - My Tasks local có corrective task riêng cho schema đã thiếu. Notification, Dashboard/audit và AI backend giữ nguyên backlog feature. [Frontend Audit](design/frontend/frontend-audit.md)
 - ENV-01 đã khôi phục schema development local và xác minh My Tasks API trả 200. [Báo cáo ENV-01](reports/frontend-redesign/ENV-01-my-tasks-local-schema.md)
+- REDESIGN-04 đã hoàn thành shell, breadcrumb theo route và mobile drawer. [Báo cáo REDESIGN-04](reports/frontend-redesign/REDESIGN-04-application-shell.md)
 
 ## Backlog
 

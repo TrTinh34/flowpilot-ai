@@ -27,3 +27,5 @@ Nguồn thiết kế hiện có gồm `styles/index.css`, `docs/design/02-Design
 - `prisma migrate status` ở local xác nhận còn ba migration chưa áp dụng: `20261126000200_tasks`, `20261127000000_collaboration`, `20261127000100_outbox_events`. [ENV-01](../../sprints/sprint-06-frontend-redesign/tasks/ENV-01-my-tasks-local-schema.md) ghi thủ tục xác nhận đích và deploy sau phê duyệt. Database được kiểm tra chỉ đọc trong phiên planning.
 
 Edge headless xác nhận Login tại 390 và 1440px có document width bằng viewport, có nút hiện mật khẩu, và My Tasks chuyển về Login khi thiếu phiên. Màn protected A–D dùng ảnh người dùng làm bằng chứng visual. Để bổ sung baseline, đăng nhập local bằng tài khoản test được cấp, chọn My Tasks trong DevTools Network, lưu status/code/request ID đã bỏ thông tin nhạy cảm. Chụp lại A–D tại 390 và 1440, đối chiếu nhóm navigation, gutter và overflow.
+
+Cập nhật ENV-01 · Đã áp dụng ba migration trên development local và tái kiểm tra GET My Tasks với kết quả 200. [Báo cáo ENV-01](../../reports/frontend-redesign/ENV-01-my-tasks-local-schema.md)

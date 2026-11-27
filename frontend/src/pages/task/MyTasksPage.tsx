@@ -19,7 +19,7 @@ export function MyTasksPage() {
     queryFn: () => listMyTasks(page),
   });
   return (
-    <main className="mx-auto max-w-4xl space-y-5 px-5 py-10">
+    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
       <Link to="/" className="text-action-link underline">
         Home
       </Link>
@@ -46,6 +46,6 @@ export function MyTasksPage() {
         hasNext={tasks.isSuccess && tasks.data.data.length >= tasks.data.size}
         onPageChange={setPage}
       />
-    </main>
+    </div>
   );
 }

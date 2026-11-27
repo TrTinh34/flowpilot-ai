@@ -6,7 +6,7 @@
 | Task Name | Application Shell & Navigation |
 | Sprint ID | Sprint 06 · Timebox A |
 | Priority | P0 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 9h |
 | Dependencies | REDESIGN-03 |
 | Related Requirements | Protected shell · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Skip link, aria-current, trap/restore focus.
 Dùng workspace query/auth hiện hành, không tạo request trùng.
 
 ## Implementation Checklist
-- [ ] Map routes
-- [ ] thêm shell
-- [ ] kiểm thử workspace switch
+- [x] Map routes và breadcrumb
+- [x] Thêm shell, desktop rail và drawer
+- [x] Kiểm thử workspace switch, route history và focus
 
 ## Expected Deliverables
 Shell và screenshots.
@@ -66,6 +66,8 @@ Router/RTL, browser 390/1440/1920.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo REDESIGN-04](../../../reports/frontend-redesign/REDESIGN-04-application-shell.md).
 
 ## Next Task
 REDESIGN-05.

@@ -27,6 +27,7 @@ Xác nhận hostname loopback, database development `flowpilot_ai` và schema `p
 | GET `/api/v1/me/tasks?page=0` với phiên kiểm thử | PASSED · 200, trang 0, size 20, danh sách rỗng cho UUID tổng hợp |
 | GET cùng endpoint thiếu token | PASSED · 401 `UNAUTHORIZED` |
 | `npm run test:db:migrate` | PASSED · PostgreSQL test đã cập nhật |
+| Edge 360px | PASSED · My Tasks render empty state từ HTTP 200 thật qua fixture trình duyệt |
 
 ## 6. Acceptance Criteria
 

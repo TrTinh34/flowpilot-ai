@@ -78,7 +78,7 @@ function ProjectSettings({ projectId }: { projectId: string }) {
   }
 
   return (
-    <main className="mx-auto max-w-4xl space-y-5 px-5 py-10">
+    <div className="mx-auto max-w-4xl space-y-5 px-page-gutter py-8">
       <Link
         to={workspaceId ? `/workspaces/${workspaceId}/projects` : '/workspaces'}
         className="underline"
@@ -153,6 +153,6 @@ function ProjectSettings({ projectId }: { projectId: string }) {
           {error && <p role="alert">{error}</p>}
         </section>
       )}
-    </main>
+    </div>
   );
 }

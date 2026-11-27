@@ -23,3 +23,5 @@ Mobile
 ```
 
 Nghiệm thu bằng route navigation, desktop collapse, mobile open/close/return focus, viewport không tràn ngang và không hiển thị shortcut ngoài quyền.
+
+REDESIGN-04 dùng sidebar 240px và rail 64px. Workspace switcher và menu tài khoản dùng Radix DropdownMenu. Drawer dưới breakpoint 1024px dùng Radix Dialog. Breadcrumb lấy workspace từ route hoặc lựa chọn hiện hành, lấy tên project/task từ query cache theo phiên. Shell chỉ tải danh sách workspace. Project shortcuts xuất hiện khi route hiện tại có project đọc được.

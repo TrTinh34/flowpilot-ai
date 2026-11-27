@@ -41,7 +41,7 @@ function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
   }
 
   return (
-    <main className="mx-auto max-w-4xl space-y-5 px-5 py-10">
+    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
       <Link to={`/workspaces?workspace=${workspaceId}`} className="text-action-link underline">
         Back to workspace
       </Link>
@@ -99,6 +99,6 @@ function ProjectsForWorkspace({ workspaceId }: { workspaceId: string }) {
         hasNext={projects.isSuccess && projects.data.data.length >= projects.data.size}
         onPageChange={setPage}
       />
-    </main>
+    </div>
   );
 }

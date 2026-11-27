@@ -4,7 +4,7 @@ export function ProfilePage() {
   const user = useAuthStore((s) => s.user);
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
+    <div className="mx-auto w-full max-w-[760px] px-page-gutter py-8">
       <h1 className="text-2xl font-semibold text-[var(--foreground)]">Profile</h1>
       <p className="mt-1 text-sm text-[var(--foreground-secondary)]">Your account information.</p>
 

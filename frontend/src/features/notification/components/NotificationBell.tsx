@@ -17,6 +17,7 @@ export function NotificationBell() {
   const [items, setItems] = useState<NotificationItem[]>(mockNotifications);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
 
   const unread = items.filter((n) => !n.isRead).length;
 
@@ -37,8 +38,18 @@ export function NotificationBell() {
   }, []);
 
   return (
-    <div ref={ref} className="relative">
+    <div
+      ref={ref}
+      className="relative"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && open) {
+          setOpen(false);
+          trigger.current?.focus();
+        }
+      }}
+    >
       <button
+        ref={trigger}
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={`Notifications${unread > 0 ? `, ${unread} unread` : ''}`}
@@ -57,7 +68,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-lg">
+        <div className="absolute -right-12 z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-border bg-card shadow-lg sm:right-0">
           {/* Dropdown header */}
           <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
             <span className="text-sm font-semibold text-[var(--foreground)]">Notifications</span>

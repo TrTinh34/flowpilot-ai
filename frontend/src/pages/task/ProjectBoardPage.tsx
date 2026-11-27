@@ -39,7 +39,7 @@ function ProjectBoard({ projectId }: { projectId: string }) {
     move.error.response?.data?.code === 'TASK_VERSION_CONFLICT';
 
   return (
-    <main className="mx-auto max-w-screen-2xl space-y-5 px-5 py-10">
+    <div className="w-full min-w-0 space-y-5 px-page-gutter py-8">
       <Link to={`/projects/${projectId}/tasks`} className="underline">
         Project tasks
       </Link>
@@ -72,6 +72,6 @@ function ProjectBoard({ projectId }: { projectId: string }) {
           }
         />
       )}
-    </main>
+    </div>
   );
 }

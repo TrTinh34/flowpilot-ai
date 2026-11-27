@@ -26,7 +26,7 @@ export function AcceptInvitePage() {
   }
 
   return (
-    <main className="mx-auto max-w-md px-5 py-12">
+    <div className="mx-auto max-w-md px-page-gutter py-12">
       <h1 className="text-2xl font-semibold">Workspace invitation</h1>
       {token ? (
         <Button className="mt-5" disabled={pending} onClick={() => void accept()}>
@@ -42,6 +42,6 @@ export function AcceptInvitePage() {
           {error}
         </p>
       )}
-    </main>
+    </div>
   );
 }

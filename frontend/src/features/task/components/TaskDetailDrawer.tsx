@@ -68,7 +68,7 @@ function TaskDetail({ taskId }: { taskId: string }) {
   const item = task.data;
   const assignee = members.find(({ userId }) => userId === item.assigneeId);
   return (
-    <main className="mx-auto max-w-4xl space-y-5 px-5 py-10">
+    <div className="mx-auto max-w-4xl space-y-5 px-page-gutter py-8">
       <Link to={`/projects/${projectId}/tasks`} className="underline">
         Back to project tasks
       </Link>
@@ -157,6 +157,6 @@ function TaskDetail({ taskId }: { taskId: string }) {
           <AttachmentUploader taskId={taskId} canWrite={canCollaborate} />
         </TabsContent>
       </Tabs>
-    </main>
+    </div>
   );
 }
