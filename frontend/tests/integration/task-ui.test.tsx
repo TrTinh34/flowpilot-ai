@@ -59,9 +59,11 @@ it('creates a project task and navigates to its detail', async () => {
   vi.mocked(api.createTask).mockResolvedValue(task);
   show('/projects/project/tasks');
   const user = userEvent.setup();
-  await user.type(await screen.findByLabelText('Task title'), 'Plan release');
-  await user.selectOptions(screen.getByLabelText('Assignee'), 'member');
-  await user.click(screen.getByRole('button', { name: 'Create task' }));
+  await user.click(await screen.findByRole('button', { name: 'Create task' }));
+  const dialog = within(await screen.findByRole('dialog'));
+  await user.type(dialog.getByLabelText('Task title'), 'Plan release');
+  await user.selectOptions(dialog.getByLabelText('Assignee'), 'member');
+  await user.click(dialog.getByRole('button', { name: 'Create task' }));
   expect(api.createTask).toHaveBeenCalledWith(
     'project',
     expect.objectContaining({
@@ -139,4 +141,35 @@ it('reports forbidden task access without showing an edit form', async () => {
   show('/tasks/task');
   expect(await screen.findByRole('alert')).toHaveTextContent('Insufficient task permissions.');
   expect(screen.queryByRole('button', { name: 'Save task' })).not.toBeInTheDocument();
+});
+
+it('filters assigned tasks within the loaded page and renders status and priority as text', async () => {
+  vi.mocked(api.listMyTasks).mockResolvedValue({
+    data: [
+      task,
+      {
+        ...task,
+        id: 'other',
+        title: 'Close milestone',
+        priority: 'LOW',
+        status: 'DONE',
+        dueDate: null,
+      },
+    ],
+    page: 0,
+    size: 20,
+  });
+  show('/my-tasks');
+  const user = userEvent.setup();
+  expect(await screen.findByRole('link', { name: 'Plan release' })).toBeInTheDocument();
+  const list = within(screen.getByRole('region', { name: 'Task list' }));
+  await user.selectOptions(list.getByLabelText('Status'), 'DONE');
+  expect(list.getByText('1 of 2 tasks on this page')).toBeInTheDocument();
+  expect(list.getByRole('link', { name: 'Close milestone' })).toBeInTheDocument();
+  expect(list.queryByRole('link', { name: 'Plan release' })).not.toBeInTheDocument();
+  await user.selectOptions(list.getByLabelText('Priority'), 'HIGH');
+  expect(list.getByText('No matching tasks.')).toBeInTheDocument();
+  await user.click(list.getByRole('button', { name: 'Clear filters' }));
+  expect(list.getByText('Due 2026-12-04')).toBeInTheDocument();
+  expect(api.listMyTasks).toHaveBeenCalledTimes(1);
 });

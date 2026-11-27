@@ -6,7 +6,7 @@
 | Task Name | My Tasks & Task Management |
 | Sprint ID | Sprint 07 · Timebox B |
 | Priority | P0 |
-| Status | PENDING |
+| Status | COMPLETED |
 | Estimated Effort | 7h |
 | Dependencies | REDESIGN-03, REDESIGN-08, ENV-01 |
 | Related Requirements | My Tasks và Project Tasks · [SRS](../../../02-SRS.md), [Screen Specs](../../../design/frontend/screen-specifications.md), [Acceptance](../acceptance-criteria.md) |
@@ -48,9 +48,9 @@ Filter label, badge text, retry và aria-live.
 Task API thật; 500 giữ error state.
 
 ## Implementation Checklist
-- [ ] Map metadata
-- [ ] thay list/state
-- [ ] lỗi và regression
+- [x] Map metadata
+- [x] thay list/state
+- [x] lỗi và regression
 
 ## Expected Deliverables
 My Tasks/Project Tasks và screenshots.
@@ -66,6 +66,8 @@ RTL 500→retry, success/empty và browser thật.
 
 ## Reporting Requirements
 Theo [Report Template](../../../reports/REPORT-TEMPLATE.md), ghi quyết định, test evidence, trạng thái và ảnh before/after khi có UI thay đổi.
+
+[Báo cáo triển khai](../../../reports/frontend-redesign/REDESIGN-09-task-management.md).
 
 ## Next Task
 REDESIGN-10.

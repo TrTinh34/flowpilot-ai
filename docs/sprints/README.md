@@ -10,7 +10,7 @@
 | Sprint 04 | Frontend Foundation & MVP Interactive Prototype | Application Shell, Dashboard, Notifications, Collaboration, AI Planner và Settings UI | COMPLETED | 9/9 Task | Sprint 03 DoD | [Sprint 04](sprint-04-frontend-foundation/README.md) |
 | Sprint 05 | Collaboration | Bình luận, mention và tệp đính kèm trên Task Detail | COMPLETED | 5/5 task. GitHub Actions đạt. | Hoàn tất | [Sprint 05](sprint-05-collaboration/README.md) |
 | Sprint 06 | Frontend Redesign & UI/UX Enhancement | Design System, shared UI, shell và baseline cho redesign MVP | COMPLETED | Timebox A đạt 5/5 task | Hoàn tất | [Sprint 06](sprint-06-frontend-redesign/README.md) |
-| Sprint 07 | Frontend Redesign · Core flows | Redesign Auth, Dashboard, Workspace, Projects, Task Lists và Kanban | IN_PROGRESS | Timebox B · 3/6 task | Sprint 06 | [Sprint 07](sprint-07-frontend-core-flows/README.md) |
+| Sprint 07 | Frontend Redesign · Core flows | Redesign Auth, Dashboard, Workspace, Projects, Task Lists và Kanban | IN_PROGRESS | Timebox B · 4/6 task | Sprint 06 | [Sprint 07](sprint-07-frontend-core-flows/README.md) |
 
 ## Nguồn quản lý
 

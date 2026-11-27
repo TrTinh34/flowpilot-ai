@@ -22,3 +22,10 @@ export type TaskFields = Pick<
   'title' | 'description' | 'priority' | 'assigneeId' | 'dueDate'
 >;
 export type TaskPage = { data: Task[]; page: number; size: number };
+
+export const taskStatusLabels: Record<TaskStatus, string> = {
+  TODO: 'To do',
+  IN_PROGRESS: 'In progress',
+  IN_REVIEW: 'In review',
+  DONE: 'Done',
+};
